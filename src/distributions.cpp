@@ -240,4 +240,93 @@ void example_par(Param &par){
 
 }
 
+// Test functions
+// STD functions
+void test_key(Param &par, SDL_keysym* keysym){
+    switch(keysym->sym){
+        case SDLK_ESCAPE:
+        case SDLK_q:
+            par.end = 1;
+            break;
+
+        case SDLK_UP:
+            if (par.dmap["rbumper"] < 0.5){
+                par.dmap["rbumper"] += 0.05;
+            }
+            break;
+        case SDLK_DOWN:
+            if (par.dmap["rbumper"] > -0.5){
+                par.dmap["rbumper"] -= 0.05;
+            }
+            break;
+        case SDLK_w:
+            if (par.dmap["lbumper"] < 0.5){
+                par.dmap["lbumper"] += 0.05;
+            }
+            break;
+        case SDLK_s:
+            if (par.dmap["lbumper"] > -0.5){
+                par.dmap["lbumper"] -= 0.05;
+            }
+            break;
+
+    }
+
+}
+
+void test_fn(Param &par){
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
+    glClear(GL_COLOR_BUFFER_BIT);
+    glColor3f(0.0,0.0,1.0);
+    glLineWidth(30);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    glBegin(GL_POLYGON);
+        glVertex2f(1.0f, 0.5f + par.dmap["rbumper"]);
+        glVertex2f(1.0f, -0.5f + par.dmap["rbumper"]);
+        glVertex2f(0.9f, -0.5f + par.dmap["rbumper"]);
+        glVertex2f(0.9f, 0.5f + par.dmap["rbumper"]);
+    glEnd();
+
+    glColor3f(1.0,0.0,0.0);
+    glBegin(GL_POLYGON);
+        glVertex2f(-1.0f, 0.5f + par.dmap["lbumper"]);
+        glVertex2f(-1.0f, -0.5f + par.dmap["lbumper"]);
+        glVertex2f(-0.9f, -0.5f + par.dmap["lbumper"]);
+        glVertex2f(-0.9f, 0.5f + par.dmap["lbumper"]);
+    glEnd();
+
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    glFlush(); 
+
+    SDL_GL_SwapBuffers();
+
+}
+
+void test_par(Param &par){
+    par.set_fns();
+    par.width = 640;
+    par.height = 480;
+    par.dist = "test";
+    par.end = 0;
+
+    par.dmap["rbumper"] = 0.0;
+    par.dmap["lbumper"] = 0.0;
+
+}
+
+void test_OGL(Param &par){
+    glewExperimental = GL_TRUE;
+
+    if (glewInit() != GLEW_OK){
+        std::cout << "You dun goofed!" << '\n';
+        exit(1);
+    }
+
+    glViewport(0,0,640,480);
+
+}
 

@@ -11,7 +11,6 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-
 #include <SDL/SDL.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -22,6 +21,7 @@
 // struct to hold most data
 struct Param{
     std::unordered_map<std::string, int> imap;
+    std::unordered_map<std::string, double> dmap;
     int end, width, height;
     std::string dist;
 

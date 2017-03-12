@@ -9,7 +9,7 @@
 
 int main(){
 
-    Param par = set_params("example");
+    Param par = set_params("test");
     SDL_init(par);
 
     // Defining OGL stuff

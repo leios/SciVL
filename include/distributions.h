@@ -21,4 +21,10 @@ void example_fn(Param &par);
 void example_par(Param &par);
 void example_OGL(Param &par);
 
+// STD functions
+void test_key(Param &par, SDL_keysym* keysym);
+void test_fn(Param &par);
+void test_par(Param &par);
+void test_OGL(Param &par);
+
 #endif

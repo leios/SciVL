@@ -7,6 +7,7 @@
 #include "../include/GL_setup.h"
 #include "../include/distributions.h"
 
+
 // Function to set parameters
 Param set_params(std::string dist){
     Param par;
@@ -21,10 +22,16 @@ void Param::set_fns(){
     key_fns["std"] = std_key;
     par_fns["std"] = std_par;
     OGL_fns["std"] = std_OGL;
+
     draw_fns["example"] = example_fn;
     key_fns["example"] = example_key;
     par_fns["example"] = example_par;
     OGL_fns["example"] = example_OGL;
+
+    draw_fns["test"] = test_fn;
+    key_fns["test"] = test_key;
+    par_fns["test"] = test_par;
+    OGL_fns["test"] = test_OGL;
 }
 
 // Function to set-up OGL
