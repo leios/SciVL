@@ -5,6 +5,8 @@
 *-----------------------------------------------------------------------------*/
 
 #include "../include/distributions.h"
+#include "../include/shape_functions.h"
+#include "../include/test_pong.h"
 
 // STD functions
 void std_key(Param &par, SDL_keysym* keysym){
@@ -12,6 +14,8 @@ void std_key(Param &par, SDL_keysym* keysym){
         case SDLK_ESCAPE:
         case SDLK_q:
             par.end = 1;
+            break;
+        default:
             break;
     }
 
@@ -94,6 +98,8 @@ void example_key(Param &par, SDL_keysym* keysym){
         case SDLK_ESCAPE:
         case SDLK_q:
             par.end = 1;
+            break;
+        default:
             break;
     }
 
@@ -269,13 +275,17 @@ void test_key(Param &par, SDL_keysym* keysym){
                 par.dmap["lbumper"] -= 0.05;
             }
             break;
+        default:
+            break;
 
     }
 
 }
 
 void test_fn(Param &par){
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
+    play_pong(par);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     glClear(GL_COLOR_BUFFER_BIT);
     glColor3f(0.0,0.0,1.0);
@@ -298,6 +308,9 @@ void test_fn(Param &par){
         glVertex2f(-0.9f, 0.5f + par.dmap["lbumper"]);
     glEnd();
 
+    glColor3f(0.0,1.0,0.0);
+    draw_circle(par);
+
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     glFlush(); 
@@ -308,13 +321,20 @@ void test_fn(Param &par){
 
 void test_par(Param &par){
     par.set_fns();
-    par.width = 640;
-    par.height = 480;
+    par.width = 1000;
+    par.height = 1000;
     par.dist = "test";
     par.end = 0;
 
     par.dmap["rbumper"] = 0.0;
     par.dmap["lbumper"] = 0.0;
+    par.dmap["radius"] = 0.1;
+    par.dmap["pos_x"] = 0.0;
+    par.dmap["pos_y"] = 0.0;
+    par.dmap["vel_y"] = ((rand() % 1000) * 0.0001 - 0.5) * 0.1;
+    par.dmap["vel_x"] = ((rand() % 1000) * 0.0001 - 0.5) * 0.1;
+    par.dmap["timestep"] = 0.1;
+    par.imap["res"] = 100;
 
 }
 
@@ -326,7 +346,7 @@ void test_OGL(Param &par){
         exit(1);
     }
 
-    glViewport(0,0,640,480);
+    glViewport(0,0,par.width,par.height);
 
 }
 

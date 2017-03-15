@@ -17,6 +17,8 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <random>
+#include <cmath>
 
 // struct to hold most data
 struct Param{
