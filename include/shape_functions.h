@@ -12,4 +12,7 @@
 // function to draw a circle, must have a radius and position
 void draw_circle(Param &par);
 
+// function to draw a square with a position and size
+void draw_square(Param &par);
+
 #endif

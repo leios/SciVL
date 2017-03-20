@@ -7,6 +7,7 @@
 #include "../include/distributions.h"
 #include "../include/shape_functions.h"
 #include "../include/test_pong.h"
+#include "../include/shaders.h"
 
 // STD functions
 void std_key(Param &par, SDL_keysym* keysym){
@@ -247,7 +248,6 @@ void example_par(Param &par){
 }
 
 // Test functions
-// STD functions
 void test_key(Param &par, SDL_keysym* keysym){
     switch(keysym->sym){
         case SDLK_ESCAPE:
@@ -321,8 +321,8 @@ void test_fn(Param &par){
 
 void test_par(Param &par){
     par.set_fns();
-    par.width = 1000;
-    par.height = 1000;
+    par.width = 500;
+    par.height = 500;
     par.dist = "test";
     par.end = 0;
 
@@ -333,12 +333,116 @@ void test_par(Param &par){
     par.dmap["pos_y"] = 0.0;
     par.dmap["vel_y"] = ((rand() % 1000) * 0.0001 - 0.5) * 0.1;
     par.dmap["vel_x"] = ((rand() % 1000) * 0.0001 - 0.5) * 0.1;
-    par.dmap["timestep"] = 0.1;
+    par.dmap["timestep"] = 0.05;
     par.imap["res"] = 100;
 
 }
 
 void test_OGL(Param &par){
+    glewExperimental = GL_TRUE;
+
+    if (glewInit() != GLEW_OK){
+        std::cout << "You dun goofed!" << '\n';
+        exit(1);
+    }
+
+    glViewport(0,0,par.width,par.height);
+
+}
+
+// Test functions using shader.h
+void test_shader_key(Param &par, SDL_keysym* keysym){
+    switch(keysym->sym){
+        case SDLK_ESCAPE:
+        case SDLK_q:
+            par.end = 1;
+            break;
+
+        case SDLK_UP:
+            if (par.dmap["rbumper"] < 0.5){
+                par.dmap["rbumper"] += 0.05;
+            }
+            break;
+        case SDLK_DOWN:
+            if (par.dmap["rbumper"] > -0.5){
+                par.dmap["rbumper"] -= 0.05;
+            }
+            break;
+        case SDLK_w:
+            if (par.dmap["lbumper"] < 0.5){
+                par.dmap["lbumper"] += 0.05;
+            }
+            break;
+        case SDLK_s:
+            if (par.dmap["lbumper"] > -0.5){
+                par.dmap["lbumper"] -= 0.05;
+            }
+            break;
+        default:
+            break;
+
+    }
+
+}
+
+void test_shader_fn(Param &par){
+
+    play_pong(par);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+    glClear(GL_COLOR_BUFFER_BIT);
+    glColor3f(0.0,0.0,1.0);
+    glLineWidth(30);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    glBegin(GL_POLYGON);
+        glVertex2f(1.0f, 0.5f + par.dmap["rbumper"]);
+        glVertex2f(1.0f, -0.5f + par.dmap["rbumper"]);
+        glVertex2f(0.9f, -0.5f + par.dmap["rbumper"]);
+        glVertex2f(0.9f, 0.5f + par.dmap["rbumper"]);
+    glEnd();
+
+    glColor3f(1.0,0.0,0.0);
+    glBegin(GL_POLYGON);
+        glVertex2f(-1.0f, 0.5f + par.dmap["lbumper"]);
+        glVertex2f(-1.0f, -0.5f + par.dmap["lbumper"]);
+        glVertex2f(-0.9f, -0.5f + par.dmap["lbumper"]);
+        glVertex2f(-0.9f, 0.5f + par.dmap["lbumper"]);
+    glEnd();
+
+    glColor3f(0.0,1.0,0.0);
+    draw_circle(par);
+    //draw_square(par);
+
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    glFlush(); 
+
+    SDL_GL_SwapBuffers();
+
+}
+
+void test_shader_par(Param &par){
+    par.set_fns();
+    par.width = 500;
+    par.height = 500;
+    par.dist = "test_shader";
+    par.end = 0;
+
+    par.dmap["rbumper"] = 0.0;
+    par.dmap["lbumper"] = 0.0;
+    par.dmap["radius"] = 0.1;
+    par.dmap["pos_x"] = 0.0;
+    par.dmap["pos_y"] = 0.0;
+    par.dmap["vel_y"] = ((rand() % 1000) * 0.0001 - 0.5) * 0.1;
+    par.dmap["vel_x"] = ((rand() % 1000) * 0.0001 - 0.5) * 0.1;
+    par.dmap["timestep"] = 0.05;
+    par.imap["res"] = 100;
+
+}
+
+void test_shader_OGL(Param &par){
     glewExperimental = GL_TRUE;
 
     if (glewInit() != GLEW_OK){

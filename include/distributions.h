@@ -27,4 +27,10 @@ void test_fn(Param &par);
 void test_par(Param &par);
 void test_OGL(Param &par);
 
+// STD functions
+void test_shader_key(Param &par, SDL_keysym* keysym);
+void test_shader_fn(Param &par);
+void test_shader_par(Param &par);
+void test_shader_OGL(Param &par);
+
 #endif

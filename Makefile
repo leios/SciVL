@@ -5,7 +5,7 @@ OGLFLAGS = -lGLEW -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -lGLU
 SDLFLAGS = `sdl-config --cflags --libs` 
 
 BINS = SDL_test
-OBJ = SDL_test.o GL_setup.o distributions.o shape_functions.o test_pong.o
+OBJ = SDL_test.o GL_setup.o distributions.o shape_functions.o test_pong.o shaders.o
 DEPS = include/SDL_test.h include/GL_setup.h include/distributions.h
 
 %.o: ./src/%.cpp $(DEPS)
