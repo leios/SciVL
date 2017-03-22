@@ -43,8 +43,8 @@ void draw_square(Param &par){
     GLfloat vertices[] = {
         pos_x - radius, pos_y - radius, 0.0f,
         pos_x - radius, pos_y + radius, 0.0f,
-        pos_x + radius, pos_y + radius, 0.0f,
-        pos_x + radius, pos_y - radius, 0.0f
+        pos_x + radius, pos_y + radius, 0.0f
+        //pos_x + radius, pos_y - radius, 0.0f
     };
 
     // Creating vertex array and vertex buffer objects
@@ -61,16 +61,16 @@ void draw_square(Param &par){
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // position attribute
-    glVertexAttribPointer(0,4,GL_FLOAT,GL_FALSE,4*sizeof(GLfloat), (GLvoid*)0);
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
 
     // color attribute
-    glVertexAttribPointer(1,4,GL_FLOAT,GL_FALSE,4*sizeof(GLfloat),
-                          (GLvoid*)(4*sizeof(GLfloat)));
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,3*sizeof(GLfloat),
+                          (GLvoid*)(3*sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
 
-    // unbind VAO
-    glBindVertexArray(0);
-
     defaultShader.Use();
+    //glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindVertexArray(0);
 }

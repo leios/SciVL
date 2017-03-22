@@ -412,7 +412,7 @@ void test_shader_fn(Param &par){
     glEnd();
 
     glColor3f(0.0,1.0,0.0);
-    draw_circle(par);
+    //draw_circle(par);
     //draw_square(par);
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
