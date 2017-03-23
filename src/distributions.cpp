@@ -387,6 +387,18 @@ void test_shader_key(Param &par, SDL_keysym* keysym){
 
 void test_shader_fn(Param &par){
 
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    par.shmap["default"].Use();
+    glBindVertexArray(par.uimap["VAO"]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, par.uimap["EBO"]);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+
+    SDL_GL_SwapBuffers();
+
+/*
     play_pong(par);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -420,6 +432,7 @@ void test_shader_fn(Param &par){
     glFlush(); 
 
     SDL_GL_SwapBuffers();
+*/
 
 }
 
@@ -432,7 +445,7 @@ void test_shader_par(Param &par){
 
     par.dmap["rbumper"] = 0.0;
     par.dmap["lbumper"] = 0.0;
-    par.dmap["radius"] = 0.1;
+    par.dmap["radius"] = 0.5;
     par.dmap["pos_x"] = 0.0;
     par.dmap["pos_y"] = 0.0;
     par.dmap["vel_y"] = ((rand() % 1000) * 0.0001 - 0.5) * 0.1;
@@ -451,6 +464,69 @@ void test_shader_OGL(Param &par){
     }
 
     glViewport(0,0,par.width,par.height);
+
+    // this should use shaders...
+    Shader defaultShader;
+    defaultShader.Load("shaders/default.vtx", "shaders/default.frg");
+
+    double pos_x = par.dmap["pos_x"];
+    double pos_y = par.dmap["pos_y"];
+    double radius = par.dmap["radius"];
+
+    // Creating our list of vertices
+    GLfloat vertices[] = {
+        pos_x - radius, pos_y - radius, 0.0f, 1.0f, 0.0f, 1.0f,
+        pos_x - radius, pos_y + radius, 0.0f, 1.0f, 0.0f, 1.0f,
+        pos_x + radius, pos_y + radius, 0.0f, 1.0f, 0.0f, 1.0f,
+        pos_x + radius, pos_y - radius, 0.0f, 1.0f, 0.0f, 1.0f
+    };
+
+/*
+    GLfloat vertices[] = {
+        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
+        -0.5f, 0.5f, 0.0f,   0.0f, 1.0f, 0.0f,
+        0.5f, 0.5f, 0.0f,    0.0f, 1.0f, 0.0f,
+        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f
+    };
+*/
+
+    // List of indices to be bound to element buffer
+    GLuint indices[] = {
+        0, 1, 3,
+        2, 1, 3
+    };
+
+    // Creating vertex array and vertex buffer objects
+    GLuint VAO, VBO, EBO;
+
+    // Generating objects
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    // Binding the vertex aray object
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, 
+                 GL_STATIC_DRAW);
+
+    // position attribute
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+
+    // color attribute
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat),
+                          (GLvoid*)(3*sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
+    par.uimap["VAO"] = VAO;
+    par.uimap["EBO"] = EBO;
+    par.shmap["default"] = defaultShader;
+    glBindVertexArray(0);
 
 }
 

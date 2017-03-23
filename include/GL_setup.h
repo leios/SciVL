@@ -20,10 +20,14 @@
 #include <random>
 #include <cmath>
 
+#include "../include/shaders.h"
+
 // struct to hold most data
 struct Param{
     std::unordered_map<std::string, int> imap;
     std::unordered_map<std::string, double> dmap;
+    std::unordered_map<std::string, GLuint> uimap;
+    std::unordered_map<std::string, Shader> shmap;
     int end, width, height;
     std::string dist;
 

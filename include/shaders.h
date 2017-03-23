@@ -4,6 +4,7 @@
 *
 *   Notes: This file is heavily influenced by:
 *               https://learnopengl.com/#!Getting-started/Shaders
+*          generalize shader class for different types of shaders
 *
 *-----------------------------------------------------------------------------*/
 
@@ -21,10 +22,10 @@
 
 struct Shader{
     // The program ID
-    GLuint Program;
+    GLuint Program = 0;
 
     // Constructor that reads and builds the shader
-    Shader(const GLchar* vertexSourcePath, const GLchar* fragmentSourcePath);
+    void Load(const GLchar* vertexSourcePath, const GLchar* fragmentSourcePath);
 
     // Function to use the program
     void Use();

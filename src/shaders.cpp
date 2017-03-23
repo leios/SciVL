@@ -8,8 +8,8 @@
 
 #include "../include/shaders.h"
 
-Shader::Shader(const GLchar* vertexSourcePath, 
-               const GLchar* fragmentSourcePath){
+void Shader::Load(const GLchar* vertexSourcePath, 
+                  const GLchar* fragmentSourcePath){
 
     // Step 1: Retreive the vertex / fragment source code from filepath
     std::string vertexCode;

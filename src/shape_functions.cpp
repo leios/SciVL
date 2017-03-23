@@ -5,7 +5,6 @@
 *-----------------------------------------------------------------------------*/
 
 #include "../include/shape_functions.h"
-#include "../include/shaders.h"
 
 // function to draw a circle, must have a radius and position
 void draw_circle(Param &par){
@@ -33,7 +32,8 @@ void draw_circle(Param &par){
 void draw_square(Param &par){
 
     // this should use shaders...
-    Shader defaultShader("shaders/default.vtx", "shaders/default.frg");
+    Shader defaultShader;
+    defaultShader.Load("shaders/default.vtx", "shaders/default.frg");
 
     double pos_x = par.dmap["pos_x"];
     double pos_y = par.dmap["pos_y"];
