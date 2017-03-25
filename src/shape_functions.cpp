@@ -29,48 +29,60 @@ void draw_circle(Param &par){
     
 }
 
-void draw_square(Param &par){
-
-    // this should use shaders...
-    Shader defaultShader;
-    defaultShader.Load("shaders/default.vtx", "shaders/default.frg");
+void draw_square(Param &par, ){
 
     double pos_x = par.dmap["pos_x"];
     double pos_y = par.dmap["pos_y"];
     double radius = par.dmap["radius"];
 
-    // Creating our list of vertices
-    GLfloat vertices[] = {
-        pos_x - radius, pos_y - radius, 0.0f,
-        pos_x - radius, pos_y + radius, 0.0f,
-        pos_x + radius, pos_y + radius, 0.0f
-        //pos_x + radius, pos_y - radius, 0.0f
-    };
-
-    // Creating vertex array and vertex buffer objects
-    GLuint VAO, VBO;
+/*
+    GLuint VAO = par.dmap["VAO"];
+    GLuint EBO = par.dmap["EBO"];
+    GLuint VBO = par.dmap["VBO"];
+*/
 
     // Generating objects
+    GLuint VAO, VBO, EBO;
+
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
 
-    // Binding the vertex aray object
+    GLfloat vertices[] = {
+        pos_x - radius, pos_y - radius, 0.0f, 1.0f, 0.0f, 1.0f,
+        pos_x - radius, pos_y + radius, 0.0f, 1.0f, 0.0f, 1.0f,
+        pos_x + radius, pos_y + radius, 0.0f, 1.0f, 0.0f, 1.0f,
+        pos_x + radius, pos_y - radius, 0.0f, 1.0f, 0.0f, 1.0f
+    };
+
+    // List of indices to be bound to element buffer
+    GLuint indices[] = {
+        0, 1, 3,
+        2, 1, 3
+    };
+
+    // Binding necessary elements
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, 
+                 GL_STATIC_DRAW);
+
     // position attribute
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(GLfloat), (GLvoid*)0);
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
 
     // color attribute
-    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,3*sizeof(GLfloat),
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat),
                           (GLvoid*)(3*sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
 
-    defaultShader.Use();
-    //glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glBindVertexArray(0);
+    par.uimap["VAO"] = VAO;
+    par.uimap["VBO"] = VBO;
+    par.uimap["EBO"] = EBO;
+
+
 }

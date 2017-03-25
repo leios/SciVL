@@ -387,9 +387,12 @@ void test_shader_key(Param &par, SDL_keysym* keysym){
 
 void test_shader_fn(Param &par){
 
+    play_pong(par);
+
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    draw_square(par);
     par.shmap["default"].Use();
     glBindVertexArray(par.uimap["VAO"]);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, par.uimap["EBO"]);
@@ -524,6 +527,7 @@ void test_shader_OGL(Param &par){
     glEnableVertexAttribArray(1);
 
     par.uimap["VAO"] = VAO;
+    par.uimap["VBO"] = VBO;
     par.uimap["EBO"] = EBO;
     par.shmap["default"] = defaultShader;
     glBindVertexArray(0);
