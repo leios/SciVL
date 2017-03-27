@@ -18,9 +18,19 @@
 #include <string>
 #include <unordered_map>
 #include <random>
+#include <vector>
 #include <cmath>
 
 #include "../include/shaders.h"
+// Struct to hold all data for shape drawing
+struct Shape{
+    GLfloat* vertices;
+    GLuint* indices;
+    GLuint VAO, VBO, EBO;
+
+    // Integer for the number of vertices
+    int vnum;
+};
 
 // struct to hold most data
 struct Param{
@@ -28,6 +38,8 @@ struct Param{
     std::unordered_map<std::string, double> dmap;
     std::unordered_map<std::string, GLuint> uimap;
     std::unordered_map<std::string, Shader> shmap;
+    //std::unordered_map<std::string, Shape> shamap;
+    std::vector<Shape> shapes;
     int end, width, height;
     std::string dist;
 

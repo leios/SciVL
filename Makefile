@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -g -Wall -march=native
+CXXFLAGS = -std=c++11 -g -Wall -march=native -Wextra -pedantic
 
 OGLFLAGS = -lGLEW -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -lGLU
 SDLFLAGS = `sdl-config --cflags --libs` 

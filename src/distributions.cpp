@@ -392,50 +392,9 @@ void test_shader_fn(Param &par){
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    draw_square(par);
-    par.shmap["default"].Use();
-    glBindVertexArray(par.uimap["VAO"]);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, par.uimap["EBO"]);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
+    draw_shapes(par);
 
     SDL_GL_SwapBuffers();
-
-/*
-    play_pong(par);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-    glClear(GL_COLOR_BUFFER_BIT);
-    glColor3f(0.0,0.0,1.0);
-    glLineWidth(30);
-
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-    glBegin(GL_POLYGON);
-        glVertex2f(1.0f, 0.5f + par.dmap["rbumper"]);
-        glVertex2f(1.0f, -0.5f + par.dmap["rbumper"]);
-        glVertex2f(0.9f, -0.5f + par.dmap["rbumper"]);
-        glVertex2f(0.9f, 0.5f + par.dmap["rbumper"]);
-    glEnd();
-
-    glColor3f(1.0,0.0,0.0);
-    glBegin(GL_POLYGON);
-        glVertex2f(-1.0f, 0.5f + par.dmap["lbumper"]);
-        glVertex2f(-1.0f, -0.5f + par.dmap["lbumper"]);
-        glVertex2f(-0.9f, -0.5f + par.dmap["lbumper"]);
-        glVertex2f(-0.9f, 0.5f + par.dmap["lbumper"]);
-    glEnd();
-
-    glColor3f(0.0,1.0,0.0);
-    //draw_circle(par);
-    //draw_square(par);
-
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-    glFlush(); 
-
-    SDL_GL_SwapBuffers();
-*/
 
 }
 
@@ -471,66 +430,31 @@ void test_shader_OGL(Param &par){
     // this should use shaders...
     Shader defaultShader;
     defaultShader.Load("shaders/default.vtx", "shaders/default.frg");
-
-    double pos_x = par.dmap["pos_x"];
-    double pos_y = par.dmap["pos_y"];
-    double radius = par.dmap["radius"];
-
-    // Creating our list of vertices
-    GLfloat vertices[] = {
-        pos_x - radius, pos_y - radius, 0.0f, 1.0f, 0.0f, 1.0f,
-        pos_x - radius, pos_y + radius, 0.0f, 1.0f, 0.0f, 1.0f,
-        pos_x + radius, pos_y + radius, 0.0f, 1.0f, 0.0f, 1.0f,
-        pos_x + radius, pos_y - radius, 0.0f, 1.0f, 0.0f, 1.0f
-    };
-
-/*
-    GLfloat vertices[] = {
-        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
-        -0.5f, 0.5f, 0.0f,   0.0f, 1.0f, 0.0f,
-        0.5f, 0.5f, 0.0f,    0.0f, 1.0f, 0.0f,
-        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f
-    };
-*/
-
-    // List of indices to be bound to element buffer
-    GLuint indices[] = {
-        0, 1, 3,
-        2, 1, 3
-    };
-
-    // Creating vertex array and vertex buffer objects
-    GLuint VAO, VBO, EBO;
-
-    // Generating objects
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    // Binding the vertex aray object
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, 
-                 GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat), (GLvoid*)0);
-    glEnableVertexAttribArray(0);
-
-    // color attribute
-    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat),
-                          (GLvoid*)(3*sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
-
-    par.uimap["VAO"] = VAO;
-    par.uimap["VBO"] = VBO;
-    par.uimap["EBO"] = EBO;
     par.shmap["default"] = defaultShader;
-    glBindVertexArray(0);
+    Shape rect;
+    float rad = (float)par.dmap["radius"];
+    glm::vec3 bloc = {0.0, 0.0, 0.0},
+              bsize = {rad, rad, 0.0},
+              bcolor = {0.0, 1.0, 0.0};
+    create_rectangle(rect, bloc, bsize, bcolor); 
+    //rect = create_square(par);
+    par.shapes.push_back(rect);
+
+    for (int i = 0; i < 24; ++i){
+        std::cout << rect.vertices[i] << '\n';
+    }
+
+    glm::vec3 lloc = {-1.0, 0.0, 0.0}, 
+              lsize = {0.2, 1.0, 0.0}, 
+              lcolor = {0.0, 0.0, 1.0};
+    create_rectangle(rect, lloc, lsize, lcolor); 
+    par.shapes.push_back(rect);
+
+    glm::vec3 rloc = {1.0, 0.0, 0.0}, 
+              rsize = {0.2, 1.0, 0.0}, 
+              rcolor = {1.0, 0.0, 0.0};
+    create_rectangle(rect, rloc, rsize, rcolor); 
+    par.shapes.push_back(rect);
 
 }
 
