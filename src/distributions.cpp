@@ -415,7 +415,7 @@ void test_shader_par(Param &par){
 
     par.dmap["rbumper"] = 0.0;
     par.dmap["lbumper"] = 0.0;
-    par.dmap["radius"] = 0.5;
+    par.dmap["radius"] = 0.1;
     par.dmap["pos_x"] = 0.0;
     par.dmap["pos_y"] = 0.0;
     par.dmap["vel_y"] = ((rand() % 1000) * 0.0001 - 0.5) * 0.1;
@@ -443,7 +443,7 @@ void test_shader_OGL(Param &par){
     float rad = (float)par.dmap["radius"];
     glm::vec3 cloc = {0.0, 0.0, 0.0},
               ccolor = {0.0, 1.0, 0.0};
-    create_circle(circle, cloc, rad, ccolor, 2); 
+    create_circle(circle, cloc, rad, ccolor, 100); 
     //rect = create_square(par);
     par.shapes.push_back(circle);
 

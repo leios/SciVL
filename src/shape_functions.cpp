@@ -14,23 +14,15 @@ void move_shape(Shape &sh, glm::vec3 &translate){
          sh.vertices[i * 6 + 2] += translate[2];
     }
 
-    GLuint VAO, VBO, EBO;
-
-    // Generating objects
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-
     // Binding the vertex array object
-    glBindVertexArray(VAO);
+    glBindVertexArray(sh.VAO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 24, sh.vertices, 
+    glBindBuffer(GL_ARRAY_BUFFER, sh.VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * sh.vnum*6, sh.vertices, 
                  GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint) * 6, 
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sh.EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint) * sh.ind, 
                  sh.indices, GL_STATIC_DRAW);
 
     // position attribute
@@ -41,10 +33,6 @@ void move_shape(Shape &sh, glm::vec3 &translate){
     glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat),
                           (GLvoid*)(3*sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
-
-    sh.VAO = VAO;
-    sh.VBO = VBO;
-    sh.EBO = EBO;
 
 }
 
@@ -75,7 +63,7 @@ void draw_shapes(Param &par){
 void create_rectangle(Shape &rect, glm::vec3 &pos, 
                       glm::vec3 &dim, glm::vec3 &color){
 
-    rect.vertices = (GLfloat*)std::malloc(sizeof(GLfloat)*24);
+    rect.vertices = (GLfloat*)malloc(sizeof(GLfloat)*24);
     rect.vertices[0] = -dim[0] * 0.5f + pos[0];
     rect.vertices[1] = -dim[1] * 0.5f + pos[1];
     rect.vertices[2] = 0.0f;
@@ -101,7 +89,7 @@ void create_rectangle(Shape &rect, glm::vec3 &pos,
     rect.vertices[22] = color[1];
     rect.vertices[23] = color[2];
 
-    rect.indices = (GLuint*)std::malloc(sizeof(GLuint) * 6);
+    rect.indices = (GLuint*)malloc(sizeof(GLuint) * 6);
     rect.indices[0] = 0;
     rect.indices[1] = 1;
     rect.indices[2] = 3;
@@ -161,12 +149,12 @@ Shape create_square(Param &par){
         rad, rad, 0.0f, 1.0f, 0.0f, 1.0f,
         rad, -rad, 0.0f, 1.0f, 0.0f, 1.0f
     };
-    square.vertices = (GLfloat*)std::malloc(sizeof(vertices)*24);
+    square.vertices = (GLfloat*)malloc(sizeof(vertices)*24);
     for (int i = 0; i < 24; ++i){
         square.vertices[i] = vertices[i];
     }
 
-    square.indices = (GLuint*)std::malloc(sizeof(GLuint) * 6);
+    square.indices = (GLuint*)malloc(sizeof(GLuint) * 6);
     square.indices[0] = 0;
     square.indices[1] = 1;
     square.indices[2] = 3;
@@ -241,7 +229,7 @@ void draw_circle(Param &par){
 void create_circle(Shape &circle, glm::vec3 &pos, double radius, 
                    glm::vec3 color, int res){
 
-    circle.vertices = (GLfloat*)std::malloc(sizeof(GLfloat) * 6 * (res+1));
+    circle.vertices = (GLfloat*)malloc(sizeof(GLfloat) * 6 * (res+1));
 
     // Allocating all the vertices
     int index = 0;
@@ -255,10 +243,9 @@ void create_circle(Shape &circle, glm::vec3 &pos, double radius,
             circle.vertices[index+2] = pos[2];
         }
 
-        // Any point that is not the origin
+        // Any point that is not the origin, note angle from 0->2pi
         else{
-            angle = static_cast<float>(i-1) * 2.0f * M_PI / 
-                    static_cast<float>(res+1);
+            angle = (i-1) * 2.0f * M_PI / res;
             offset[0] = cos(angle) * radius;
             offset[1] = sin(angle) * radius;
             offset[2] = 0.0;
@@ -273,14 +260,10 @@ void create_circle(Shape &circle, glm::vec3 &pos, double radius,
         index += 6;
     }
 
-    for (int i = 0; i < (res+1) * 6; ++i){
-        std::cout << circle.vertices[i] << '\n';
-    }
-
-
     // Allocating all the indices
-    circle.indices = (GLuint*)std::malloc(sizeof(GLuint) * 3 * res);
+    circle.indices = (GLuint*)malloc(sizeof(GLuint) * 3 * res);
 
+    // This might be the same as circle fan, as before
     index = 0;
     for (int i = 1; i < res+1; ++i){
         circle.indices[index] = 0;
@@ -288,6 +271,9 @@ void create_circle(Shape &circle, glm::vec3 &pos, double radius,
         circle.indices[index+2] = i+1;
         index += 3;
     }
+
+    // Setting last element to first element to complete circle
+    circle.indices[res*3 - 1] = 1;
 
     GLuint VAO, VBO, EBO;
 
