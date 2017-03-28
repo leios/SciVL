@@ -36,4 +36,8 @@ void draw_circle(Param &par);
 // function to draw a square with a position and size
 void draw_square(Param &par);
 
+// Function to create a circle for drawing
+void create_circle(Shape &circle, glm::vec3 &pos, double radius, 
+                   glm::vec3 color, int res);
+
 #endif

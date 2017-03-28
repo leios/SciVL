@@ -52,5 +52,4 @@ void play_pong(Param &par){
         }
     }
 
-    // Recreating shapes
 }

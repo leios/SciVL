@@ -30,6 +30,7 @@ struct Shape{
 
     // Integer for the number of vertices
     int vnum;
+    int ind;
 };
 
 // struct to hold most data

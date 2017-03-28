@@ -59,7 +59,8 @@ void draw_shape(Param &par, Shape &sh){
     par.shmap["default"].Use();
     glBindVertexArray(sh.VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sh.EBO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glDrawElements(GL_TRIANGLES, sh.ind, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
 
@@ -141,6 +142,7 @@ void create_rectangle(Shape &rect, glm::vec3 &pos,
     rect.EBO = EBO;
 
     rect.vnum = 4;
+    rect.ind = 6;
 
 }
 
@@ -164,7 +166,6 @@ Shape create_square(Param &par){
         square.vertices[i] = vertices[i];
     }
 
-    square.indices = (GLuint*)std::malloc(sizeof(GLuint) * 6);
     square.indices = (GLuint*)std::malloc(sizeof(GLuint) * 6);
     square.indices[0] = 0;
     square.indices[1] = 1;
@@ -207,6 +208,7 @@ Shape create_square(Param &par){
     square.EBO = EBO;
 
     square.vnum = 4;
+    square.ind = 6;
 
     return square;
 }
@@ -233,4 +235,94 @@ void draw_circle(Param &par){
 
     glEnd();
     
+}
+
+// Function to create a circle for drawing
+void create_circle(Shape &circle, glm::vec3 &pos, double radius, 
+                   glm::vec3 color, int res){
+
+    circle.vertices = (GLfloat*)std::malloc(sizeof(GLfloat) * 6 * (res+1));
+
+    // Allocating all the vertices
+    int index = 0;
+    float angle = 0;
+    glm::vec3 offset;
+    for (int i = 0; i < res+1; ++i){
+        // Now to assign the positions
+        if (i == 0){
+            circle.vertices[index] = pos[0];
+            circle.vertices[index+1] = pos[1];
+            circle.vertices[index+2] = pos[2];
+        }
+
+        // Any point that is not the origin
+        else{
+            angle = static_cast<float>(i-1) * 2.0f * M_PI / 
+                    static_cast<float>(res+1);
+            offset[0] = cos(angle) * radius;
+            offset[1] = sin(angle) * radius;
+            offset[2] = 0.0;
+            circle.vertices[index] = pos[0] + offset[0];
+            circle.vertices[index+1] = pos[1] + offset[1];
+            circle.vertices[index+2] = pos[2] + offset[2];
+        }
+        // Manual assignment of color
+        circle.vertices[index+3] = color[0];
+        circle.vertices[index+4] = color[1];
+        circle.vertices[index+5] = color[2];
+        index += 6;
+    }
+
+    for (int i = 0; i < (res+1) * 6; ++i){
+        std::cout << circle.vertices[i] << '\n';
+    }
+
+
+    // Allocating all the indices
+    circle.indices = (GLuint*)std::malloc(sizeof(GLuint) * 3 * res);
+
+    index = 0;
+    for (int i = 1; i < res+1; ++i){
+        circle.indices[index] = 0;
+        circle.indices[index+1] = i;
+        circle.indices[index+2] = i+1;
+        index += 3;
+    }
+
+    GLuint VAO, VBO, EBO;
+
+    // Generating objects
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    // Binding the vertex array object
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6*(res+1), circle.vertices, 
+                 GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint) * res * 3, 
+                 circle.indices, GL_STATIC_DRAW);
+
+    // position attribute
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+
+    // color attribute
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat),
+                          (GLvoid*)(3*sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
+    // Setting square attributes
+    circle.VAO = VAO;
+    circle.VBO = VBO;
+    circle.EBO = EBO;
+
+    circle.vnum = res+1;
+    circle.ind = res*3;
+    std::cout << "index number is: " << circle.ind << '\n';
+
 }

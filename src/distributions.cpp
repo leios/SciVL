@@ -361,21 +361,29 @@ void test_shader_key(Param &par, SDL_keysym* keysym){
         case SDLK_UP:
             if (par.dmap["rbumper"] < 0.5){
                 par.dmap["rbumper"] += 0.05;
+                glm::vec3 trans = {0.0, 0.05, 0.0};
+                move_shape(par.shapes[2], trans);
             }
             break;
         case SDLK_DOWN:
             if (par.dmap["rbumper"] > -0.5){
                 par.dmap["rbumper"] -= 0.05;
+                glm::vec3 trans = {0.0, -0.05, 0.0};
+                move_shape(par.shapes[2], trans);
             }
             break;
         case SDLK_w:
             if (par.dmap["lbumper"] < 0.5){
                 par.dmap["lbumper"] += 0.05;
+                glm::vec3 trans = {0.0, 0.05, 0.0};
+                move_shape(par.shapes[1], trans);
             }
             break;
         case SDLK_s:
             if (par.dmap["lbumper"] > -0.5){
                 par.dmap["lbumper"] -= 0.05;
+                glm::vec3 trans = {0.0, -0.05, 0.0};
+                move_shape(par.shapes[1], trans);
             }
             break;
         default:
@@ -431,19 +439,15 @@ void test_shader_OGL(Param &par){
     Shader defaultShader;
     defaultShader.Load("shaders/default.vtx", "shaders/default.frg");
     par.shmap["default"] = defaultShader;
-    Shape rect;
+    Shape circle;
     float rad = (float)par.dmap["radius"];
-    glm::vec3 bloc = {0.0, 0.0, 0.0},
-              bsize = {rad, rad, 0.0},
-              bcolor = {0.0, 1.0, 0.0};
-    create_rectangle(rect, bloc, bsize, bcolor); 
+    glm::vec3 cloc = {0.0, 0.0, 0.0},
+              ccolor = {0.0, 1.0, 0.0};
+    create_circle(circle, cloc, rad, ccolor, 2); 
     //rect = create_square(par);
-    par.shapes.push_back(rect);
+    par.shapes.push_back(circle);
 
-    for (int i = 0; i < 24; ++i){
-        std::cout << rect.vertices[i] << '\n';
-    }
-
+    Shape rect;
     glm::vec3 lloc = {-1.0, 0.0, 0.0}, 
               lsize = {0.2, 1.0, 0.0}, 
               lcolor = {0.0, 0.0, 1.0};
