@@ -20,6 +20,27 @@
 #include <random>
 #include <vector>
 #include <cmath>
+#include <glm/vec3.hpp>
+#include <glm/vec2.hpp>
+
+// For font rendering
+#include <ft2build.h>
+#include FT_FREETYPE_H  
+
+// Struct to hold freetype character information
+struct Character{
+    // glyph texture ID
+    GLuint texID;
+
+    // Size of glyph
+    glm::ivec2 size;
+
+    // Offset from baseline to left / top of glyph
+    glm::ivec2 bearing;
+
+    // Offset to advance to next glyph
+    GLuint advance;
+};
 
 #include "../include/shaders.h"
 // Struct to hold all data for shape drawing
@@ -76,5 +97,11 @@ void key_down(Param &par, SDL_keysym* keysym);
 
 // Processing with events
 void process_events(Param &par);
+
+// Dealing with text input and such
+void write_string(Param &par, std::string text, glm::vec3 pos);
+
+// function to set up freetype
+void setup_freetype(Param &par);
 
 #endif

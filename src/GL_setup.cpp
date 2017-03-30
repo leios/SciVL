@@ -101,3 +101,12 @@ void process_events(Param &par){
         }
     }
 }
+
+// Dealing with text input and such
+void write_string(Param &par, std::string text, glm::vec3 pos){
+}
+
+// function to set up freetype
+void setup_freetype(Param &par){
+}
+
