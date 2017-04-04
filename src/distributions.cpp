@@ -423,6 +423,9 @@ void test_shader_par(Param &par){
     par.dmap["timestep"] = 0.05;
     par.imap["res"] = 100;
 
+    par.font = "fonts/arial.ttf";
+    par.font_size = 48;
+
 }
 
 void test_shader_OGL(Param &par){

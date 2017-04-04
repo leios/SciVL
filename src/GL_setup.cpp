@@ -6,6 +6,7 @@
 
 #include "../include/GL_setup.h"
 #include "../include/distributions.h"
+#include FT_FREETYPE_H
 
 
 // Function to set parameters
@@ -103,10 +104,67 @@ void process_events(Param &par){
 }
 
 // Dealing with text input and such
-void write_string(Param &par, std::string text, glm::vec3 pos){
+void write_string(Param &par, std::string text, glm::vec3 pos, glm::vec3 color){
 }
 
 // function to set up freetype
 void setup_freetype(Param &par){
+
+    FT_Library ft;
+    if (FT_Init_FreeType(&ft))
+        std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << '\n';
+    
+    FT_Face face;
+    if (FT_New_Face(ft, par.font.c_str(), 0, &face))
+        std::cout << "ERROR::FREETYPE: Failed to load font" << '\n';; 
+
+    FT_Set_Pixel_Sizes(face, 0, par.font_size);
+
+    // Disable byte-alignment restriction
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    for (GLubyte c = 0; c < 128; c++){
+
+        // Load Character glyph
+        if (FT_Load_Char(face, c, FT_LOAD_RENDER)){
+            std::cout << "ERROR::FREETYPE: Failed to load Glyph" << '\n';
+            continue;
+        }
+
+        // Generate texture
+        GLuint texture;
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexImage2D(
+            GL_TEXTURE_2D,
+            0,
+            GL_RED,
+            face->glyph->bitmap.width,
+            face->glyph->bitmap.rows,
+            0,
+            GL_RED,
+            GL_UNSIGNED_BYTE,
+            face->glyph->bitmap.buffer
+        );
+
+        // Setting texture options
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        // Now to store the character for later
+        Character character = {
+            texture,
+            glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+            glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+            face->glyph->advance.x
+        };
+        par.chmap.insert(std::pair<GLchar, Character>(c, character));
+    }
+
+    // Freeing freetype resources
+    FT_Done_Face(face);
+    FT_Done_FreeType(ft);
 }
 

@@ -78,6 +78,11 @@ struct Param{
     // function to set all mapped functions
     void set_fns();
 
+    // Text rendering parameters
+    std::string font;
+    int font_size;
+    std::unordered_map<GLchar, Character> chmap;
+
 };
 
 // Function to set parameters
@@ -99,7 +104,7 @@ void key_down(Param &par, SDL_keysym* keysym);
 void process_events(Param &par);
 
 // Dealing with text input and such
-void write_string(Param &par, std::string text, glm::vec3 pos);
+void write_string(Param &par, std::string text, glm::vec3 pos, glm::vec3 color);
 
 // function to set up freetype
 void setup_freetype(Param &par);
