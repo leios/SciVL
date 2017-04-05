@@ -104,7 +104,59 @@ void process_events(Param &par){
 }
 
 // Dealing with text input and such
-void write_string(Param &par, std::string text, glm::vec3 pos, glm::vec3 color){
+void write_string(Param &par, std::string text, glm::vec3 pos, GLfloat scale, 
+                  glm::vec3 color){
+
+    //Using the corresponding shader
+    Shader textShader = par.shmap["text"];
+    textShader.Use();
+
+    glUniform3f(glGetUniformLocation(textShader.Program, "textColor"),
+                color.x, color.y, color.z);
+    glActiveTexture(GL_TEXTURE0);
+    glBindVertexArray(par.text.VAO);
+
+    std::string::const_iterator c;
+    Character ch;
+    GLfloat x_pos, y_pos;
+    for (c = text.begin(); c != text.end(); c++){
+        ch = par.chmap[*c];
+
+        x_pos = pos.x + ch.bearing.x * scale;
+        y_pos = pos.y - (ch.size.y - ch.bearing.y) * scale;
+
+        GLfloat w = ch.size.x * scale;
+        GLfloat h = ch.size.y * scale;
+
+        // Updating VBO for each character
+        GLfloat vertices[6][4] = {
+            {x_pos, y_pos + h, 0.0, 0.0},
+            {x_pos, y_pos, 0.0, 0.0},
+            {x_pos + w, y_pos, 1.0, 1.0},
+            {x_pos, y_pos + h, 0.0, 0.0},
+            {x_pos + w, y_pos, 1.0, 1.0},
+            {x_pos + w, y_pos + h, 1.0, 1.0}
+        };
+
+        // render glyph texture over quad
+        glBindTexture(GL_TEXTURE_2D, ch.texID);
+
+        // Update contents of VBO memory
+        glBindBuffer(GL_ARRAY_BUFFER, par.text.VBO);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        // render quad
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        // Advance for next character 
+        // advance is number of 1/64 pixels, so bitshift
+        pos.x += (ch.advance >> 6) * scale; 
+    }
+
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
 }
 
 // function to set up freetype

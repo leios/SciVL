@@ -40,4 +40,7 @@ void draw_square(Param &par);
 void create_circle(Shape &circle, glm::vec3 &pos, double radius, 
                    glm::vec3 color, int res);
 
+// Function to create text quads
+void create_quad(Shape &quad);
+
 #endif

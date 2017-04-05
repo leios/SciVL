@@ -397,10 +397,12 @@ void test_shader_fn(Param &par){
 
     play_pong(par);
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     draw_shapes(par);
+    glm::vec3 pos = {0.0, 0.0, 0.0};
+    write_string(par, "sample text", pos, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
 
     SDL_GL_SwapBuffers();
 
@@ -442,6 +444,14 @@ void test_shader_OGL(Param &par){
     Shader defaultShader;
     defaultShader.Load("shaders/default.vtx", "shaders/default.frg");
     par.shmap["default"] = defaultShader;
+
+    Shader textShader;
+    textShader.Load("shaders/text.vtx", "shaders/default.frg");
+    par.shmap["text"] = textShader;
+    create_quad(par.text);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     Shape circle;
     float rad = (float)par.dmap["radius"];
     glm::vec3 cloc = {0.0, 0.0, 0.0},
