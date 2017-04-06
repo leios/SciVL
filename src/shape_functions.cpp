@@ -316,15 +316,19 @@ void create_circle(Shape &circle, glm::vec3 &pos, double radius,
 // Function to set up text quads
 void create_quad(Shape &quad){
 
-    glGenVertexArrays(1, &quad.VAO);
-    glGenBuffers(1, &quad.VBO);
-    glBindVertexArray(quad.VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, quad.VBO);
+    GLuint VAO, VBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, 
                  GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    quad.VAO = VAO;
+    quad.VBO = VBO;
     
 }

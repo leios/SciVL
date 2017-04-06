@@ -108,10 +108,12 @@ void write_string(Param &par, std::string text, glm::vec3 pos, GLfloat scale,
                   glm::vec3 color){
 
     //Using the corresponding shader
-    Shader textShader = par.shmap["text"];
-    textShader.Use();
+    //Shader textShader = par.shmap["text"];
+    //textShader.Use();
 
-    glUniform3f(glGetUniformLocation(textShader.Program, "textColor"),
+    par.shmap["text"].Use();
+
+    glUniform3f(glGetUniformLocation(par.shmap["text"].Program, "textColor"),
                 color.x, color.y, color.z);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(par.text.VAO);
@@ -122,8 +124,8 @@ void write_string(Param &par, std::string text, glm::vec3 pos, GLfloat scale,
     for (c = text.begin(); c != text.end(); c++){
         ch = par.chmap[*c];
 
-        x_pos = pos.x + ch.bearing.x * scale;
-        y_pos = pos.y - (ch.size.y - ch.bearing.y) * scale;
+        x_pos = pos[0] + ch.bearing.x * scale;
+        y_pos = pos[1] - (ch.size.y - ch.bearing.y) * scale;
 
         GLfloat w = ch.size.x * scale;
         GLfloat h = ch.size.y * scale;
@@ -131,11 +133,11 @@ void write_string(Param &par, std::string text, glm::vec3 pos, GLfloat scale,
         // Updating VBO for each character
         GLfloat vertices[6][4] = {
             {x_pos, y_pos + h, 0.0, 0.0},
-            {x_pos, y_pos, 0.0, 0.0},
+            {x_pos, y_pos, 0.0, 1.0},
             {x_pos + w, y_pos, 1.0, 1.0},
             {x_pos, y_pos + h, 0.0, 0.0},
             {x_pos + w, y_pos, 1.0, 1.0},
-            {x_pos + w, y_pos + h, 1.0, 1.0}
+            {x_pos + w, y_pos + h, 1.0, 0.0}
         };
 
         // render glyph texture over quad
@@ -143,7 +145,7 @@ void write_string(Param &par, std::string text, glm::vec3 pos, GLfloat scale,
 
         // Update contents of VBO memory
         glBindBuffer(GL_ARRAY_BUFFER, par.text.VBO);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat)* 24, vertices);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         // render quad
@@ -151,7 +153,7 @@ void write_string(Param &par, std::string text, glm::vec3 pos, GLfloat scale,
 
         // Advance for next character 
         // advance is number of 1/64 pixels, so bitshift
-        pos.x += (ch.advance >> 6) * scale; 
+        pos[0] += (ch.advance >> 6) * scale; 
     }
 
     glBindVertexArray(0);
@@ -163,12 +165,14 @@ void write_string(Param &par, std::string text, glm::vec3 pos, GLfloat scale,
 void setup_freetype(Param &par){
 
     FT_Library ft;
-    if (FT_Init_FreeType(&ft))
+    if (FT_Init_FreeType(&ft)){
         std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << '\n';
+    }
     
     FT_Face face;
-    if (FT_New_Face(ft, par.font.c_str(), 0, &face))
+    if (FT_New_Face(ft, par.font.c_str(), 0, &face)){
         std::cout << "ERROR::FREETYPE: Failed to load font" << '\n';; 
+    }
 
     FT_Set_Pixel_Sizes(face, 0, par.font_size);
 
@@ -214,6 +218,7 @@ void setup_freetype(Param &par){
         };
         par.chmap.insert(std::pair<GLchar, Character>(c, character));
     }
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     // Freeing freetype resources
     FT_Done_Face(face);

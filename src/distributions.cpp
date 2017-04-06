@@ -4,6 +4,10 @@
 *
 *-----------------------------------------------------------------------------*/
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "../include/distributions.h"
 #include "../include/shape_functions.h"
 #include "../include/test_pong.h"
@@ -401,7 +405,7 @@ void test_shader_fn(Param &par){
     glClear(GL_COLOR_BUFFER_BIT);
 
     draw_shapes(par);
-    glm::vec3 pos = {0.0, 0.0, 0.0};
+    glm::vec3 pos = {20.0f, 20.0f, 0.0f};
     write_string(par, "sample text", pos, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
 
     SDL_GL_SwapBuffers();
@@ -425,8 +429,10 @@ void test_shader_par(Param &par){
     par.dmap["timestep"] = 0.05;
     par.imap["res"] = 100;
 
-    par.font = "fonts/arial.ttf";
+    par.font = "/usr/share/fonts/TTF/arial.ttf";
     par.font_size = 48;
+
+    setup_freetype(par);
 
 }
 
@@ -446,10 +452,16 @@ void test_shader_OGL(Param &par){
     par.shmap["default"] = defaultShader;
 
     Shader textShader;
-    textShader.Load("shaders/text.vtx", "shaders/default.frg");
+    textShader.Load("shaders/text.vtx", "shaders/text.frg");
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(par.width), 
+                                      0.0f, static_cast<GLfloat>(par.height));
+    textShader.Use();
+    glUniformMatrix4fv(glGetUniformLocation(textShader.Program, "projection"), 
+                       1, GL_FALSE, glm::value_ptr(projection));
     par.shmap["text"] = textShader;
     create_quad(par.text);
 
+    //glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     Shape circle;
