@@ -429,7 +429,7 @@ void test_shader_par(Param &par){
     par.dmap["timestep"] = 0.05;
     par.imap["res"] = 100;
 
-    par.font = "/usr/share/fonts/TTF/arial.ttf";
+    par.font = "/usr/share/fonts/TTF/ProggyClean.ttf";
     par.font_size = 48;
 
     setup_freetype(par);

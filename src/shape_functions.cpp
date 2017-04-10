@@ -54,8 +54,10 @@ void draw_shape(Param &par, Shape &sh){
 
 // Function to draw all shapes in the par shape map
 void draw_shapes(Param &par){
-    for (auto &sh : par.shapes){
-        draw_shape(par, sh);
+    if (par.shapes.size() > 0){
+        for (auto &sh : par.shapes){
+            draw_shape(par, sh);
+        }
     }
 
 }
