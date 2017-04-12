@@ -406,7 +406,7 @@ void test_shader_fn(Param &par){
 
     draw_shapes(par);
     glm::vec3 pos = {20.0f, 20.0f, 0.0f};
-    write_string(par, "sample text", pos, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+    write_string(par, "sample text", pos, 1.0f, glm::vec3(0.5, 0.0f, 0.5f));
 
     SDL_GL_SwapBuffers();
 
@@ -432,8 +432,6 @@ void test_shader_par(Param &par){
     par.font = "/usr/share/fonts/TTF/ProggyClean.ttf";
     par.font_size = 48;
 
-    setup_freetype(par);
-
 }
 
 void test_shader_OGL(Param &par){
@@ -445,6 +443,9 @@ void test_shader_OGL(Param &par){
     }
 
     glViewport(0,0,par.width,par.height);
+    //glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // this should use shaders...
     Shader defaultShader;
@@ -459,11 +460,9 @@ void test_shader_OGL(Param &par){
     glUniformMatrix4fv(glGetUniformLocation(textShader.Program, "projection"), 
                        1, GL_FALSE, glm::value_ptr(projection));
     par.shmap["text"] = textShader;
+    setup_freetype(par);
     create_quad(par.text);
 
-    //glEnable(GL_CULL_FACE);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     Shape circle;
     float rad = (float)par.dmap["radius"];
     glm::vec3 cloc = {0.0, 0.0, 0.0},

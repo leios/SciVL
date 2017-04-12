@@ -145,7 +145,7 @@ void write_string(Param &par, std::string text, glm::vec3 pos, GLfloat scale,
 
         // Update contents of VBO memory
         glBindBuffer(GL_ARRAY_BUFFER, par.text.VBO);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat)* 24, vertices);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         // render quad

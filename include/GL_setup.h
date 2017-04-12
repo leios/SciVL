@@ -17,6 +17,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <map>
 #include <random>
 #include <vector>
 #include <cmath>
@@ -81,7 +82,7 @@ struct Param{
     // Text rendering parameters
     std::string font;
     int font_size;
-    std::unordered_map<GLchar, Character> chmap;
+    std::map<GLchar, Character> chmap;
 
     Shape text;
 
