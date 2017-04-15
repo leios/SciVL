@@ -32,7 +32,7 @@ void play_pong(Param &par){
             par.dmap["pos_y"] > par.dmap["rbumper"] - 0.5){
             std::cout << par.dmap["pos_y"] << '\t' 
                       << par.dmap["rbumper"] << '\n';
-            par.dmap["vel_x"] = - 1.10 * par.dmap["vel_x"];
+            par.dmap["vel_x"] = - 2.0 * par.dmap["vel_x"];
         }
         else{
             std::cout << "Red wins!" << '\n';
@@ -44,7 +44,7 @@ void play_pong(Param &par){
             par.dmap["pos_y"] > par.dmap["lbumper"] - 0.5){
             std::cout << par.dmap["pos_y"] << '\t' 
                       << par.dmap["lbumper"] << '\n';
-            par.dmap["vel_x"] = - 1.10 * par.dmap["vel_x"];
+            par.dmap["vel_x"] = - 2.0 * par.dmap["vel_x"];
         }
         else{
             std::cout << "Blue wins!" << '\n';
