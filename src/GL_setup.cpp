@@ -49,17 +49,23 @@ void setup_OGL(Param &par){
 
 // SDL initialization
 void SDL_init(Param &par){
+
     // Initialize SDL
     SDL_Init(SDL_INIT_VIDEO);
 
-    // Set the title bar
-    SDL_WM_SetCaption("SDL Test", "SDL Test");
+    // Setting up SDL_OpenGL context
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
     // Create Window
-    const SDL_VideoInfo* info = SDL_GetVideoInfo();
-    int bpp = info->vfmt->BitsPerPixel;
-    par.screen = SDL_SetVideoMode(par.width, par.height, bpp, 
-                                           SDL_OPENGL);
+    par.screen = SDL_CreateWindow("SDL_TEST", SDL_WINDOWPOS_UNDEFINED,
+                                  SDL_WINDOWPOS_UNDEFINED, par.width,
+                                  par.height, 
+                                  SDL_WINDOW_OPENGL);
+
+    par.context = SDL_GL_CreateContext(par.screen);
 
     // Setting OGL specific values:
     SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
@@ -77,7 +83,7 @@ void draw_screen(Param &par){
     par.draw_fns[par.dist](par);
 }
 
-void key_down(Param &par,  SDL_keysym* keysym){
+void key_down(Param &par,  SDL_Keysym* keysym){
     par.key_fns[par.dist](par, keysym);
 }
 

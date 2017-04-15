@@ -14,8 +14,8 @@
 #include "../include/shaders.h"
 
 // STD functions
-void std_key(Param &par, SDL_keysym* keysym){
-    switch(keysym->sym){
+void std_key(Param &par, SDL_Keysym* Keysym){
+    switch(Keysym->sym){
         case SDLK_ESCAPE:
         case SDLK_q:
             par.end = 1;
@@ -31,7 +31,7 @@ void std_fn(Param &par){
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    SDL_GL_SwapBuffers();
+    SDL_GL_SwapWindow(par.screen);
 
 }
 
@@ -98,8 +98,8 @@ void example_OGL(Param &par){
 }
 
 
-void example_key(Param &par, SDL_keysym* keysym){
-    switch(keysym->sym){
+void example_key(Param &par, SDL_Keysym* Keysym){
+    switch(Keysym->sym){
         case SDLK_ESCAPE:
         case SDLK_q:
             par.end = 1;
@@ -238,7 +238,7 @@ void example_fn(Param &par){
 
     glEnd( );
 
-    SDL_GL_SwapBuffers();
+    SDL_GL_SwapWindow(par.screen);
 
 }
 
@@ -252,8 +252,8 @@ void example_par(Param &par){
 }
 
 // Test functions
-void test_key(Param &par, SDL_keysym* keysym){
-    switch(keysym->sym){
+void test_key(Param &par, SDL_Keysym* Keysym){
+    switch(Keysym->sym){
         case SDLK_ESCAPE:
         case SDLK_q:
             par.end = 1;
@@ -319,7 +319,7 @@ void test_fn(Param &par){
 
     glFlush(); 
 
-    SDL_GL_SwapBuffers();
+    SDL_GL_SwapWindow(par.screen);
 
 }
 
@@ -355,8 +355,8 @@ void test_OGL(Param &par){
 }
 
 // Test functions using shader.h
-void test_shader_key(Param &par, SDL_keysym* keysym){
-    switch(keysym->sym){
+void test_shader_key(Param &par, SDL_Keysym* Keysym){
+    switch(Keysym->sym){
         case SDLK_ESCAPE:
         case SDLK_q:
             par.end = 1;
@@ -408,7 +408,7 @@ void test_shader_fn(Param &par){
     glm::vec3 pos = {20.0f, 20.0f, 0.0f};
     write_string(par, "sample text", pos, 1.0f, glm::vec3(0.5, 0.0f, 0.5f));
 
-    SDL_GL_SwapBuffers();
+    SDL_GL_SwapWindow(par.screen);
 
 }
 
@@ -438,7 +438,8 @@ void test_shader_OGL(Param &par){
     glewExperimental = GL_TRUE;
 
     if (glewInit() != GLEW_OK){
-        std::cout << "You dun goofed!" << '\n';
+        std::cout << "You dun goofed!" << '\t' 
+                  << glewGetErrorString(glewInit()) << '\n';
         exit(1);
     }
 

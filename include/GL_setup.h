@@ -11,7 +11,7 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <iostream>
@@ -66,14 +66,15 @@ struct Param{
     int end, width, height;
     std::string dist;
 
-    SDL_Surface* screen;
+    SDL_Window* screen;
+    SDL_GLContext context;
 
     typedef void (*functionPtr)(Param&);
     std::unordered_map<std::string, functionPtr> draw_fns;
     std::unordered_map<std::string, functionPtr> par_fns;
     std::unordered_map<std::string, functionPtr> OGL_fns;
 
-    typedef void (*functionPtr_key)(Param&, SDL_keysym*);
+    typedef void (*functionPtr_key)(Param&, SDL_Keysym*);
     std::unordered_map<std::string, functionPtr_key> key_fns;
 
     // function to set all mapped functions
@@ -101,7 +102,7 @@ void SDL_init(Param &par);
 void draw_screen(Param &par);
 
 // Dealing with key presses
-void key_down(Param &par, SDL_keysym* keysym);
+void key_down(Param &par, SDL_Keysym* keysym);
 
 // Processing with events
 void process_events(Param &par);
