@@ -43,4 +43,7 @@ void create_circle(Shape &circle, glm::vec3 &pos, double radius,
 // Function to create text quads
 void create_quad(Shape &quad);
 
+// function to create array shape
+void create_array(Shape &line, std::vector<glm::vec3> &array, glm::vec3 &color);
+
 #endif

@@ -47,8 +47,7 @@ void draw_shape(Param &par, Shape &sh){
     par.shmap["default"].Use();
     glBindVertexArray(sh.VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sh.EBO);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glDrawElements(GL_TRIANGLES, sh.ind, GL_UNSIGNED_INT, 0);
+    glDrawElements(sh.rtype, sh.ind, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
 
@@ -328,5 +327,67 @@ void create_quad(Shape &quad){
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+}
+
+// function to create array shape
+void create_array(Shape &line, std::vector<glm::vec3> &array, glm::vec3 &color){
+
+    // Setting render type to GL_LINES
+    //line.rtype = GL_POINTS | GL_LINES;
+    line.rtype = GL_LINES;
+
+    // Allocating space for vertices
+    line.vertices = (GLfloat*)malloc(sizeof(GLfloat)*6*array.size());
+    for (size_t i = 0; i < array.size(); ++i){
+        line.vertices[0+i*6] = array[i].x;
+        line.vertices[1+i*6] = array[i].y;
+        line.vertices[2+i*6] = array[i].z;
+        line.vertices[3+i*6] = color[0];
+        line.vertices[4+i*6] = color[1];
+        line.vertices[5+i*6] = color[2];
+    }
+
+    // Allocating space for indices
+    line.indices = (GLuint*)malloc(sizeof(GLuint)*(array.size()-1)*2);
+    for (size_t i = 0; i < array.size()-1; ++i){
+        line.indices[0+i*2] = i;
+        line.indices[1+i*2] = i+1;
+    }
+
+    GLuint VAO, VBO, EBO;
+
+    // Generating objects
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    // Binding the vertex array object
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * array.size() * 6,
+                 line.vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint) * (array.size()-1) * 2, 
+                 line.indices, GL_STATIC_DRAW);
+
+    // position attribute
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+
+    // color attribute
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat),
+                          (GLvoid*)(3*sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
+    // Setting square attributes
+    line.VAO = VAO;
+    line.VBO = VBO;
+    line.EBO = EBO;
+
+    line.vnum = array.size();
+    line.ind = (array.size()-1)*2;
 
 }

@@ -53,6 +53,8 @@ struct Shape{
     // Integer for the number of vertices
     int vnum;
     int ind;
+
+    int rtype = GL_TRIANGLES;
 };
 
 // struct to hold most data

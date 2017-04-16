@@ -453,6 +453,12 @@ void test_shader_OGL(Param &par){
     defaultShader.Load("shaders/default.vtx", "shaders/default.frg");
     par.shmap["default"] = defaultShader;
 
+    glEnable(GL_LINE_SMOOTH);
+    glLineWidth(10);
+
+    glEnable(GL_POINT_SMOOTH);
+    glPointSize(10);
+
     Shader textShader;
     textShader.Load("shaders/text.vtx", "shaders/text.frg");
     glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(par.width), 
@@ -484,6 +490,17 @@ void test_shader_OGL(Param &par){
               rcolor = {1.0, 0.0, 0.0};
     create_rectangle(rect, rloc, rsize, rcolor); 
     par.shapes.push_back(rect);
+
+    Shape line;
+    std::vector<glm::vec3> array(3);
+    array[0] = {-0.5, 0.5, 0.0};
+    array[1] = {0.5, 0.5, 0.0};
+    array[2] = {0.0, 0.0, 0.0};
+
+    glm::vec3 licolor = {1.0, 0.0, 1.0};
+
+    create_array(line, array, licolor);
+    par.shapes.push_back(line);
 
 }
 
