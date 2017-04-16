@@ -504,3 +504,147 @@ void test_shader_OGL(Param &par){
 
 }
 
+// Test functions using shader.h
+void test_fft_key(Param &par, SDL_Keysym* Keysym){
+    switch(Keysym->sym){
+        case SDLK_ESCAPE:
+        case SDLK_q:
+            par.end = 1;
+            break;
+
+        case SDLK_UP:
+            if (par.dmap["rbumper"] < 0.5){
+                par.dmap["rbumper"] += 0.05;
+                glm::vec3 trans = {0.0, 0.05, 0.0};
+                move_shape(par.shapes[2], trans);
+            }
+            break;
+        case SDLK_DOWN:
+            if (par.dmap["rbumper"] > -0.5){
+                par.dmap["rbumper"] -= 0.05;
+                glm::vec3 trans = {0.0, -0.05, 0.0};
+                move_shape(par.shapes[2], trans);
+            }
+            break;
+        case SDLK_w:
+            if (par.dmap["lbumper"] < 0.5){
+                par.dmap["lbumper"] += 0.05;
+                glm::vec3 trans = {0.0, 0.05, 0.0};
+                move_shape(par.shapes[1], trans);
+            }
+            break;
+        case SDLK_s:
+            if (par.dmap["lbumper"] > -0.5){
+                par.dmap["lbumper"] -= 0.05;
+                glm::vec3 trans = {0.0, -0.05, 0.0};
+                move_shape(par.shapes[1], trans);
+            }
+            break;
+        default:
+            break;
+
+    }
+
+}
+
+void test_fft_fn(Param &par){
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    draw_shapes(par);
+    glm::vec3 pos = {20.0f, 20.0f, 0.0f};
+    write_string(par, "sample text", pos, 1.0f, glm::vec3(0.5, 0.0f, 0.5f));
+
+    SDL_GL_SwapWindow(par.screen);
+
+}
+
+void test_fft_par(Param &par){
+    par.set_fns();
+    par.width = 500;
+    par.height = 500;
+    par.dist = "test_fft";
+    par.end = 0;
+
+    par.dmap["rbumper"] = 0.0;
+    par.dmap["lbumper"] = 0.0;
+    par.dmap["radius"] = 0.1;
+    par.dmap["pos_x"] = 0.0;
+    par.dmap["pos_y"] = 0.0;
+    par.dmap["vel_y"] = ((rand() % 1000) * 0.0001 - 0.5) * 0.1;
+    par.dmap["vel_x"] = ((rand() % 1000) * 0.0001 - 0.5) * 0.1;
+    par.dmap["timestep"] = 0.05;
+    par.imap["res"] = 100;
+
+    par.font = "/usr/share/fonts/TTF/arial.ttf";
+    par.font_size = 48;
+
+}
+
+void test_fft_OGL(Param &par){
+    glewExperimental = GL_TRUE;
+
+    if (glewInit() != GLEW_OK){
+        std::cout << "You dun goofed!" << '\t' 
+                  << glewGetErrorString(glewInit()) << '\n';
+        exit(1);
+    }
+
+    glViewport(0,0,par.width,par.height);
+    //glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // this should use shaders...
+    Shader defaultShader;
+    defaultShader.Load("shaders/default.vtx", "shaders/default.frg");
+    par.shmap["default"] = defaultShader;
+
+    glEnable(GL_LINE_SMOOTH);
+    glLineWidth(10);
+
+    glEnable(GL_POINT_SMOOTH);
+    glPointSize(10);
+
+    Shader textShader;
+    textShader.Load("shaders/text.vtx", "shaders/text.frg");
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(par.width), 
+                                      0.0f, static_cast<GLfloat>(par.height));
+    textShader.Use();
+    glUniformMatrix4fv(glGetUniformLocation(textShader.Program, "projection"), 
+                       1, GL_FALSE, glm::value_ptr(projection));
+    par.shmap["text"] = textShader;
+    setup_freetype(par);
+    create_quad(par.text);
+
+    Shape line;
+    std::vector<glm::vec3> array(3);
+    array[0] = {-0.95, 0.95, 0.0};
+    array[1] = {-0.95, 0.0, 0.0};
+    array[2] = {-0.05, 0.0, 0.0};
+
+    glm::vec3 licolor = {1.0, 0.0, 1.0};
+
+    create_array(line, array, licolor);
+    par.shapes.push_back(line);
+
+    array[0] = {0.05, 0.95, 0.0};
+    array[1] = {0.05, 0.0, 0.0};
+    array[2] = {0.95, 0.0, 0.0};
+
+    create_array(line, array, licolor);
+    par.shapes.push_back(line);
+
+    // now creating a sinusoidal wave
+    std::vector<glm::vec3> sinarr(100);
+    for (size_t i = 0; i < sinarr.size(); ++i){
+        sinarr[i].x = -0.95 + 0.9 * (double)i / sinarr.size();
+        sinarr[i].y = (sin(2*M_PI*i/100.0)) * 0.5 * 0.9 + 0.5;
+        sinarr[i].z = 0;
+    }
+    create_array(line, sinarr, licolor);
+    par.shapes.push_back(line);
+
+}
+

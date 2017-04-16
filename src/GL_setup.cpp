@@ -38,6 +38,11 @@ void Param::set_fns(){
     key_fns["test_shader"] = test_shader_key;
     par_fns["test_shader"] = test_shader_par;
     OGL_fns["test_shader"] = test_shader_OGL;
+
+    draw_fns["test_fft"] = test_fft_fn;
+    key_fns["test_fft"] = test_fft_key;
+    par_fns["test_fft"] = test_fft_par;
+    OGL_fns["test_fft"] = test_fft_OGL;
 }
 
 // Function to set-up OGL
