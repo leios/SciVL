@@ -7,6 +7,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <fftw3.h>
 
 #include "../include/distributions.h"
 #include "../include/shape_functions.h"
@@ -562,8 +563,8 @@ void test_fft_fn(Param &par){
 
 void test_fft_par(Param &par){
     par.set_fns();
-    par.width = 500;
-    par.height = 500;
+    par.width = 1000;
+    par.height = 1000;
     par.dist = "test_fft";
     par.end = 0;
 
@@ -636,14 +637,39 @@ void test_fft_OGL(Param &par){
     create_array(line, array, licolor);
     par.shapes.push_back(line);
 
+    // Creating the two arrays for plotting 
+    fftw_complex *wave, *ftwave;
+    wave = ( fftw_complex* ) fftw_malloc(sizeof (fftw_complex ) * 100);
+    ftwave = ( fftw_complex* ) fftw_malloc(sizeof (fftw_complex ) * 100);
+
+    // Creating the plan for fft'ing
+    fftw_plan plan;
+    for (int i = 0; i < 100; ++i){
+        wave[i][0] = sin(2*M_PI*i/100.0);
+        wave[i][1] = 0;
+    }
+
+    // Performing fft
+    plan = fftw_plan_dft_1d(100, wave, ftwave, FFTW_FORWARD, FFTW_ESTIMATE);
+    fftw_execute(plan);
+
+    fftw_destroy_plan(plan);
+
     // now creating a sinusoidal wave
     std::vector<glm::vec3> sinarr(100);
+    std::vector<glm::vec3> fftarr(100);
     for (size_t i = 0; i < sinarr.size(); ++i){
         sinarr[i].x = -0.95 + 0.9 * (double)i / sinarr.size();
-        sinarr[i].y = (sin(2*M_PI*i/100.0)) * 0.5 * 0.9 + 0.5;
+        sinarr[i].y = (wave[i][0]) * 0.5 * 0.9 + 0.5;
         sinarr[i].z = 0;
+        fftarr[i].x = 0.05 + 0.9 * (double)i / sinarr.size();
+        fftarr[i].y = (ftwave[i][0]) * 0.5 * 0.9 + 0.5;
+        fftarr[i].z = 0;
+        std::cout << wave[i][0] << '\t' << ftwave[i][0] << '\n';
     }
     create_array(line, sinarr, licolor);
+    par.shapes.push_back(line);
+    create_array(line, fftarr, licolor);
     par.shapes.push_back(line);
 
 }
