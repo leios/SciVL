@@ -13,6 +13,7 @@
 #include "../include/shape_functions.h"
 #include "../include/test_pong.h"
 #include "../include/shaders.h"
+#include "../include/operations.h"
 
 // STD functions
 void std_key(Param &par, SDL_Keysym* Keysym){
