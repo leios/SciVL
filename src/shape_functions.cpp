@@ -331,15 +331,19 @@ void create_quad(Shape &quad){
 }
 
 // function to create array shape
+
 void create_array(Shape &line, std::vector<glm::vec3> &array, glm::vec3 &color){
+    create_array(line, array.data(), array.size(), color);
+}
+void create_array(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
 
     // Setting render type to GL_LINES
     //line.rtype = GL_POINTS | GL_LINES;
     line.rtype = GL_LINES;
 
     // Allocating space for vertices
-    line.vertices = (GLfloat*)malloc(sizeof(GLfloat)*6*array.size());
-    for (size_t i = 0; i < array.size(); ++i){
+    line.vertices = (GLfloat*)malloc(sizeof(GLfloat)*6*size);
+    for (int i = 0; i < size; ++i){
         line.vertices[0+i*6] = array[i].x;
         line.vertices[1+i*6] = array[i].y;
         line.vertices[2+i*6] = array[i].z;
@@ -349,8 +353,8 @@ void create_array(Shape &line, std::vector<glm::vec3> &array, glm::vec3 &color){
     }
 
     // Allocating space for indices
-    line.indices = (GLuint*)malloc(sizeof(GLuint)*(array.size()-1)*2);
-    for (size_t i = 0; i < array.size()-1; ++i){
+    line.indices = (GLuint*)malloc(sizeof(GLuint)*(size-1)*2);
+    for (int i = 0; i < size-1; ++i){
         line.indices[0+i*2] = i;
         line.indices[1+i*2] = i+1;
     }
@@ -366,11 +370,11 @@ void create_array(Shape &line, std::vector<glm::vec3> &array, glm::vec3 &color){
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * array.size() * 6,
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * size * 6,
                  line.vertices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint) * (array.size()-1) * 2, 
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint) * (size-1) * 2, 
                  line.indices, GL_STATIC_DRAW);
 
     // position attribute
@@ -387,7 +391,7 @@ void create_array(Shape &line, std::vector<glm::vec3> &array, glm::vec3 &color){
     line.VBO = VBO;
     line.EBO = EBO;
 
-    line.vnum = array.size();
-    line.ind = (array.size()-1)*2;
+    line.vnum = size;
+    line.ind = (size-1)*2;
 
 }

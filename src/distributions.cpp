@@ -646,7 +646,7 @@ void test_fft_OGL(Param &par){
     // Creating the plan for fft'ing
     fftw_plan plan;
     for (int i = 0; i < 100; ++i){
-        wave[i][0] = sin(2*M_PI*i/100.0);
+        wave[i][0] = sin(20*2*M_PI*i/100.0);
         wave[i][1] = 0;
     }
 
@@ -664,7 +664,7 @@ void test_fft_OGL(Param &par){
         sinarr[i].y = (wave[i][0]) * 0.5 * 0.9 + 0.5;
         sinarr[i].z = 0;
         fftarr[i].x = 0.05 + 0.9 * (double)i / sinarr.size();
-        fftarr[i].y = (ftwave[i][0]) * 0.5 * 0.9 + 0.5;
+        fftarr[i].y = (abs2(ftwave[i])/2500.0) * 0.5 * 0.9 + 0.5;
         fftarr[i].z = 0;
         std::cout << wave[i][0] << '\t' << ftwave[i][0] << '\n';
     }

@@ -9,15 +9,20 @@
 #include <iostream>
 #include <fftw3.h>
 #include <cmath>
+#include <vector>
 
 // Functions to calculate the absolute value
 double abs(fftw_complex value);
 double *abs(double *value, int size);
 double *abs(fftw_complex *value, int size);
+std::vector<double> abs(std::vector<double> value);
+std::vector<double> abs(std::vector<fftw_complex> value);
 
 // Functions to calculate absolute value squared
 double abs2(fftw_complex value);
 double *abs2(double *value, int size);
 double *abs2(fftw_complex *value, int size);
+std::vector<double> abs2(std::vector<double> value);
+std::vector<double> abs2(std::vector<fftw_complex> value);
 
 #endif

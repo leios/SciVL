@@ -44,6 +44,7 @@ void create_circle(Shape &circle, glm::vec3 &pos, double radius,
 void create_quad(Shape &quad);
 
 // function to create array shape
+void create_array(Shape &line, glm::vec3 *array, int size, glm::vec3 &color);
 void create_array(Shape &line, std::vector<glm::vec3> &array, glm::vec3 &color);
 
 #endif
