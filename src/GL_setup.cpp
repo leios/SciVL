@@ -64,6 +64,11 @@ void SDL_init(Param &par){
 
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
+
+    glEnable(GL_MULTISAMPLE);
+
     // Create Window
     par.screen = SDL_CreateWindow("SDL_TEST", SDL_WINDOWPOS_UNDEFINED,
                                   SDL_WINDOWPOS_UNDEFINED, par.width,

@@ -604,7 +604,7 @@ void test_fft_OGL(Param &par){
     par.shmap["default"] = defaultShader;
 
     glEnable(GL_LINE_SMOOTH);
-    glLineWidth(10);
+    glLineWidth(2);
 
     glEnable(GL_POINT_SMOOTH);
     glPointSize(10);
@@ -638,27 +638,29 @@ void test_fft_OGL(Param &par){
     create_array(line, array, licolor);
     par.shapes.push_back(line);
 
+    int res = 1000;
+
     // Creating the two arrays for plotting 
     fftw_complex *wave, *ftwave;
-    wave = ( fftw_complex* ) fftw_malloc(sizeof (fftw_complex ) * 100);
-    ftwave = ( fftw_complex* ) fftw_malloc(sizeof (fftw_complex ) * 100);
+    wave = ( fftw_complex* ) fftw_malloc(sizeof (fftw_complex ) * res);
+    ftwave = ( fftw_complex* ) fftw_malloc(sizeof (fftw_complex ) * res);
 
     // Creating the plan for fft'ing
     fftw_plan plan;
-    for (int i = 0; i < 100; ++i){
-        wave[i][0] = sin(20*2*M_PI*i/100.0);
+    for (int i = 0; i < res; ++i){
+        wave[i][0] = sin(20*2*M_PI*i/(double)res);
         wave[i][1] = 0;
     }
 
     // Performing fft
-    plan = fftw_plan_dft_1d(100, wave, ftwave, FFTW_FORWARD, FFTW_ESTIMATE);
+    plan = fftw_plan_dft_1d(res, wave, ftwave, FFTW_FORWARD, FFTW_ESTIMATE);
     fftw_execute(plan);
 
     fftw_destroy_plan(plan);
 
     // now creating a sinusoidal wave
-    std::vector<glm::vec3> sinarr(100);
-    std::vector<glm::vec3> fftarr(100);
+    std::vector<glm::vec3> sinarr(res);
+    std::vector<glm::vec3> fftarr(res);
     for (size_t i = 0; i < sinarr.size(); ++i){
         sinarr[i].x = -0.95 + 0.9 * (double)i / sinarr.size();
         sinarr[i].y = (wave[i][0]) * 0.5 * 0.9 + 0.5;
@@ -666,7 +668,7 @@ void test_fft_OGL(Param &par){
         fftarr[i].x = 0.05 + 0.9 * (double)i / sinarr.size();
         fftarr[i].y = (abs2(ftwave[i])/2500.0) * 0.5 * 0.9 + 0.5;
         fftarr[i].z = 0;
-        std::cout << wave[i][0] << '\t' << ftwave[i][0] << '\n';
+        //std::cout << wave[i][0] << '\t' << ftwave[i][0] << '\n';
     }
     create_array(line, sinarr, licolor);
     par.shapes.push_back(line);
