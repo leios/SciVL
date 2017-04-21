@@ -339,25 +339,64 @@ void create_array(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
 
     // Setting render type to GL_LINES
     //line.rtype = GL_POINTS | GL_LINES;
-    line.rtype = GL_LINES;
+    line.rtype = GL_TRIANGLES;
 
-    // Allocating space for vertices
-    line.vertices = (GLfloat*)malloc(sizeof(GLfloat)*6*size);
-    for (int i = 0; i < size; ++i){
-        line.vertices[0+i*6] = array[i].x;
-        line.vertices[1+i*6] = array[i].y;
-        line.vertices[2+i*6] = array[i].z;
-        line.vertices[3+i*6] = color[0];
-        line.vertices[4+i*6] = color[1];
-        line.vertices[5+i*6] = color[2];
+    // Allocating space for vertices -- 2 points for every vertex!
+    line.vertices = (GLfloat*)malloc(sizeof(GLfloat)*12*size);
+    double theta;
+    double rad = 0.004;
+    for (size_t i = 0; i < size; ++i){
+        if (i == 0){
+            theta = atan(-(array[0].x - array[1].x)
+                           /(array[0].y - array[1].y));
+            if (array[0].y - array[1].y < 0){
+                theta += M_PI;
+            }
+
+        }
+        else if (i == size-1){
+            theta = atan(-(array[size-2].x-array[size-1].x)
+                           /(array[size-2].y-array[size-1].y));
+            if (array[size-2].y - array[size-1].y < 0){
+                theta += M_PI;
+            }
+
+        }
+        else{
+            theta = atan(-((array[i-1].x - array[i+1].x)
+                            /(array[i-1].y - array[i+1].y)));
+            if (array[i-1].y - array[i+1].y < 0){
+                theta += M_PI;
+            }
+
+        }
+        //std::cout << theta << '\n';
+        line.vertices[0+i*12]  = array[i].x + rad*cos(theta);
+        line.vertices[1+i*12]  = array[i].y + rad*sin(theta);
+        line.vertices[2+i*12]  = array[i].z;
+        line.vertices[3+i*12]  = color[0];
+        line.vertices[4+i*12]  = color[1];
+        line.vertices[5+i*12]  = color[2];
+
+        line.vertices[6+i*12]  = array[i].x - rad*cos(theta);
+        line.vertices[7+i*12]  = array[i].y - rad*sin(theta);
+        line.vertices[8+i*12]  = array[i].z;
+        line.vertices[9+i*12]  = color[0];
+        line.vertices[10+i*12] = color[1];
+        line.vertices[11+i*12] = color[2];
     }
 
     // Allocating space for indices
-    line.indices = (GLuint*)malloc(sizeof(GLuint)*(size-1)*2);
-    for (int i = 0; i < size-1; ++i){
-        line.indices[0+i*2] = i;
-        line.indices[1+i*2] = i+1;
+    line.indices = (GLuint*)malloc(sizeof(GLuint)*(size-1)*6);
+    for (size_t i = 0; i < size-1; ++i){
+        line.indices[0+i*6] = 2*i;
+        line.indices[1+i*6] = 2*i+1;
+        line.indices[2+i*6] = 2*i+3;
+        line.indices[3+i*6] = 2*i;
+        line.indices[4+i*6] = 2*i+2;
+        line.indices[5+i*6] = 2*i+3;
     }
+
 
     GLuint VAO, VBO, EBO;
 
@@ -370,11 +409,11 @@ void create_array(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * size * 6,
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * size * 12,
                  line.vertices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint) * (size-1) * 2, 
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint) * (size-1) * 6, 
                  line.indices, GL_STATIC_DRAW);
 
     // position attribute
@@ -392,6 +431,6 @@ void create_array(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
     line.EBO = EBO;
 
     line.vnum = size;
-    line.ind = (size-1)*2;
+    line.ind = (size-1)*6;
 
 }

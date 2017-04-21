@@ -564,8 +564,8 @@ void test_fft_fn(Param &par){
 
 void test_fft_par(Param &par){
     par.set_fns();
-    par.width = 1000;
-    par.height = 1000;
+    par.width = 2000;
+    par.height = 2000;
     par.dist = "test_fft";
     par.end = 0;
 
@@ -597,6 +597,7 @@ void test_fft_OGL(Param &par){
     //glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // this should use shaders...
     Shader defaultShader;
@@ -648,7 +649,7 @@ void test_fft_OGL(Param &par){
     // Creating the plan for fft'ing
     fftw_plan plan;
     for (int i = 0; i < res; ++i){
-        wave[i][0] = sin(20*2*M_PI*i/(double)res);
+        wave[i][0] = sin(2*2*M_PI*i/(double)res);
         wave[i][1] = 0;
     }
 
