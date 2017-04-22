@@ -11,6 +11,9 @@
 #include <glm/mat3x3.hpp>
 #include "../include/distributions.h"
 
+// Function to move a single vertex
+void move_vertex(Shape &sh, glm::vec3 &translate, int ind);
+
 // Function to draw a single shape
 void draw_shape(Param &par, std::string shapestr);
 

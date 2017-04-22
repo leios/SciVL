@@ -43,6 +43,11 @@ void Param::set_fns(){
     key_fns["test_fft"] = test_fft_key;
     par_fns["test_fft"] = test_fft_par;
     OGL_fns["test_fft"] = test_fft_OGL;
+
+    draw_fns["test_pend"] = test_pend_fn;
+    key_fns["test_pend"] = test_pend_key;
+    par_fns["test_pend"] = test_pend_par;
+    OGL_fns["test_pend"] = test_pend_OGL;
 }
 
 // Function to set-up OGL

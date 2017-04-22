@@ -53,3 +53,25 @@ void play_pong(Param &par){
     }
 
 }
+
+// function to swing pendulum
+void move_pendulum(Param &par){
+
+    // For this we will be using the verlet algorithm
+    double theta_prev = par.dmap["theta_prev"];
+    double theta = par.dmap["theta"];
+    double dt = par.dmap["timestep"];
+    par.dmap["alpha"] = -2*9.81*sin(theta);
+
+    par.dmap["theta"] = 2*theta + par.dmap["alpha"]*dt*dt - theta_prev;
+    par.dmap["theta_prev"] = theta;
+
+    //now we need to move the appropriate indices, 12, 13, 18, 19
+
+    glm::vec3 trans = {sin(par.dmap["theta"])*0.05, 
+                       0.0, 0.0};
+    move_vertex(par.shapes[0], trans, 2);
+    move_vertex(par.shapes[0], trans, 3);
+    
+
+}

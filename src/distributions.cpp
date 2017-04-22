@@ -514,34 +514,6 @@ void test_fft_key(Param &par, SDL_Keysym* Keysym){
             par.end = 1;
             break;
 
-        case SDLK_UP:
-            if (par.dmap["rbumper"] < 0.5){
-                par.dmap["rbumper"] += 0.05;
-                glm::vec3 trans = {0.0, 0.05, 0.0};
-                move_shape(par.shapes[2], trans);
-            }
-            break;
-        case SDLK_DOWN:
-            if (par.dmap["rbumper"] > -0.5){
-                par.dmap["rbumper"] -= 0.05;
-                glm::vec3 trans = {0.0, -0.05, 0.0};
-                move_shape(par.shapes[2], trans);
-            }
-            break;
-        case SDLK_w:
-            if (par.dmap["lbumper"] < 0.5){
-                par.dmap["lbumper"] += 0.05;
-                glm::vec3 trans = {0.0, 0.05, 0.0};
-                move_shape(par.shapes[1], trans);
-            }
-            break;
-        case SDLK_s:
-            if (par.dmap["lbumper"] > -0.5){
-                par.dmap["lbumper"] -= 0.05;
-                glm::vec3 trans = {0.0, -0.05, 0.0};
-                move_shape(par.shapes[1], trans);
-            }
-            break;
         default:
             break;
 
@@ -675,6 +647,132 @@ void test_fft_OGL(Param &par){
     par.shapes.push_back(line);
     create_array(line, fftarr, licolor);
     par.shapes.push_back(line);
+
+}
+
+// Test functions using shader.h
+void test_pend_key(Param &par, SDL_Keysym* Keysym){
+    switch(Keysym->sym){
+        case SDLK_ESCAPE:
+        case SDLK_q:
+            par.end = 1;
+            break;
+        case SDLK_LEFT:
+            if(par.shapes[1].vertices[0] - par.dmap["radius"] > -1){
+                glm::vec3 trans = {-0.05, 0.0, 0.0};
+                move_shape(par.shapes[1], trans);
+                //move_shape(par.shapes[0], trans);
+                move_vertex(par.shapes[0], trans, 0);
+                move_vertex(par.shapes[0], trans, 1);
+                par.dmap["theta"] += asin(0.05/0.5);
+            }
+            break;
+        case SDLK_RIGHT:
+            if(par.shapes[1].vertices[0] + par.dmap["radius"] < 1){
+                glm::vec3 trans = {0.05, 0.0, 0.0};
+                move_shape(par.shapes[1], trans);
+                //move_shape(par.shapes[0], trans);
+                move_vertex(par.shapes[0], trans, 0);
+                move_vertex(par.shapes[0], trans, 1);
+                par.dmap["theta"] -= asin(0.05/0.5);
+            }
+            break;
+        default:
+            break;
+
+    }
+
+}
+
+void test_pend_fn(Param &par){
+
+    move_pendulum(par);
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    draw_shapes(par);
+    glm::vec3 pos = {20.0f, 20.0f, 0.0f};
+    write_string(par, "sample text", pos, 1.0f, glm::vec3(0.5, 0.0f, 0.5f));
+
+    SDL_GL_SwapWindow(par.screen);
+
+}
+
+void test_pend_par(Param &par){
+    par.set_fns();
+    par.width = 500;
+    par.height = 500;
+    par.dist = "test_pend";
+    par.end = 0;
+
+    par.dmap["alpha"] = 0.0;
+    par.dmap["theta"] = 0.0;
+    par.dmap["theta_prev"] = 0.0;
+    par.dmap["radius"] = 0.1;
+    par.dmap["timestep"] = 0.05;
+    par.imap["res"] = 50;
+
+    par.font = "/usr/share/fonts/TTF/arial.ttf";
+    par.font_size = 48;
+
+}
+
+void test_pend_OGL(Param &par){
+    glewExperimental = GL_TRUE;
+
+    if (glewInit() != GLEW_OK){
+        std::cout << "You dun goofed!" << '\t' 
+                  << glewGetErrorString(glewInit()) << '\n';
+        exit(1);
+    }
+
+    glViewport(0,0,par.width,par.height);
+    //glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    // this should use shaders...
+    Shader defaultShader;
+    defaultShader.Load("shaders/default.vtx", "shaders/default.frg");
+    par.shmap["default"] = defaultShader;
+
+    glEnable(GL_LINE_SMOOTH);
+    glLineWidth(2);
+
+    glEnable(GL_POINT_SMOOTH);
+    glPointSize(10);
+
+    Shader textShader;
+    textShader.Load("shaders/text.vtx", "shaders/text.frg");
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(par.width), 
+                                      0.0f, static_cast<GLfloat>(par.height));
+    textShader.Use();
+    glUniformMatrix4fv(glGetUniformLocation(textShader.Program, "projection"), 
+                       1, GL_FALSE, glm::value_ptr(projection));
+    par.shmap["text"] = textShader;
+    setup_freetype(par);
+    create_quad(par.text);
+
+    // Creating a line to work with
+    Shape line;
+    std::vector<glm::vec3> array(2);
+    array[0] = {0.0, 0.0, 0.0};
+    array[1] = {0.0, -0.5, 0.0};
+
+    glm::vec3 licolor = {1.0, 0.0, 1.0};
+
+    create_array(line, array, licolor);
+    par.shapes.push_back(line);
+
+    // Creating a circle to work with
+    Shape circle;
+    float rad = (float)par.dmap["radius"];
+    glm::vec3 cloc = {0.0, 0.0, 0.0},
+              ccolor = {1.0, 0.0, 1.0};
+    create_circle(circle, cloc, rad, ccolor, par.imap["res"]); 
+    par.shapes.push_back(circle);
 
 }
 

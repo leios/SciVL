@@ -6,6 +6,34 @@
 
 #include "../include/shape_functions.h"
 
+// Function to move a single vertex
+void move_vertex(Shape &sh, glm::vec3 &translate, int ind){
+    sh.vertices[ind*6] += translate[0];
+    sh.vertices[ind*6+1] += translate[1];
+    sh.vertices[ind*6+1] += translate[2];
+
+    // Binding the vertex array object
+    glBindVertexArray(sh.VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, sh.VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * sh.vnum*6, sh.vertices, 
+                 GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sh.EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint) * sh.ind, 
+                 sh.indices, GL_STATIC_DRAW);
+
+    // position attribute
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+
+    // color attribute
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat),
+                          (GLvoid*)(3*sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
+}
+
 // Function to move shape
 void move_shape(Shape &sh, glm::vec3 &translate){
     for (int i = 0; i < sh.vnum; ++i){
@@ -344,7 +372,7 @@ void create_array(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
     // Allocating space for vertices -- 2 points for every vertex!
     line.vertices = (GLfloat*)malloc(sizeof(GLfloat)*12*size);
     double theta;
-    double rad = 0.004;
+    double rad = 0.005;
     for (size_t i = 0; i < size; ++i){
         if (i == 0){
             theta = atan(-(array[0].x - array[1].x)
@@ -430,7 +458,7 @@ void create_array(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
     line.VBO = VBO;
     line.EBO = EBO;
 
-    line.vnum = size;
+    line.vnum = size*2;
     line.ind = (size-1)*6;
 
 }
