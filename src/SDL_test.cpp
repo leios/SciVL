@@ -12,7 +12,7 @@
 
 int main(){
 
-    Param par = set_params("test_pend");
+    Param par = set_params("test_fft");
     SDL_init(par);
 
     // Defining OGL stuff

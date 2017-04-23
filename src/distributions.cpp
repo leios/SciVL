@@ -514,6 +514,34 @@ void test_fft_key(Param &par, SDL_Keysym* Keysym){
             par.end = 1;
             break;
 
+        case SDLK_LEFT:
+            par.factors[par.curr_factor] -= 0.1;
+            update_fft(par);
+            break;
+        case SDLK_RIGHT:
+            par.factors[par.curr_factor] += 0.1;
+            update_fft(par);
+            break;
+        case SDLK_DOWN:
+            if (par.curr_factor < 2){
+                par.curr_factor += 1;
+                if (par.curr_factor > par.factors.size()-1){
+                    par.factors.push_back((double)par.curr_factor + 1);
+                }
+                glm::vec3 trans = {0.0, -0.2, 0.0};
+                move_shape(par.shapes[par.shapes.size()-3], trans);
+            }
+            update_fft(par);
+            break;
+        case SDLK_UP:
+            if (par.curr_factor > 0){
+                par.curr_factor -= 1;
+                glm::vec3 trans = {0.0, 0.2, 0.0};
+                move_shape(par.shapes[par.shapes.size()-3], trans);
+            }
+            update_fft(par);
+            break;
+
         default:
             break;
 
@@ -527,8 +555,7 @@ void test_fft_fn(Param &par){
     glClear(GL_COLOR_BUFFER_BIT);
 
     draw_shapes(par);
-    glm::vec3 pos = {20.0f, 20.0f, 0.0f};
-    write_string(par, "sample text", pos, 1.0f, glm::vec3(0.5, 0.0f, 0.5f));
+    draw_fft(par);
 
     SDL_GL_SwapWindow(par.screen);
 
@@ -536,19 +563,12 @@ void test_fft_fn(Param &par){
 
 void test_fft_par(Param &par){
     par.set_fns();
-    par.width = 2000;
-    par.height = 2000;
+    par.width = 1000;
+    par.height = 1000;
     par.dist = "test_fft";
     par.end = 0;
 
-    par.dmap["rbumper"] = 0.0;
-    par.dmap["lbumper"] = 0.0;
-    par.dmap["radius"] = 0.1;
-    par.dmap["pos_x"] = 0.0;
-    par.dmap["pos_y"] = 0.0;
-    par.dmap["vel_y"] = ((rand() % 1000) * 0.0001 - 0.5) * 0.1;
-    par.dmap["vel_x"] = ((rand() % 1000) * 0.0001 - 0.5) * 0.1;
-    par.dmap["timestep"] = 0.05;
+    par.factors.push_back(1.0);
     par.imap["res"] = 100;
 
     par.font = "/usr/share/fonts/TTF/arial.ttf";
@@ -593,25 +613,38 @@ void test_fft_OGL(Param &par){
     setup_freetype(par);
     create_quad(par.text);
 
+    // Creating the xy axis for plotting
     Shape line;
     std::vector<glm::vec3> array(3);
-    array[0] = {-0.95, 0.95, 0.0};
-    array[1] = {-0.95, 0.0, 0.0};
-    array[2] = {-0.05, 0.0, 0.0};
+    array[0] = {-0.95, 0.85, 0.0};
+    array[1] = {-0.95, -0.1, 0.0};
+    array[2] = {-0.05, -0.1, 0.0};
 
     glm::vec3 licolor = {1.0, 0.0, 1.0};
 
     create_array(line, array, licolor);
     par.shapes.push_back(line);
 
-    array[0] = {0.05, 0.95, 0.0};
-    array[1] = {0.05, 0.0, 0.0};
-    array[2] = {0.95, 0.0, 0.0};
+    array[0] = {0.05, 0.85, 0.0};
+    array[1] = {0.05, -0.1, 0.0};
+    array[2] = {0.95, -0.1, 0.0};
 
     create_array(line, array, licolor);
     par.shapes.push_back(line);
 
-    int res = 1000;
+    // Creating the box around the text for our current factor that we are using
+    std::vector<glm::vec3> box(5);
+    box[0] = {-0.7, -0.45, 0.0};
+    box[1] = {-0.7, -0.3, 0.0};
+    box[2] = {0.7, -0.3, 0.0};
+    box[3] = {0.7, -0.45, 0.0};
+    box[4] = {-0.7, -0.45, 0.0};
+
+    glm::vec3 box_color = {1.0, 1.0, 1.0};
+    create_array(line, box, box_color);
+    par.shapes.push_back(line);
+
+    int res = par.imap["res"];
 
     // Creating the two arrays for plotting 
     fftw_complex *wave, *ftwave;
@@ -621,7 +654,7 @@ void test_fft_OGL(Param &par){
     // Creating the plan for fft'ing
     fftw_plan plan;
     for (int i = 0; i < res; ++i){
-        wave[i][0] = sin(2*2*M_PI*i/(double)res);
+        wave[i][0] = sin(par.factors[0]*2*M_PI*i/(double)res);
         wave[i][1] = 0;
     }
 
@@ -636,10 +669,10 @@ void test_fft_OGL(Param &par){
     std::vector<glm::vec3> fftarr(res);
     for (size_t i = 0; i < sinarr.size(); ++i){
         sinarr[i].x = -0.95 + 0.9 * (double)i / sinarr.size();
-        sinarr[i].y = (wave[i][0]) * 0.5 * 0.9 + 0.5;
+        sinarr[i].y = (wave[i][0]) * 0.5 * 0.9 + 0.4;
         sinarr[i].z = 0;
         fftarr[i].x = 0.05 + 0.9 * (double)i / sinarr.size();
-        fftarr[i].y = (abs2(ftwave[i])/2500.0) * 0.5 * 0.9 + 0.5;
+        fftarr[i].y = (abs2(ftwave[i])/2500.0) * 0.5 * 0.9 + 0.4;
         fftarr[i].z = 0;
         //std::cout << wave[i][0] << '\t' << ftwave[i][0] << '\n';
     }

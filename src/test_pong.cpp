@@ -5,9 +5,12 @@
 *-----------------------------------------------------------------------------*/
 
 #include <glm/mat3x3.hpp>
+#include <glm/glm.hpp>
+#include <fftw3.h>
 
 #include "../include/test_pong.h"
 #include "../include/shape_functions.h"
+#include "../include/operations.h"
 
 void play_pong(Param &par){
 
@@ -73,5 +76,72 @@ void move_pendulum(Param &par){
     move_vertex(par.shapes[0], trans, 2);
     move_vertex(par.shapes[0], trans, 3);
     
+
+}
+
+// Function to update fft arrays
+void update_fft(Param &par){
+
+    int res = par.imap["res"];
+
+    // Creating the two arrays for plotting 
+    fftw_complex *wave, *ftwave;
+    wave = ( fftw_complex* ) fftw_malloc(sizeof (fftw_complex ) * res);
+    ftwave = ( fftw_complex* ) fftw_malloc(sizeof (fftw_complex ) * res);
+
+    // Creating the plan for fft'ing
+    fftw_plan plan;
+    for (int i = 0; i < res; ++i){
+        for (size_t j = 0; j < par.factors.size(); ++j){
+            if (j == 0){
+                wave[i][0] = sin(par.factors[0]*2*M_PI*i/(double)res);
+                wave[i][1] = 0;
+            }
+            else{
+                wave[i][0] += sin(par.factors[j]*2*M_PI*i/(double)res);
+            }
+        }
+    }
+
+    normalize(wave, res);
+
+    // Performing fft
+    plan = fftw_plan_dft_1d(res, wave, ftwave, FFTW_FORWARD, FFTW_ESTIMATE);
+    fftw_execute(plan);
+
+    fftw_destroy_plan(plan);
+
+    // now creating a sinusoidal wave
+    glm::vec3 *sinarr;
+    glm::vec3 *fftarr;
+    sinarr = (glm::vec3*)malloc(sizeof(glm::vec3)*res);
+    fftarr = (glm::vec3*)malloc(sizeof(glm::vec3)*res);
+    for (int i = 0; i < res; ++i){
+        sinarr[i].x = -0.95 + 0.9 * (double)i / res;
+        sinarr[i].y = (wave[i][0]) * 0.5 * 0.9 + 0.4;
+        sinarr[i].z = 0;
+        fftarr[i].x = 0.05 + 0.9 * (double)i / res;
+        fftarr[i].y = (abs2(ftwave[i])/2500.0) * 0.5 * 0.9 + 0.4;
+        fftarr[i].z = 0;
+    }
+    update_array(par.shapes[par.shapes.size()-2], sinarr);
+    update_array(par.shapes[par.shapes.size()-1], fftarr);
+
+}
+
+// function to draw all necessary fft visualizations to screen
+void draw_fft(Param &par){
+    glm::vec3 pos = {-0.6f, 0.9f, 0.0f};
+    write_string(par, "REAL", pos, 1.0f, glm::vec3(0.25, 0.25, 1.0));
+    pos = {0.2f, 0.9f, 0.0f};
+    write_string(par, "FREQUENCY", pos, 1.0f, glm::vec3(0.25, 0.25, 1.0));
+
+    // Writing out all frequencies
+    for (int i = 0; i < par.factors.size(); ++i){
+        pos = {-0.65, -0.4 - (double)i*0.2, 0.0};
+        write_string(par,"FREQUENCY " +std::to_string(i) + " is : "
+                         +std::to_string(par.factors[i]),
+                     pos, 1.0f, glm::vec3(0.25, 0.25, 1.0));
+    }
 
 }

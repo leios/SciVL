@@ -12,7 +12,7 @@ DEPS = include/SDL_test.h include/GL_setup.h include/distributions.h include/ope
 	$(CXX) $(CXXFLAGS) $(OGLFLAGS) $(SDLFLAGS) -c -o $@ $<
 
 $(BINS): $(OBJ)
-	$(CXX) $(CXXFLAGS) $(OGLFLAGS) $(SDLFLAGS) -o $(BINS) $^
+	$(CXX) $(CXXFLAGS) $(OGLFLAGS) $^ $(SDLFLAGS) -o $(BINS)
 
 clean:
 	rm -Rf $(BINS) $(OBJ)

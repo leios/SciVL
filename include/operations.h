@@ -25,4 +25,8 @@ double *abs2(fftw_complex *value, int size);
 std::vector<double> abs2(std::vector<double> value);
 std::vector<double> abs2(std::vector<fftw_complex> value);
 
+// Function for normalization
+void *normalize(double *array, int size);
+void *normalize(fftw_complex *array, int size);
+
 #endif

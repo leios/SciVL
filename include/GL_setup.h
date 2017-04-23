@@ -49,6 +49,7 @@ struct Shape{
     GLfloat* vertices;
     GLuint* indices;
     GLuint VAO, VBO, EBO;
+    double rad = 0.005;
 
     // Integer for the number of vertices
     int vnum;
@@ -86,6 +87,10 @@ struct Param{
     std::string font;
     int font_size;
     std::map<GLchar, Character> chmap;
+
+    // Adding in a vector for fft factors
+    std::vector<double> factors;
+    int curr_factor = 0;
 
     Shape text;
 

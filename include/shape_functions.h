@@ -50,4 +50,7 @@ void create_quad(Shape &quad);
 void create_array(Shape &line, glm::vec3 *array, int size, glm::vec3 &color);
 void create_array(Shape &line, std::vector<glm::vec3> &array, glm::vec3 &color);
 
+// Function to update an array
+void update_array(Shape &sh, glm::vec3 *new_array);
+
 #endif

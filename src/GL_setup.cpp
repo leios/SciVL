@@ -142,6 +142,10 @@ void write_string(Param &par, std::string text, glm::vec3 pos, GLfloat scale,
     std::string::const_iterator c;
     Character ch;
     GLfloat x_pos, y_pos;
+
+    // setting up the character positions
+    pos[0] = pos[0]*par.width*0.5 + par.width * 0.5;
+    pos[1] = pos[1]*par.height*0.5 + par.height * 0.5;
     for (c = text.begin(); c != text.end(); c++){
         ch = par.chmap[*c];
 
