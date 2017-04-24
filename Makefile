@@ -1,7 +1,12 @@
 CXX = g++
 CXXFLAGS = -std=c++11 -g -Wall -march=native -Wextra -pedantic
 
+ifeq ($(shell uname), Darwin)
+OGLFLAGS = -lGLEW -framework OpenGL -lpthread -framework GLUT -lfreetype -I/usr/local/include/freetype2 -lfftw3
+else
 OGLFLAGS = -lGLEW -lGL -lX11 -lpthread -lXrandr -lXi -lGLU -lfreetype -I/usr/include/freetype2 -lfftw3
+endif
+
 SDLFLAGS = `sdl2-config --cflags --libs` 
 
 BINS = SDL_test
