@@ -111,18 +111,22 @@ void update_fft(Param &par){
 
     fftw_destroy_plan(plan);
 
+    normalize(ftwave, res);
+
     // now creating a sinusoidal wave
     glm::vec3 *sinarr;
     glm::vec3 *fftarr;
     sinarr = (glm::vec3*)malloc(sizeof(glm::vec3)*res);
-    fftarr = (glm::vec3*)malloc(sizeof(glm::vec3)*res);
+    fftarr = (glm::vec3*)malloc(sizeof(glm::vec3)*res / 2);
     for (int i = 0; i < res; ++i){
         sinarr[i].x = -0.95 + 0.9 * (double)i / res;
         sinarr[i].y = (wave[i][0]) * 0.5 * 0.9 + 0.4;
         sinarr[i].z = 0;
-        fftarr[i].x = 0.05 + 0.9 * (double)i / res;
-        fftarr[i].y = (abs2(ftwave[i])/2500.0) * 0.5 * 0.9 + 0.4;
-        fftarr[i].z = 0;
+        if (i < res / 2){
+            fftarr[i].x = 0.05 + 0.9 * 2 * (double)i / res;
+            fftarr[i].y = (abs2(ftwave[i])) * 0.5 * 0.9 + 0.4;
+            fftarr[i].z = 0;
+        }
     }
     update_array(par.shapes[par.shapes.size()-2], sinarr);
     update_array(par.shapes[par.shapes.size()-1], fftarr);

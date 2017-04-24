@@ -130,21 +130,18 @@ void *normalize(double* array, int size){
 
 void *normalize(fftw_complex* array, int size){
     double max = 0;
-    double min = 0;
     // finding the maximum element
     for (int i = 0; i < size; ++i){
-        if (array[i][0] > max){
-            max = array[i][0];
-        }
-        if (array[i][0] < min){
-            min = array[i][0];
+        if (abs(array[i]) > max){
+            max = abs(array[i]);
         }
     }
 
+
     // Dividing by the maximum value
     for (int i = 0; i < size; ++i){
-        array[i][0] /= (max-min);
-        array[i][1] /= (max-min);
+        array[i][0] /= max;
+        array[i][1] /= max;
     }
 
 }

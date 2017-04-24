@@ -89,7 +89,6 @@ void SDL_init(Param &par){
     SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
     SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
-
 }
 
 // Drawing to screen

@@ -563,6 +563,8 @@ void test_fft_fn(Param &par){
 
 void test_fft_par(Param &par){
     par.set_fns();
+    //par.width = 3000;
+    //par.height = 3000;
     par.width = 1000;
     par.height = 1000;
     par.dist = "test_fft";
@@ -578,6 +580,7 @@ void test_fft_par(Param &par){
 
 void test_fft_OGL(Param &par){
     glewExperimental = GL_TRUE;
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     if (glewInit() != GLEW_OK){
         std::cout << "You dun goofed!" << '\t' 
@@ -634,11 +637,11 @@ void test_fft_OGL(Param &par){
 
     // Creating the box around the text for our current factor that we are using
     std::vector<glm::vec3> box(5);
-    box[0] = {-0.7, -0.45, 0.0};
-    box[1] = {-0.7, -0.3, 0.0};
-    box[2] = {0.7, -0.3, 0.0};
-    box[3] = {0.7, -0.45, 0.0};
-    box[4] = {-0.7, -0.45, 0.0};
+    box[0] = {-0.7, -0.3, 0.0};
+    box[1] = {0.7, -0.3, 0.0};
+    box[2] = {0.7, -0.45, 0.0};
+    box[3] = {-0.7, -0.45, 0.0};
+    box[4] = {-0.7, -0.3, 0.0};
 
     glm::vec3 box_color = {1.0, 1.0, 1.0};
     create_array(line, box, box_color);
@@ -658,22 +661,35 @@ void test_fft_OGL(Param &par){
         wave[i][1] = 0;
     }
 
+    normalize(wave, res);
+
     // Performing fft
     plan = fftw_plan_dft_1d(res, wave, ftwave, FFTW_FORWARD, FFTW_ESTIMATE);
     fftw_execute(plan);
 
+/*
+    std::cout << "FTWAVE IS:" << '\n';
+    for (int i = 0; i < res; ++i){
+        std::cout << ftwave[i][0] << '\t' << ftwave[i][1] << '\n';
+    }
+*/
+
     fftw_destroy_plan(plan);
+
+    normalize(ftwave, res);
 
     // now creating a sinusoidal wave
     std::vector<glm::vec3> sinarr(res);
-    std::vector<glm::vec3> fftarr(res);
+    std::vector<glm::vec3> fftarr(res / 2);
     for (size_t i = 0; i < sinarr.size(); ++i){
         sinarr[i].x = -0.95 + 0.9 * (double)i / sinarr.size();
         sinarr[i].y = (wave[i][0]) * 0.5 * 0.9 + 0.4;
         sinarr[i].z = 0;
-        fftarr[i].x = 0.05 + 0.9 * (double)i / sinarr.size();
-        fftarr[i].y = (abs2(ftwave[i])/2500.0) * 0.5 * 0.9 + 0.4;
-        fftarr[i].z = 0;
+        if (i < res / 2){
+            fftarr[i].x = 0.05 + 0.9 * 2 * (double)i / sinarr.size();
+            fftarr[i].y = (abs2(ftwave[i])) * 0.5 * 0.9 + 0.4;
+            fftarr[i].z = 0;
+        }
         //std::cout << wave[i][0] << '\t' << ftwave[i][0] << '\n';
     }
     create_array(line, sinarr, licolor);

@@ -439,41 +439,51 @@ void create_array(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
     // Allocating space for vertices -- 2 points for every vertex!
     line.vertices = (GLfloat*)malloc(sizeof(GLfloat)*12*size);
     double theta;
+
+    // This is done in a 3 step process
+    //     1. Find slope of points before and after our element
+    //     2. Find a slope perpendicular to the slope found in 1
+    //     3. Extend that slope in both directions based on the radius
+    double factor = 1.0;
     for (int i = 0; i < size; ++i){
+        // Special cases for our first and last elements
         if (i == 0){
-            theta = atan(-(array[0].x - array[1].x)
-                           /(array[0].y - array[1].y));
-            if (array[0].y - array[1].y < 0){
+            theta = atan(-(array[1].x - array[0].x)
+                           /(array[1].y - array[0].y));
+            if (array[1].x - array[0].x < 0){
                 theta += M_PI;
+                factor = -1.0;
             }
 
         }
         else if (i == size-1){
-            theta = atan(-(array[size-2].x-array[size-1].x)
-                           /(array[size-2].y-array[size-1].y));
-            if (array[size-2].y - array[size-1].y < 0){
+            theta = atan(-(array[size-1].x-array[size-2].x)
+                           /(array[size-1].y-array[size-2].y));
+            if (array[size-1].x - array[size-2].x < 0){
                 theta += M_PI;
+                factor = -1.0;
             }
 
         }
         else{
-            theta = atan(-((array[i-1].x - array[i+1].x)
-                            /(array[i-1].y - array[i+1].y)));
-            if (array[i-1].y - array[i+1].y < 0){
+            theta = atan(-((array[i+1].x - array[i-1].x)
+                            /(array[i+1].y - array[i-1].y)));
+            if (array[i+1].x - array[i-1].x < 0){
                 theta += M_PI;
+                factor = -1.0;
             }
 
         }
         //std::cout << theta << '\n';
-        line.vertices[0+i*12]  = array[i].x + line.rad*cos(theta);
-        line.vertices[1+i*12]  = array[i].y + line.rad*sin(theta);
+        line.vertices[0+i*12]  = array[i].x + factor*line.rad*cos(theta);
+        line.vertices[1+i*12]  = array[i].y + factor*line.rad*sin(theta);
         line.vertices[2+i*12]  = array[i].z;
         line.vertices[3+i*12]  = color[0];
         line.vertices[4+i*12]  = color[1];
         line.vertices[5+i*12]  = color[2];
 
-        line.vertices[6+i*12]  = array[i].x - line.rad*cos(theta);
-        line.vertices[7+i*12]  = array[i].y - line.rad*sin(theta);
+        line.vertices[6+i*12]  = array[i].x - factor*line.rad*cos(theta);
+        line.vertices[7+i*12]  = array[i].y - factor*line.rad*sin(theta);
         line.vertices[8+i*12]  = array[i].z;
         line.vertices[9+i*12]  = color[0];
         line.vertices[10+i*12] = color[1];
