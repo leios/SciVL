@@ -644,12 +644,16 @@ void test_fft_OGL(Param &par){
     par.shapes.push_back(line);
 
     // Creating the box around the text for our current factor that we are using
-    std::vector<glm::vec3> box(5);
+    std::vector<glm::vec3> box(9);
     box[0] = {-0.7, -0.3, 0.0};
-    box[1] = {0.7, -0.3, 0.0};
-    box[2] = {0.7, -0.45, 0.0};
-    box[3] = {-0.7, -0.45, 0.0};
-    box[4] = {-0.7, -0.3, 0.0};
+    box[1] = {0.0, -0.3, 0.0};
+    box[2] = {0.7, -0.3, 0.0};
+    box[3] = {0.7, -0.4, 0.0};
+    box[4] = {0.7, -0.45, 0.0};
+    box[5] = {0.0, -0.45, 0.0};
+    box[6] = {-0.7, -0.45, 0.0};
+    box[7] = {-0.7, -0.4, 0.0};
+    box[8] = {-0.7, -0.3, 0.0};
 
     glm::vec3 box_color = {1.0, 1.0, 1.0};
     create_array(line, box, box_color);

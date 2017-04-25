@@ -362,39 +362,34 @@ void create_quad(Shape &quad){
 // Function to update an array
 void update_array(Shape &sh, glm::vec3 *new_array){
 
-    double theta = 0;
-    for (int i = 0; i < sh.vnum*0.5; ++i){
+    double slope_x, slope_y, norm;
+    int size = sh.vnum / 2;
+    for (int i = 0; i < size; ++i){
+        // Special cases for our first and last elements
         if (i == 0){
-            theta = atan(-(new_array[0].x - new_array[1].x)
-                           /(new_array[0].y - new_array[1].y));
-            if (new_array[0].y - new_array[1].y < 0){
-                theta += M_PI;
-            }
+            slope_x = -(new_array[1].y - new_array[0].y);
+            slope_y = (new_array[1].x - new_array[0].x);
 
         }
-        else if (i == sh.vnum-1){
-            theta = atan(-(new_array[sh.vnum-2].x-new_array[sh.vnum-1].x)
-                           /(new_array[sh.vnum-2].y-new_array[sh.vnum-1].y));
-            if (new_array[sh.vnum-2].y - new_array[sh.vnum-1].y < 0){
-                theta += M_PI;
-            }
+        else if (i == size-1){
+            slope_x = -(new_array[size-1].y-new_array[size-2].y);
+            slope_y =  (new_array[size-1].x-new_array[size-2].x);
 
         }
         else{
-            theta = atan(-((new_array[i-1].x - new_array[i+1].x)
-                            /(new_array[i-1].y - new_array[i+1].y)));
-            if (new_array[i-1].y - new_array[i+1].y < 0){
-                theta += M_PI;
-            }
-
+            slope_x = -(new_array[i+1].y - new_array[i-1].y);
+            slope_y =  (new_array[i+1].x - new_array[i-1].x);
         }
-        //std::cout << theta << '\n';
-        sh.vertices[0+i*12]  = new_array[i].x + sh.rad*cos(theta);
-        sh.vertices[1+i*12]  = new_array[i].y + sh.rad*sin(theta);
+        norm = 1/sqrt(slope_x*slope_x + slope_y*slope_y);
+        slope_x *= norm;
+        slope_y *= norm;
+
+        sh.vertices[0+i*12]  = new_array[i].x + sh.rad*slope_x;
+        sh.vertices[1+i*12]  = new_array[i].y + sh.rad*slope_y;
         sh.vertices[2+i*12]  = new_array[i].z;
 
-        sh.vertices[6+i*12]  = new_array[i].x - sh.rad*cos(theta);
-        sh.vertices[7+i*12]  = new_array[i].y - sh.rad*sin(theta);
+        sh.vertices[6+i*12]  = new_array[i].x - sh.rad*slope_x;
+        sh.vertices[7+i*12]  = new_array[i].y - sh.rad*slope_y;
         sh.vertices[8+i*12]  = new_array[i].z;
     }
 
@@ -438,52 +433,41 @@ void create_array(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
 
     // Allocating space for vertices -- 2 points for every vertex!
     line.vertices = (GLfloat*)malloc(sizeof(GLfloat)*12*size);
-    double theta;
+    double slope_x, slope_y, norm;
 
     // This is done in a 3 step process
     //     1. Find slope of points before and after our element
     //     2. Find a slope perpendicular to the slope found in 1
     //     3. Extend that slope in both directions based on the radius
-    double factor = 1.0;
     for (int i = 0; i < size; ++i){
         // Special cases for our first and last elements
         if (i == 0){
-            theta = atan(-(array[1].x - array[0].x)
-                           /(array[1].y - array[0].y));
-            if (array[1].x - array[0].x < 0){
-                theta += M_PI;
-                factor = -1.0;
-            }
+            slope_x = -(array[1].y - array[0].y);
+            slope_y = (array[1].x - array[0].x);
 
         }
         else if (i == size-1){
-            theta = atan(-(array[size-1].x-array[size-2].x)
-                           /(array[size-1].y-array[size-2].y));
-            if (array[size-1].x - array[size-2].x < 0){
-                theta += M_PI;
-                factor = -1.0;
-            }
+            slope_x = -(array[size-1].y-array[size-2].y);
+            slope_y =  (array[size-1].x-array[size-2].x);
 
         }
         else{
-            theta = atan(-((array[i+1].x - array[i-1].x)
-                            /(array[i+1].y - array[i-1].y)));
-            if (array[i+1].x - array[i-1].x < 0){
-                theta += M_PI;
-                factor = -1.0;
-            }
-
+            slope_x = -(array[i+1].y - array[i-1].y);
+            slope_y =  (array[i+1].x - array[i-1].x);
         }
-        //std::cout << theta << '\n';
-        line.vertices[0+i*12]  = array[i].x + factor*line.rad*cos(theta);
-        line.vertices[1+i*12]  = array[i].y + factor*line.rad*sin(theta);
+        norm = 1/sqrt(slope_x*slope_x + slope_y*slope_y);
+        slope_x *= norm;
+        slope_y *= norm;
+
+        line.vertices[0+i*12]  = array[i].x + line.rad*slope_x;
+        line.vertices[1+i*12]  = array[i].y + line.rad*slope_y;
         line.vertices[2+i*12]  = array[i].z;
         line.vertices[3+i*12]  = color[0];
         line.vertices[4+i*12]  = color[1];
         line.vertices[5+i*12]  = color[2];
 
-        line.vertices[6+i*12]  = array[i].x - factor*line.rad*cos(theta);
-        line.vertices[7+i*12]  = array[i].y - factor*line.rad*sin(theta);
+        line.vertices[6+i*12]  = array[i].x - line.rad*slope_x;
+        line.vertices[7+i*12]  = array[i].y - line.rad*slope_y;
         line.vertices[8+i*12]  = array[i].z;
         line.vertices[9+i*12]  = color[0];
         line.vertices[10+i*12] = color[1];
