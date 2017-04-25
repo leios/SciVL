@@ -64,6 +64,7 @@ void SDL_init(Param &par){
     SDL_Init(SDL_INIT_VIDEO);
 
     // Setting up SDL_OpenGL context
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
@@ -238,7 +239,7 @@ void setup_freetype(Param &par){
             texture,
             glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
             glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-            face->glyph->advance.x
+            (GLuint) face->glyph->advance.x
         };
         par.chmap.insert(std::pair<GLchar, Character>(c, character));
     }

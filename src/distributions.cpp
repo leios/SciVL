@@ -431,7 +431,11 @@ void test_shader_par(Param &par){
     par.dmap["timestep"] = 0.05;
     par.imap["res"] = 100;
 
+#ifdef __APPLE__
+    par.font = "/Library/Fonts/Arial.ttf";
+#else
     par.font = "/usr/share/fonts/TTF/arial.ttf";
+#endif
     par.font_size = 48;
 
 }
@@ -573,7 +577,11 @@ void test_fft_par(Param &par){
     par.factors.push_back(1.0);
     par.imap["res"] = 100;
 
+#ifdef __APPLE__
+    par.font = "/Library/Fonts/Arial.ttf";
+#else
     par.font = "/usr/share/fonts/TTF/arial.ttf";
+#endif
     par.font_size = 48;
 
 }
@@ -762,7 +770,11 @@ void test_pend_par(Param &par){
     par.dmap["timestep"] = 0.05;
     par.imap["res"] = 50;
 
+#ifdef __APPLE__
+    par.font = "/Library/Fonts/Arial.ttf";
+#else
     par.font = "/usr/share/fonts/TTF/arial.ttf";
+#endif
     par.font_size = 48;
 
 }
