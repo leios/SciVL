@@ -61,6 +61,7 @@ struct Shape{
     int ind;
 
     int rtype = GL_TRIANGLES;
+    void destroy();
 };
 
 // struct to hold most data
@@ -98,6 +99,8 @@ struct Param{
     int curr_factor = 0;
 
     Shape text;
+
+    void destroy();
 
 };
 

@@ -28,8 +28,6 @@ int main(){
     // Clean-up
     //glDeleteVertexArrays(1, &VAO);
     //glDeleteBuffers(1, &VBO);
-    SDL_GL_DeleteContext(par.context);
-    SDL_DestroyWindow(par.screen);
-    SDL_Quit();
+    par.destroy();
 
 }

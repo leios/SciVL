@@ -252,3 +252,20 @@ void setup_freetype(Param &par){
     FT_Done_FreeType(ft);
 }
 
+// Frees vertices and indicies
+void Shape::destroy(){
+    free(vertices);
+    free(indices);
+}
+
+// Detroys everything in Param
+void Param::destroy(){
+    for (size_t i = 0; i < shapes.size(); ++i){
+        shapes[i].destroy();
+    }
+
+    SDL_GL_DeleteContext(context);
+    SDL_DestroyWindow(screen);
+    SDL_Quit();
+
+}
