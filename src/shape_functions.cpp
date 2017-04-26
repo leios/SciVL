@@ -360,8 +360,43 @@ void create_quad(Shape &quad){
 }
 
 // Function to update an array
-void update_array(Shape &sh, glm::vec3 *new_array){
+void update_line(Shape &sh, glm::vec3 *new_array){
 
+    // Changing points in array
+    for (int i = 0; i < sh.vnum; ++i){
+        sh.vertices[0+i*6] = new_array[i].x;
+        sh.vertices[1+i*6] = new_array[i].y;
+        sh.vertices[2+i*6] = new_array[i].z;
+    }
+
+    GLuint VAO, VBO;
+
+    // Generating objects
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    // Binding the vertex array object
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * sh.vnum * 6,
+                 sh.vertices, GL_STATIC_DRAW);
+
+    // position attribute
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+
+    // color attribute
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat),
+                          (GLvoid*)(3*sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
+    // Setting square attributes
+    sh.VAO = VAO;
+    sh.VBO = VBO;
+
+
+/*
     double slope_x, slope_y, norm;
     int size = sh.vnum / 2;
     for (int i = 0; i < size; ++i){
@@ -418,15 +453,74 @@ void update_array(Shape &sh, glm::vec3 *new_array){
     // Setting square attributes
     sh.VAO = VAO;
     sh.VBO = VBO;
+*/
 
 }
 
 // function to create array shape
-void create_array(Shape &line, std::vector<glm::vec3> &array, glm::vec3 &color){
-    create_array(line, array.data(), array.size(), color);
+void create_line(Shape &line, std::vector<glm::vec3> &array, glm::vec3 &color){
+    create_line(line, array.data(), array.size(), color);
 }
-void create_array(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
+void create_line(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
 
+    // Setting render type to GL_LINES
+    //line.rtype = GL_POINTS | GL_LINES;
+    line.rtype = GL_LINES;
+
+    // Allocating space for vertices
+    line.vertices = (GLfloat*)malloc(sizeof(GLfloat)*6*size);
+    for (int i = 0; i < size; ++i){
+        line.vertices[0+i*6] = array[i].x;
+        line.vertices[1+i*6] = array[i].y;
+        line.vertices[2+i*6] = array[i].z;
+        line.vertices[3+i*6] = color[0];
+        line.vertices[4+i*6] = color[1];
+        line.vertices[5+i*6] = color[2];
+    }
+
+    // Allocating space for indices
+    line.indices = (GLuint*)malloc(sizeof(GLuint)*(size-1)*2);
+    for (int i = 0; i < size-1; ++i){
+        line.indices[0+i*2] = i;
+        line.indices[1+i*2] = i+1;
+    }
+
+    GLuint VAO, VBO, EBO;
+
+    // Generating objects
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    // Binding the vertex array object
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * size * 6,
+                 line.vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint) * (size-1) * 2, 
+                 line.indices, GL_STATIC_DRAW);
+
+    // position attribute
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+
+    // color attribute
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat),
+                          (GLvoid*)(3*sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
+    // Setting square attributes
+    line.VAO = VAO;
+    line.VBO = VBO;
+    line.EBO = EBO;
+
+    line.vnum = size;
+    line.ind = (size-1)*2;
+
+/*
     // Setting render type to GL_LINES
     //line.rtype = GL_POINTS | GL_LINES;
     line.rtype = GL_TRIANGLES;
@@ -520,5 +614,6 @@ void create_array(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
 
     line.vnum = size*2;
     line.ind = (size-1)*6;
+*/
 
 }

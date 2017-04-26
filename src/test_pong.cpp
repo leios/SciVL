@@ -128,8 +128,8 @@ void update_fft(Param &par){
             fftarr[i].z = 0;
         }
     }
-    update_array(par.shapes[par.shapes.size()-2], sinarr);
-    update_array(par.shapes[par.shapes.size()-1], fftarr);
+    update_line(par.shapes[par.shapes.size()-2], sinarr);
+    update_line(par.shapes[par.shapes.size()-1], fftarr);
 
 }
 

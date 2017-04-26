@@ -505,7 +505,7 @@ void test_shader_OGL(Param &par){
 
     glm::vec3 licolor = {1.0, 0.0, 1.0};
 
-    create_array(line, array, licolor);
+    create_line(line, array, licolor);
     par.shapes.push_back(line);
 
 }
@@ -574,6 +574,7 @@ void test_fft_par(Param &par){
     par.dist = "test_fft";
     par.end = 0;
 
+
     par.factors.push_back(1.0);
     par.imap["res"] = 100;
 
@@ -633,14 +634,14 @@ void test_fft_OGL(Param &par){
 
     glm::vec3 licolor = {1.0, 0.0, 1.0};
 
-    create_array(line, array, licolor);
+    create_line(line, array, licolor);
     par.shapes.push_back(line);
 
     array[0] = {0.05, 0.85, 0.0};
     array[1] = {0.05, -0.1, 0.0};
     array[2] = {0.95, -0.1, 0.0};
 
-    create_array(line, array, licolor);
+    create_line(line, array, licolor);
     par.shapes.push_back(line);
 
     // Creating the box around the text for our current factor that we are using
@@ -656,7 +657,7 @@ void test_fft_OGL(Param &par){
     box[8] = {-0.7, -0.3, 0.0};
 
     glm::vec3 box_color = {1.0, 1.0, 1.0};
-    create_array(line, box, box_color);
+    create_line(line, box, box_color);
     par.shapes.push_back(line);
 
     int res = par.imap["res"];
@@ -679,13 +680,6 @@ void test_fft_OGL(Param &par){
     plan = fftw_plan_dft_1d(res, wave, ftwave, FFTW_FORWARD, FFTW_ESTIMATE);
     fftw_execute(plan);
 
-/*
-    std::cout << "FTWAVE IS:" << '\n';
-    for (int i = 0; i < res; ++i){
-        std::cout << ftwave[i][0] << '\t' << ftwave[i][1] << '\n';
-    }
-*/
-
     fftw_destroy_plan(plan);
 
     normalize(ftwave, res);
@@ -704,9 +698,9 @@ void test_fft_OGL(Param &par){
         }
         //std::cout << wave[i][0] << '\t' << ftwave[i][0] << '\n';
     }
-    create_array(line, sinarr, licolor);
+    create_line(line, sinarr, licolor);
     par.shapes.push_back(line);
-    create_array(line, fftarr, licolor);
+    create_line(line, fftarr, licolor);
     par.shapes.push_back(line);
 
 }
@@ -828,7 +822,7 @@ void test_pend_OGL(Param &par){
 
     glm::vec3 licolor = {1.0, 0.0, 1.0};
 
-    create_array(line, array, licolor);
+    create_line(line, array, licolor);
     par.shapes.push_back(line);
 
     // Creating a circle to work with
