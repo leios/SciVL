@@ -105,7 +105,7 @@ struct Param{
 };
 
 // Function to set parameters
-Param set_params(std::string dist);
+void set_params(Param &par);
 
 // OGL set-up function
 void setup_OGL(Param &par);

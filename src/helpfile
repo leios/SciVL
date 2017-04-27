@@ -1,0 +1,11 @@
+                                   SciVL
+This is a Scientific Visualization Library specifically for simulations on the
+LeiosOS youtube channel and simuleios Twitch stream, please note that it is a 
+work in progress and will be consistently developed in the future
+
+Here are the commandline options:
+-h                  Print helpfile
+-r 1000x1000        Set resolution
+-s test             Set simulation type
+
+More arguments to come!

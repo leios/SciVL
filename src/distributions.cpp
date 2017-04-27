@@ -39,8 +39,6 @@ void std_fn(Param &par){
 
 void std_par(Param &par){
     par.set_fns();
-    par.width = 640;
-    par.height = 480;
     par.dist = "std";
     par.end = 0;
 
@@ -246,8 +244,6 @@ void example_fn(Param &par){
 
 void example_par(Param &par){
     par.set_fns();
-    par.width = 640;
-    par.height = 480;
     par.dist = "example";
     par.end = 0;
 
@@ -327,8 +323,6 @@ void test_fn(Param &par){
 
 void test_par(Param &par){
     par.set_fns();
-    par.width = 500;
-    par.height = 500;
     par.dist = "test";
     par.end = 0;
 
@@ -416,8 +410,6 @@ void test_shader_fn(Param &par){
 
 void test_shader_par(Param &par){
     par.set_fns();
-    par.width = 500;
-    par.height = 500;
     par.dist = "test_shader";
     par.end = 0;
 
@@ -431,12 +423,8 @@ void test_shader_par(Param &par){
     par.dmap["timestep"] = 0.05;
     par.imap["res"] = 100;
 
-#ifdef __APPLE__
-    par.font = "/Library/Fonts/Arial.ttf";
-#else
-    par.font = "/usr/share/fonts/TTF/arial.ttf";
-#endif
-    par.font_size = 48;
+    par.font = "fonts/LinLibertine_Rah.ttf";
+    par.font_size = sqrt(par.width*par.width + par.height*par.height) / 34;
 
 }
 
@@ -567,10 +555,6 @@ void test_fft_fn(Param &par){
 
 void test_fft_par(Param &par){
     par.set_fns();
-    //par.width = 3000;
-    //par.height = 3000;
-    par.width = 1000;
-    par.height = 1000;
     par.dist = "test_fft";
     par.end = 0;
 
@@ -578,12 +562,8 @@ void test_fft_par(Param &par){
     par.factors.push_back(1.0);
     par.imap["res"] = 100;
 
-#ifdef __APPLE__
-    par.font = "/Library/Fonts/Arial.ttf";
-#else
-    par.font = "/usr/share/fonts/TTF/arial.ttf";
-#endif
-    par.font_size = 48;
+    par.font = "fonts/LinLibertine_Rah.ttf";
+    par.font_size = sqrt(par.width*par.width + par.height*par.height) / 34;
 
 }
 
@@ -756,8 +736,6 @@ void test_pend_fn(Param &par){
 
 void test_pend_par(Param &par){
     par.set_fns();
-    par.width = 500;
-    par.height = 500;
     par.dist = "test_pend";
     par.end = 0;
 
@@ -768,12 +746,8 @@ void test_pend_par(Param &par){
     par.dmap["timestep"] = 0.05;
     par.imap["res"] = 50;
 
-#ifdef __APPLE__
-    par.font = "/Library/Fonts/Arial.ttf";
-#else
-    par.font = "/usr/share/fonts/TTF/arial.ttf";
-#endif
-    par.font_size = 48;
+    par.font = "fonts/LinLibertine_Rah.ttf";
+    par.font_size = sqrt(par.width*par.width + par.height*par.height) / 34;
 
 }
 

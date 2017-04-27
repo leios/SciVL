@@ -10,11 +10,9 @@
 
 
 // Function to set parameters
-Param set_params(std::string dist){
-    Param par;
+void set_params(Param &par){
     par.set_fns();
-    par.par_fns[dist](par);
-    return par;
+    par.par_fns[par.dist](par);
 }
 
 // function to set the drawing functions in the Param struct

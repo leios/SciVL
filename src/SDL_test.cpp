@@ -8,11 +8,13 @@
 *
 *-----------------------------------------------------------------------------*/
 
-#include "../include/GL_setup.h"
+#include <GL_setup.h>
+#include <parser.h>
 
-int main(){
+int main(int argc, char** argv){
 
-    Param par = set_params("test_fft");
+    Param par = parse_args(argc, argv);
+    set_params(par);
     SDL_init(par);
 
     // Defining OGL stuff
