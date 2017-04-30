@@ -11,47 +11,49 @@
 
 // Function to set parameters
 void set_params(Param &par){
-    par.set_fns();
-    par.par_fns[par.dist](par);
+    par.set_fns(par.dist);
+    par.par_fn(par);
 }
 
 // function to set the drawing functions in the Param struct
-void Param::set_fns(){
-    draw_fns["std"] = std_fn;
-    key_fns["std"] = std_key;
-    par_fns["std"] = std_par;
-    OGL_fns["std"] = std_OGL;
-
-    draw_fns["example"] = example_fn;
-    key_fns["example"] = example_key;
-    par_fns["example"] = example_par;
-    OGL_fns["example"] = example_OGL;
-
-    draw_fns["test"] = test_fn;
-    key_fns["test"] = test_key;
-    par_fns["test"] = test_par;
-    OGL_fns["test"] = test_OGL;
-
-    draw_fns["test_shader"] = test_shader_fn;
-    key_fns["test_shader"] = test_shader_key;
-    par_fns["test_shader"] = test_shader_par;
-    OGL_fns["test_shader"] = test_shader_OGL;
-
-    draw_fns["test_fft"] = test_fft_fn;
-    key_fns["test_fft"] = test_fft_key;
-    par_fns["test_fft"] = test_fft_par;
-    OGL_fns["test_fft"] = test_fft_OGL;
-
-    draw_fns["test_pend"] = test_pend_fn;
-    key_fns["test_pend"] = test_pend_key;
-    par_fns["test_pend"] = test_pend_par;
-    OGL_fns["test_pend"] = test_pend_OGL;
+void Param::set_fns(std::string dist){
+    if (dist == "test_pend"){
+        draw_fn = test_pend_fn;
+        key_fn = test_pend_key;
+        par_fn = test_pend_par;
+        OGL_fn = test_pend_OGL;
+    }
+    else if (dist == "pong"){
+        draw_fn = pong_fn;
+        key_fn = pong_key;
+        par_fn = pong_par;
+        OGL_fn = pong_OGL;
+    }
+    else if (dist == "fourier"){
+        draw_fn = fourier_fn;
+        key_fn = fourier_key;
+        par_fn = fourier_par;
+        OGL_fn = fourier_OGL;
+    }
+    else{
+        if (dist != "std"){
+            std::cout << "Simulation type " << dist << " does not exist!"
+                      << '\n' << "Using standard output." << '\n';
+            std::cout << "Try one of these: " << '\n'
+                      << "pong" << '\n'
+                      << "fourier" << '\n';
+        }
+        draw_fn = std_fn;
+        key_fn = std_key;
+        par_fn = std_par;
+        OGL_fn = std_OGL;
+    }
 }
 
 // Function to set-up OGL
 void setup_OGL(Param &par){
 
-    par.OGL_fns[par.dist](par);
+    par.OGL_fn(par);
 
 }
 
@@ -88,18 +90,20 @@ void SDL_init(Param &par){
     SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
     SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
-    //SDL_SetWindowFullscreen(par.screen, SDL_WINDOW_FULLSCREEN);
+    if (par.fullscreen){
+        SDL_SetWindowFullscreen(par.screen, SDL_WINDOW_FULLSCREEN);
+    }
 
 }
 
 // Drawing to screen
 void draw_screen(Param &par){
 
-    par.draw_fns[par.dist](par);
+    par.draw_fn(par);
 }
 
 void key_down(Param &par,  SDL_Keysym* keysym){
-    par.key_fns[par.dist](par, keysym);
+    par.key_fn(par, keysym);
 }
 
 // Function to process events in game loop

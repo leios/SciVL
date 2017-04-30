@@ -142,7 +142,7 @@ void draw_fft(Param &par){
 
     // Writing out all frequencies
     for (size_t i = 0; i < par.factors.size(); ++i){
-        pos = {-0.65, -0.4 - (double)i*0.2, 0.0};
+        pos = {-0.4, -0.4 - (double)i*0.2, 0.0};
         write_string(par,"FREQUENCY " +std::to_string(i) + " is : "
                          +std::to_string(par.factors[i]),
                      pos, 1.0f, glm::vec3(0.25, 0.25, 1.0));

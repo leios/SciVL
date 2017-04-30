@@ -8,6 +8,22 @@
 #include <fftw3.h>
 #include "../include/operations.h"
 
+double sign(double val){
+    double ret;
+    if (val > 0){
+        ret = 1;
+    }
+    else if (val < 0){
+        ret = -1;
+    }
+    else{
+        ret = 0;
+    }
+
+    return ret;
+
+}
+
 double abs(fftw_complex value){
     return sqrt(value[0]*value[0] + value[1]*value[1]);
 }
@@ -108,7 +124,7 @@ std::vector<double> abs2(std::vector<fftw_complex> value){
 
 }
 
-void *normalize(double* array, int size){
+void normalize(double* array, int size){
     double max = 0;
     double min = 0;
     // finding the maximum element
@@ -128,7 +144,7 @@ void *normalize(double* array, int size){
 
 }
 
-void *normalize(fftw_complex* array, int size){
+void normalize(fftw_complex* array, int size){
     double max = 0;
     // finding the maximum element
     for (int i = 0; i < size; ++i){

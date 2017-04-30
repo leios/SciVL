@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -g -Wall -march=native -Wextra -pedantic -I./include
+CXXFLAGS = -std=c++11 -Wall -march=native -Wextra -pedantic -I./include -g
 
 ifeq ($(shell uname), Darwin)
 OGLFLAGS = -lGLEW -framework OpenGL -lpthread -framework GLUT -lfreetype -I/usr/local/include/freetype2 -lfftw3

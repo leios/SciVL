@@ -11,6 +11,9 @@
 #include <cmath>
 #include <vector>
 
+// function to find sign
+double sign(double val);
+
 // Functions to calculate the absolute value
 double abs(fftw_complex value);
 double *abs(double *value, int size);
@@ -26,7 +29,7 @@ std::vector<double> abs2(std::vector<double> value);
 std::vector<double> abs2(std::vector<fftw_complex> value);
 
 // Function for normalization
-void *normalize(double *array, int size);
-void *normalize(fftw_complex *array, int size);
+void normalize(double *array, int size);
+void normalize(fftw_complex *array, int size);
 
 #endif

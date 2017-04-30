@@ -54,7 +54,7 @@ struct Shape{
     GLfloat* vertices;
     GLuint* indices;
     GLuint VAO, VBO, EBO;
-    double rad = 0.005;
+    double rad = 0.01;
 
     // Integer for the number of vertices
     int vnum;
@@ -70,7 +70,6 @@ struct Param{
     std::unordered_map<std::string, double> dmap;
     std::unordered_map<std::string, GLuint> uimap;
     std::unordered_map<std::string, Shader> shmap;
-    //std::unordered_map<std::string, Shape> shamap;
     std::vector<Shape> shapes;
     int end, width, height;
     std::string dist;
@@ -78,16 +77,16 @@ struct Param{
     SDL_Window* screen;
     SDL_GLContext context;
 
+    // Function pointers for all drawing functions
     typedef void (*functionPtr)(Param&);
-    std::unordered_map<std::string, functionPtr> draw_fns;
-    std::unordered_map<std::string, functionPtr> par_fns;
-    std::unordered_map<std::string, functionPtr> OGL_fns;
+    functionPtr draw_fn, par_fn, OGL_fn;
 
+    // Function pointer for the key functions
     typedef void (*functionPtr_key)(Param&, SDL_Keysym*);
-    std::unordered_map<std::string, functionPtr_key> key_fns;
+    functionPtr_key key_fn;
 
     // function to set all mapped functions
-    void set_fns();
+    void set_fns(std::string dist);
 
     // Text rendering parameters
     std::string font;
@@ -101,6 +100,8 @@ struct Param{
     Shape text;
 
     void destroy();
+
+    bool fullscreen;
 
 };
 

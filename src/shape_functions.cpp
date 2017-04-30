@@ -4,7 +4,8 @@
 *
 *-----------------------------------------------------------------------------*/
 
-#include "../include/shape_functions.h"
+#include <shape_functions.h>
+#include <operations.h>
 
 // Function to move a single vertex
 void move_vertex(Shape &sh, glm::vec3 &translate, int ind){
@@ -394,10 +395,11 @@ void update_line(Shape &sh, glm::vec3 *new_array){
     // Setting square attributes
     sh.VAO = VAO;
     sh.VBO = VBO;
-
-
 /*
+
     double slope_x, slope_y, norm;
+    double slopein_x, slopein_y, slopeout_x, slopeout_y;
+
     int size = sh.vnum / 2;
     for (int i = 0; i < size; ++i){
         // Special cases for our first and last elements
@@ -412,19 +414,50 @@ void update_line(Shape &sh, glm::vec3 *new_array){
 
         }
         else{
-            slope_x = -(new_array[i+1].y - new_array[i-1].y);
-            slope_y =  (new_array[i+1].x - new_array[i-1].x);
+            slopein_x = new_array[i].x - new_array[i-1].x;
+            slopein_y = new_array[i].y - new_array[i-1].y;
+            slopeout_x = new_array[i+1].x - new_array[i].x;
+            slopeout_y = new_array[i+1].y - new_array[i].y;
+
+            // normalizing the two slopes
+            norm = 1/sqrt(slopein_x*slopein_x + slopein_y*slopein_y);
+            slopein_x *= norm;
+            slopein_y *= norm;
+
+            norm = 1/sqrt(slopeout_x*slopeout_x + slopeout_y*slopeout_y);
+            slopeout_x *= norm;
+            slopeout_y *= norm;
+
+            slope_x = -(slopein_y + slopeout_y);
+            slope_y =  (slopein_x + slopeout_x);
         }
         norm = 1/sqrt(slope_x*slope_x + slope_y*slope_y);
         slope_x *= norm;
         slope_y *= norm;
 
-        sh.vertices[0+i*12]  = new_array[i].x + sh.rad*slope_x;
-        sh.vertices[1+i*12]  = new_array[i].y + sh.rad*slope_y;
+        double offset_x, offset_y;
+        if (abs(slope_y / slope_x) >=1){
+            //offset_y = sh.rad*slope_y;
+            offset_y = sign(slope_y)*sh.rad;
+        }
+        else{
+            offset_y = sh.rad*slope_y;
+        }
+
+        if(abs(slope_y / slope_x) <=1){
+            //offset_x = sh.rad*slope_x;
+            offset_x = sign(slope_x)*sh.rad;
+        }
+        else{
+            offset_x = sh.rad*slope_x;
+        }
+
+        sh.vertices[0+i*12]  = new_array[i].x + offset_x;
+        sh.vertices[1+i*12]  = new_array[i].y + offset_y;
         sh.vertices[2+i*12]  = new_array[i].z;
 
-        sh.vertices[6+i*12]  = new_array[i].x - sh.rad*slope_x;
-        sh.vertices[7+i*12]  = new_array[i].y - sh.rad*slope_y;
+        sh.vertices[6+i*12]  = new_array[i].x - offset_x;
+        sh.vertices[7+i*12]  = new_array[i].y - offset_y;
         sh.vertices[8+i*12]  = new_array[i].z;
     }
 
@@ -519,8 +552,8 @@ void create_line(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
 
     line.vnum = size;
     line.ind = (size-1)*2;
-
 /*
+
     // Setting render type to GL_LINES
     //line.rtype = GL_POINTS | GL_LINES;
     line.rtype = GL_TRIANGLES;
@@ -528,6 +561,7 @@ void create_line(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
     // Allocating space for vertices -- 2 points for every vertex!
     line.vertices = (GLfloat*)malloc(sizeof(GLfloat)*12*size);
     double slope_x, slope_y, norm;
+    double slopein_x, slopein_y, slopeout_x, slopeout_y;
 
     // This is done in a 3 step process
     //     1. Find slope of points before and after our element
@@ -546,22 +580,53 @@ void create_line(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
 
         }
         else{
-            slope_x = -(array[i+1].y - array[i-1].y);
-            slope_y =  (array[i+1].x - array[i-1].x);
+            slopein_x = array[i].x - array[i-1].x;
+            slopein_y = array[i].y - array[i-1].y;
+            slopeout_x = array[i+1].x - array[i].x;
+            slopeout_y = array[i+1].y - array[i].y;
+
+            // normalizing the two slopes
+            norm = 1/sqrt(slopein_x*slopein_x + slopein_y*slopein_y);
+            slopein_x *= norm;
+            slopein_y *= norm;
+
+            norm = 1/sqrt(slopeout_x*slopeout_x + slopeout_y*slopeout_y);
+            slopeout_x *= norm;
+            slopeout_y *= norm;
+
+            slope_x = -(slopein_y + slopeout_y);
+            slope_y =  (slopein_x + slopeout_x);
         }
         norm = 1/sqrt(slope_x*slope_x + slope_y*slope_y);
         slope_x *= norm;
         slope_y *= norm;
 
-        line.vertices[0+i*12]  = array[i].x + line.rad*slope_x;
-        line.vertices[1+i*12]  = array[i].y + line.rad*slope_y;
+        double offset_x, offset_y;
+        if (abs(slope_y / slope_x) >=1){
+            //offset_y = line.rad*slope_y;
+            offset_y = sign(slope_y)*line.rad;
+        }
+        else{
+            offset_y = line.rad*slope_y;
+        }
+
+        if(abs(slope_y / slope_x) <=1){
+            //offset_x = line.rad*slope_x;
+            offset_x = sign(slope_x)*line.rad;
+        }
+        else{
+            offset_x = line.rad*slope_x;
+        }
+
+        line.vertices[0+i*12]  = array[i].x + offset_x;
+        line.vertices[1+i*12]  = array[i].y + offset_y;
         line.vertices[2+i*12]  = array[i].z;
         line.vertices[3+i*12]  = color[0];
         line.vertices[4+i*12]  = color[1];
         line.vertices[5+i*12]  = color[2];
 
-        line.vertices[6+i*12]  = array[i].x - line.rad*slope_x;
-        line.vertices[7+i*12]  = array[i].y - line.rad*slope_y;
+        line.vertices[6+i*12]  = array[i].x - offset_x;
+        line.vertices[7+i*12]  = array[i].y - offset_y;
         line.vertices[8+i*12]  = array[i].z;
         line.vertices[9+i*12]  = color[0];
         line.vertices[10+i*12] = color[1];
@@ -615,5 +680,4 @@ void create_line(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
     line.vnum = size*2;
     line.ind = (size-1)*6;
 */
-
 }

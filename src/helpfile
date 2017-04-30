@@ -7,5 +7,11 @@ Here are the commandline options:
 -h                  Print helpfile
 -r 1000x1000        Set resolution
 -s test             Set simulation type
+-f                  Set fullscreen mode (if available)
 
 More arguments to come!
+
+The following simulations are available:
+std                 Create a basic colored screen 
+fourier             Fourier Transform example
+pong                simple pong game

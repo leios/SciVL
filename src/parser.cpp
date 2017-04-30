@@ -48,11 +48,13 @@ Param parse_args(int argc, char** argv){
     Param par;
 
     // setting default options
-    par.dist = "test_shader";
+    par.dist = "fourier";
     par.height = 1000;
     par.width = 1000;
 
-    while ((c = parg_getopt(&ps, argc, argv, "s:r:h")) != -1){
+    par.fullscreen = false;
+
+    while ((c = parg_getopt(&ps, argc, argv, "s:r:hf")) != -1){
         switch(c){
             case 1: 
             {
@@ -75,6 +77,12 @@ Param parse_args(int argc, char** argv){
                     std::cout << line << '\n';
                 }
                 exit(0);
+                break;
+            }
+            case 'f':
+            {
+                std::cout << "entering fullscreen mode" << '\n';
+                par.fullscreen = true;
                 break;
             }
             case 'r':
