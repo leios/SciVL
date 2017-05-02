@@ -6,6 +6,7 @@
 
 #include <shape_functions.h>
 #include <operations.h>
+#include <ctime>
 
 // Function to move a single vertex
 void move_vertex(Shape &sh, glm::vec3 &translate, int ind){
@@ -350,11 +351,13 @@ void grow_circle(Shape &circle, glm::vec3 &pos, double radius,
 
     // This will be split up into a growing phase and a shrinking phase
     
+/*
     if (((std::clock() - circle.time) / (double) CLOCKS_PER_SECOND) 
         < draw_time * 0.75){
     }
     else{
     }
+*/
     
 }
 
