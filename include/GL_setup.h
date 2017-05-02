@@ -28,6 +28,7 @@
 #include <cmath>
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
+#include <ctime>
 
 // For font rendering
 #include <ft2build.h>
@@ -59,6 +60,10 @@ struct Shape{
     // Integer for the number of vertices
     int vnum;
     int ind;
+
+    // Stage of simulation
+    int stage;
+    std::clock_t time;
 
     int rtype = GL_TRIANGLES;
     void destroy();

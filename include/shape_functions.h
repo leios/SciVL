@@ -43,6 +43,10 @@ void draw_square(Param &par);
 void create_circle(Shape &circle, glm::vec3 &pos, double radius, 
                    glm::vec3 color, int res);
 
+// Function to animate the drawing of a circle
+void grow_circle(Shape &circle, glm::vec3 &pos, double radius, 
+                 glm::vec3 color, double draw_time);
+
 // Function to create text quads
 void create_quad(Shape &quad);
 

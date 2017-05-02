@@ -23,6 +23,12 @@ void Param::set_fns(std::string dist){
         par_fn = test_pend_par;
         OGL_fn = test_pend_OGL;
     }
+    else if (dist == "test_anim"){
+        draw_fn = test_anim_fn;
+        key_fn = test_anim_key;
+        par_fn = test_anim_par;
+        OGL_fn = test_anim_OGL;
+    }
     else if (dist == "pong"){
         draw_fn = pong_fn;
         key_fn = pong_key;

@@ -33,4 +33,10 @@ void test_pend_fn(Param &par);
 void test_pend_par(Param &par);
 void test_pend_OGL(Param &par);
 
+// test anim functions
+void test_anim_key(Param &par, SDL_Keysym* Keysym);
+void test_anim_fn(Param &par);
+void test_anim_par(Param &par);
+void test_anim_OGL(Param &par);
+
 #endif

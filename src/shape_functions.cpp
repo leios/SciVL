@@ -344,6 +344,20 @@ void create_circle(Shape &circle, glm::vec3 &pos, double radius,
 
 }
 
+// Function to animate the drawing of a circle
+void grow_circle(Shape &circle, glm::vec3 &pos, double radius, 
+                 glm::vec3 color, double draw_time){
+
+    // This will be split up into a growing phase and a shrinking phase
+    
+    if (((std::clock() - circle.time) / (double) CLOCKS_PER_SECOND) 
+        < draw_time * 0.75){
+    }
+    else{
+    }
+    
+}
+
 // Function to set up text quads
 void create_quad(Shape &quad){
 
