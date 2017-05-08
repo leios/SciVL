@@ -380,116 +380,75 @@ void create_quad(Shape &quad){
 // Function to update an array
 void update_line(Shape &sh, glm::vec3 *new_array){
 
-    // Changing points in array
-    for (int i = 0; i < sh.vnum; ++i){
-        sh.vertices[0+i*6] = new_array[i].x;
-        sh.vertices[1+i*6] = new_array[i].y;
-        sh.vertices[2+i*6] = new_array[i].z;
-    }
-
-    GLuint VAO, VBO;
-
-    // Generating objects
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    // Binding the vertex array object
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * sh.vnum * 6,
-                 sh.vertices, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat), (GLvoid*)0);
-    glEnableVertexAttribArray(0);
-
-    // color attribute
-    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat),
-                          (GLvoid*)(3*sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
-
-    // Setting square attributes
-    sh.VAO = VAO;
-    sh.VBO = VBO;
-/*
-
-    double slope_x, slope_y, norm;
-    double slopein_x, slopein_y, slopeout_x, slopeout_y;
-
-    int size = sh.vnum / 2;
+    int size = sh.vnum / 4;
     for (int i = 0; i < size; ++i){
-        // Special cases for our first and last elements
-        if (i == 0){
-            slope_x = -(new_array[1].y - new_array[0].y);
-            slope_y = (new_array[1].x - new_array[0].x);
 
-        }
-        else if (i == size-1){
-            slope_x = -(new_array[size-1].y-new_array[size-2].y);
-            slope_y =  (new_array[size-1].x-new_array[size-2].x);
+        sh.vertices[0+i*24]  = new_array[i].x - sh.rad;
+        sh.vertices[1+i*24]  = new_array[i].y - sh.rad;
+        sh.vertices[2+i*24]  = new_array[i].z;
 
-        }
-        else{
-            slopein_x = new_array[i].x - new_array[i-1].x;
-            slopein_y = new_array[i].y - new_array[i-1].y;
-            slopeout_x = new_array[i+1].x - new_array[i].x;
-            slopeout_y = new_array[i+1].y - new_array[i].y;
+        sh.vertices[6+i*24]  = new_array[i].x - sh.rad;
+        sh.vertices[7+i*24]  = new_array[i].y + sh.rad;
+        sh.vertices[8+i*24]  = new_array[i].z;
 
-            // normalizing the two slopes
-            norm = 1/sqrt(slopein_x*slopein_x + slopein_y*slopein_y);
-            slopein_x *= norm;
-            slopein_y *= norm;
+        sh.vertices[12+i*24] = new_array[i].x + sh.rad;
+        sh.vertices[13+i*24] = new_array[i].y - sh.rad;
+        sh.vertices[14+i*24] = new_array[i].z;
 
-            norm = 1/sqrt(slopeout_x*slopeout_x + slopeout_y*slopeout_y);
-            slopeout_x *= norm;
-            slopeout_y *= norm;
-
-            slope_x = -(slopein_y + slopeout_y);
-            slope_y =  (slopein_x + slopeout_x);
-        }
-        norm = 1/sqrt(slope_x*slope_x + slope_y*slope_y);
-        slope_x *= norm;
-        slope_y *= norm;
-
-        double offset_x, offset_y;
-        if (abs(slope_y / slope_x) >=1){
-            //offset_y = sh.rad*slope_y;
-            offset_y = sign(slope_y)*sh.rad;
-        }
-        else{
-            offset_y = sh.rad*slope_y;
-        }
-
-        if(abs(slope_y / slope_x) <=1){
-            //offset_x = sh.rad*slope_x;
-            offset_x = sign(slope_x)*sh.rad;
-        }
-        else{
-            offset_x = sh.rad*slope_x;
-        }
-
-        sh.vertices[0+i*12]  = new_array[i].x + offset_x;
-        sh.vertices[1+i*12]  = new_array[i].y + offset_y;
-        sh.vertices[2+i*12]  = new_array[i].z;
-
-        sh.vertices[6+i*12]  = new_array[i].x - offset_x;
-        sh.vertices[7+i*12]  = new_array[i].y - offset_y;
-        sh.vertices[8+i*12]  = new_array[i].z;
+        sh.vertices[18+i*24] = new_array[i].x + sh.rad;
+        sh.vertices[19+i*24] = new_array[i].y + sh.rad;
+        sh.vertices[20+i*24] = new_array[i].z;
     }
 
-    GLuint VAO, VBO;
+    // Resetting the indices.
+    double slope;
+    for (int i = 0; i < size-1; ++i){
+        slope = (new_array[i].y - new_array[i+1].y) 
+                / (new_array[i].x - new_array[i+1].x);
+        if (slope >= 0){
+            sh.indices[6+i*12] = 4*i+2;
+            sh.indices[7+i*12] = 4*i+1;
+            sh.indices[8+i*12] = 4*i+5;
+            sh.indices[9+i*12] = 4*i+2;
+            sh.indices[10+i*12] = 4*i+6;
+            sh.indices[11+i*12] = 4*i+5;
+        }
+        else{
+            sh.indices[6+i*12] = 4*i+3;
+            sh.indices[7+i*12] = 4*i+7;
+            sh.indices[8+i*12] = 4*i+4;
+            sh.indices[9+i*12] = 4*i+3;
+            sh.indices[10+i*12] = 4*i;
+            sh.indices[11+i*12] = 4*i+4;
+        }
+
+        sh.indices[12+i*12] = 4*i+4;
+        sh.indices[13+i*12] = 4*i+5;
+        sh.indices[14+i*12] = 4*i+7;
+        sh.indices[15+i*12] = 4*i+4;
+        sh.indices[16+i*12] = 4*i+6;
+        sh.indices[17+i*12] = 4*i+7;
+    }
+
+
+    GLuint VAO, VBO, EBO;
 
     // Generating objects
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
 
     // Binding the vertex array object
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * sh.vnum * 12,
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * sh.vnum * 24,
                  sh.vertices, GL_STATIC_DRAW);
+
+    // Setting the indices again.
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint) * ((size-1) * 12 + 6), 
+                 sh.indices, GL_STATIC_DRAW);
 
     // position attribute
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat), (GLvoid*)0);
@@ -503,7 +462,7 @@ void update_line(Shape &sh, glm::vec3 *new_array){
     // Setting square attributes
     sh.VAO = VAO;
     sh.VBO = VBO;
-*/
+    sh.EBO = EBO;
 
 }
 
@@ -515,70 +474,11 @@ void create_line(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
 
     // Setting render type to GL_LINES
     //line.rtype = GL_POINTS | GL_LINES;
-    line.rtype = GL_LINES;
-
-    // Allocating space for vertices
-    line.vertices = (GLfloat*)malloc(sizeof(GLfloat)*6*size);
-    for (int i = 0; i < size; ++i){
-        line.vertices[0+i*6] = array[i].x;
-        line.vertices[1+i*6] = array[i].y;
-        line.vertices[2+i*6] = array[i].z;
-        line.vertices[3+i*6] = color[0];
-        line.vertices[4+i*6] = color[1];
-        line.vertices[5+i*6] = color[2];
-    }
-
-    // Allocating space for indices
-    line.indices = (GLuint*)malloc(sizeof(GLuint)*(size-1)*2);
-    for (int i = 0; i < size-1; ++i){
-        line.indices[0+i*2] = i;
-        line.indices[1+i*2] = i+1;
-    }
-
-    GLuint VAO, VBO, EBO;
-
-    // Generating objects
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    // Binding the vertex array object
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * size * 6,
-                 line.vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint) * (size-1) * 2, 
-                 line.indices, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat), (GLvoid*)0);
-    glEnableVertexAttribArray(0);
-
-    // color attribute
-    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat),
-                          (GLvoid*)(3*sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
-
-    // Setting square attributes
-    line.VAO = VAO;
-    line.VBO = VBO;
-    line.EBO = EBO;
-
-    line.vnum = size;
-    line.ind = (size-1)*2;
-/*
-
-    // Setting render type to GL_LINES
-    //line.rtype = GL_POINTS | GL_LINES;
     line.rtype = GL_TRIANGLES;
 
     // Allocating space for vertices -- 2 points for every vertex!
-    line.vertices = (GLfloat*)malloc(sizeof(GLfloat)*12*size);
-    double slope_x, slope_y, norm;
-    double slopein_x, slopein_y, slopeout_x, slopeout_y;
+    line.vertices = (GLfloat*)malloc(sizeof(GLfloat)*24*size);
+    double slope;
 
     // This is done in a 3 step process
     //     1. Find slope of points before and after our element
@@ -586,79 +486,73 @@ void create_line(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
     //     3. Extend that slope in both directions based on the radius
     for (int i = 0; i < size; ++i){
         // Special cases for our first and last elements
-        if (i == 0){
-            slope_x = -(array[1].y - array[0].y);
-            slope_y = (array[1].x - array[0].x);
+        line.vertices[0+i*24]  = array[i].x - line.rad;
+        line.vertices[1+i*24]  = array[i].y - line.rad;
+        line.vertices[2+i*24]  = array[i].z;
+        line.vertices[3+i*24]  = color[0];
+        line.vertices[4+i*24]  = color[1];
+        line.vertices[5+i*24]  = color[2];
 
-        }
-        else if (i == size-1){
-            slope_x = -(array[size-1].y-array[size-2].y);
-            slope_y =  (array[size-1].x-array[size-2].x);
+        line.vertices[6+i*24]  = array[i].x - line.rad;
+        line.vertices[7+i*24]  = array[i].y + line.rad;
+        line.vertices[8+i*24]  = array[i].z;
+        line.vertices[9+i*24]  = color[0];
+        line.vertices[10+i*24] = color[1];
+        line.vertices[11+i*24] = color[2];
 
-        }
-        else{
-            slopein_x = array[i].x - array[i-1].x;
-            slopein_y = array[i].y - array[i-1].y;
-            slopeout_x = array[i+1].x - array[i].x;
-            slopeout_y = array[i+1].y - array[i].y;
+        line.vertices[12+i*24] = array[i].x + line.rad;
+        line.vertices[13+i*24] = array[i].y - line.rad;
+        line.vertices[14+i*24] = array[i].z;
+        line.vertices[15+i*24] = color[0];
+        line.vertices[16+i*24] = color[1];
+        line.vertices[17+i*24] = color[2];
 
-            // normalizing the two slopes
-            norm = 1/sqrt(slopein_x*slopein_x + slopein_y*slopein_y);
-            slopein_x *= norm;
-            slopein_y *= norm;
+        line.vertices[18+i*24] = array[i].x + line.rad;
+        line.vertices[19+i*24] = array[i].y + line.rad;
+        line.vertices[20+i*24] = array[i].z;
+        line.vertices[21+i*24] = color[0];
+        line.vertices[22+i*24] = color[1];
+        line.vertices[23+i*24] = color[2];
 
-            norm = 1/sqrt(slopeout_x*slopeout_x + slopeout_y*slopeout_y);
-            slopeout_x *= norm;
-            slopeout_y *= norm;
-
-            slope_x = -(slopein_y + slopeout_y);
-            slope_y =  (slopein_x + slopeout_x);
-        }
-        norm = 1/sqrt(slope_x*slope_x + slope_y*slope_y);
-        slope_x *= norm;
-        slope_y *= norm;
-
-        double offset_x, offset_y;
-        if (abs(slope_y / slope_x) >=1){
-            //offset_y = line.rad*slope_y;
-            offset_y = sign(slope_y)*line.rad;
-        }
-        else{
-            offset_y = line.rad*slope_y;
-        }
-
-        if(abs(slope_y / slope_x) <=1){
-            //offset_x = line.rad*slope_x;
-            offset_x = sign(slope_x)*line.rad;
-        }
-        else{
-            offset_x = line.rad*slope_x;
-        }
-
-        line.vertices[0+i*12]  = array[i].x + offset_x;
-        line.vertices[1+i*12]  = array[i].y + offset_y;
-        line.vertices[2+i*12]  = array[i].z;
-        line.vertices[3+i*12]  = color[0];
-        line.vertices[4+i*12]  = color[1];
-        line.vertices[5+i*12]  = color[2];
-
-        line.vertices[6+i*12]  = array[i].x - offset_x;
-        line.vertices[7+i*12]  = array[i].y - offset_y;
-        line.vertices[8+i*12]  = array[i].z;
-        line.vertices[9+i*12]  = color[0];
-        line.vertices[10+i*12] = color[1];
-        line.vertices[11+i*12] = color[2];
     }
 
     // Allocating space for indices
-    line.indices = (GLuint*)malloc(sizeof(GLuint)*(size-1)*6);
+    // FIX
+    line.indices = (GLuint*)malloc(sizeof(GLuint)*((size-1)*12 + 6));
+
+    // Setting up initial triangle
+    line.indices[0] = 0;
+    line.indices[1] = 1;
+    line.indices[2] = 2;
+    line.indices[3] = 1;
+    line.indices[4] = 2;
+    line.indices[5] = 3;
+
     for (int i = 0; i < size-1; ++i){
-        line.indices[0+i*6] = 2*i;
-        line.indices[1+i*6] = 2*i+1;
-        line.indices[2+i*6] = 2*i+3;
-        line.indices[3+i*6] = 2*i;
-        line.indices[4+i*6] = 2*i+2;
-        line.indices[5+i*6] = 2*i+3;
+        slope = (array[i].y - array[i+1].y) / (array[i].x - array[i+1].x);
+        if (slope >= 0){
+            line.indices[6+i*12] = 4*i+2;
+            line.indices[7+i*12] = 4*i+1;
+            line.indices[8+i*12] = 4*i+5;
+            line.indices[9+i*12] = 4*i+2;
+            line.indices[10+i*12] = 4*i+6;
+            line.indices[11+i*12] = 4*i+5;
+        }
+        else{
+            line.indices[6+i*12] = 4*i+3;
+            line.indices[7+i*12] = 4*i+7;
+            line.indices[8+i*12] = 4*i+4;
+            line.indices[9+i*12] = 4*i+3;
+            line.indices[10+i*12] = 4*i;
+            line.indices[11+i*12] = 4*i+4;
+        }
+
+        line.indices[12+i*12] = 4*i+4;
+        line.indices[13+i*12] = 4*i+5;
+        line.indices[14+i*12] = 4*i+7;
+        line.indices[15+i*12] = 4*i+4;
+        line.indices[16+i*12] = 4*i+6;
+        line.indices[17+i*12] = 4*i+7;
     }
 
 
@@ -673,11 +567,11 @@ void create_line(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * size * 12,
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * size * 24,
                  line.vertices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint) * (size-1) * 6, 
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint) * ((size-1) * 12 + 6), 
                  line.indices, GL_STATIC_DRAW);
 
     // position attribute
@@ -694,7 +588,6 @@ void create_line(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
     line.VBO = VBO;
     line.EBO = EBO;
 
-    line.vnum = size*2;
-    line.ind = (size-1)*6;
-*/
+    line.vnum = size*4;
+    line.ind = (size-1)*12 +6;
 }
