@@ -47,6 +47,10 @@ void create_circle(Shape &circle, glm::vec3 &pos, double radius,
 void grow_circle(Shape &circle, glm::vec3 &pos, double radius, 
                  glm::vec3 color, double draw_time);
 
+// Function to animate the drawing of a line
+void animate_line(Shape &line, std::vector<glm::vec3> &array, glm::vec3 color,
+                  double start_time, double end_time);
+
 // Function to create text quads
 void create_quad(Shape &quad);
 

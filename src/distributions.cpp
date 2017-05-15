@@ -195,19 +195,35 @@ void pong_OGL(Param &par){
 void fourier_key(Param &par, SDL_Keysym* Keysym){
     switch(Keysym->sym){
         case SDLK_ESCAPE:
-        case SDLK_q:
+        case SDLK_q:{
             par.end = 1;
             break;
+        }
 
-        case SDLK_LEFT:
+        case SDLK_LEFT:{
+            
             par.factors[par.curr_factor] -= 0.1;
             update_fft(par);
+            std::chrono::high_resolution_clock::time_point curr_time 
+                = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double> time_span;
+            time_span=std::chrono::duration_cast<std::chrono::duration<double>>
+                      (curr_time - par.start_time);
+            std::cout << "Current time is: " << time_span.count() << '\n';
             break;
-        case SDLK_RIGHT:
+        }
+        case SDLK_RIGHT:{
             par.factors[par.curr_factor] += 0.1;
             update_fft(par);
+            std::chrono::high_resolution_clock::time_point curr_time 
+                = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double> time_span;
+            time_span=std::chrono::duration_cast<std::chrono::duration<double>>
+                      (curr_time - par.start_time);
+            std::cout << "Current time is: " << time_span.count() << '\n';
             break;
-        case SDLK_DOWN:
+        }
+        case SDLK_DOWN:{
             if (par.curr_factor < 2){
                 par.curr_factor += 1;
                 if (par.curr_factor > par.factors.size()-1){
@@ -218,7 +234,8 @@ void fourier_key(Param &par, SDL_Keysym* Keysym){
             }
             update_fft(par);
             break;
-        case SDLK_UP:
+        }
+        case SDLK_UP:{
             if (par.curr_factor > 0){
                 par.curr_factor -= 1;
                 glm::vec3 trans = {0.0, 0.2, 0.0};
@@ -226,6 +243,7 @@ void fourier_key(Param &par, SDL_Keysym* Keysym){
             }
             update_fft(par);
             break;
+        }
 
         default:
             break;
@@ -256,6 +274,8 @@ void fourier_par(Param &par){
 
     par.font = "fonts/LinLibertine_Rah.ttf";
     par.font_size = sqrt(par.width*par.width + par.height*par.height) / 34;
+
+    par.start_time = std::chrono::high_resolution_clock::now();
 
 }
 
@@ -504,26 +524,6 @@ void test_anim_key(Param &par, SDL_Keysym* Keysym){
         case SDLK_q:
             par.end = 1;
             break;
-        case SDLK_LEFT:
-            if(par.shapes[1].vertices[0] - par.dmap["radius"] > -1){
-                glm::vec3 trans = {-0.05, 0.0, 0.0};
-                move_shape(par.shapes[1], trans);
-                //move_shape(par.shapes[0], trans);
-                move_vertex(par.shapes[0], trans, 0);
-                move_vertex(par.shapes[0], trans, 1);
-                par.dmap["theta"] += asin(0.05/0.5);
-            }
-            break;
-        case SDLK_RIGHT:
-            if(par.shapes[1].vertices[0] + par.dmap["radius"] < 1){
-                glm::vec3 trans = {0.05, 0.0, 0.0};
-                move_shape(par.shapes[1], trans);
-                //move_shape(par.shapes[0], trans);
-                move_vertex(par.shapes[0], trans, 0);
-                move_vertex(par.shapes[0], trans, 1);
-                par.dmap["theta"] -= asin(0.05/0.5);
-            }
-            break;
         default:
             break;
 
@@ -539,8 +539,6 @@ void test_anim_fn(Param &par){
     glClear(GL_COLOR_BUFFER_BIT);
 
     draw_shapes(par);
-    glm::vec3 pos = {20.0f, 20.0f, 0.0f};
-    write_string(par, "sample text", pos, 1.0f, glm::vec3(0.5, 0.0f, 0.5f));
 
     SDL_GL_SwapWindow(par.screen);
 
@@ -549,16 +547,6 @@ void test_anim_fn(Param &par){
 void test_anim_par(Param &par){
     par.dist = "test_anim";
     par.end = 0;
-
-    par.dmap["alpha"] = 0.0;
-    par.dmap["theta"] = 0.0;
-    par.dmap["theta_prev"] = 0.0;
-    par.dmap["radius"] = 0.1;
-    par.dmap["timestep"] = 0.05;
-    par.imap["res"] = 50;
-
-    par.font = "fonts/LinLibertine_Rah.ttf";
-    par.font_size = sqrt(par.width*par.width + par.height*par.height) / 34;
 
 }
 
@@ -588,20 +576,10 @@ void test_anim_OGL(Param &par){
     glEnable(GL_POINT_SMOOTH);
     glPointSize(10);
 
-    Shader textShader;
-    textShader.Load("shaders/text.vtx", "shaders/text.frg");
-    glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(par.width), 
-                                      0.0f, static_cast<GLfloat>(par.height));
-    textShader.Use();
-    glUniformMatrix4fv(glGetUniformLocation(textShader.Program, "projection"), 
-                       1, GL_FALSE, glm::value_ptr(projection));
-    par.shmap["text"] = textShader;
-    setup_freetype(par);
-    create_quad(par.text);
-
-    // Creating a line to work with
+    // Creating a simple line
     Shape line;
     std::vector<glm::vec3> array(2);
+
     array[0] = {0.0, 0.0, 0.0};
     array[1] = {0.0, -0.5, 0.0};
 
@@ -609,14 +587,6 @@ void test_anim_OGL(Param &par){
 
     create_line(line, array, licolor);
     par.shapes.push_back(line);
-
-    // Creating a circle to work with
-    Shape circle;
-    float rad = (float)par.dmap["radius"];
-    glm::vec3 cloc = {0.0, 0.0, 0.0},
-              ccolor = {1.0, 0.0, 1.0};
-    create_circle(circle, cloc, rad, ccolor, par.imap["res"]); 
-    par.shapes.push_back(circle);
 
 }
 

@@ -29,6 +29,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
 #include <ctime>
+#include <chrono>
 
 // For font rendering
 #include <ft2build.h>
@@ -63,7 +64,8 @@ struct Shape{
 
     // Stage of simulation
     int stage;
-    std::clock_t time;
+
+    double start_time, end_time;
 
     int rtype = GL_TRIANGLES;
     void destroy();
@@ -108,6 +110,16 @@ struct Param{
 
     bool fullscreen;
 
+    std::chrono::high_resolution_clock::time_point start_time;
+
+};
+
+// Struct to hold all data for scenes
+struct Scene{
+    Param par;
+    std::vector<Shape> shapes;
+
+    std::chrono::high_resolution_clock::time_point start_time;
 };
 
 // Function to set parameters
