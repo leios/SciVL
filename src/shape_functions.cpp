@@ -365,6 +365,8 @@ void grow_circle(Shape &circle, glm::vec3 &pos, double radius,
 // Function to animate the drawing of a line
 void animate_line(Shape &line, std::vector<glm::vec3> &array, glm::vec3 color,
                   double start_time, double end_time){
+
+
 }
 
 // Function to set up text quads
