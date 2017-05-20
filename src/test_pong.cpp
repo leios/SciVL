@@ -71,10 +71,12 @@ void move_pendulum(Param &par){
 
     //now we need to move the appropriate indices, 12, 13, 18, 19
 
-    glm::vec3 trans = {sin(par.dmap["theta"])*0.05, 
+    glm::vec3 trans = {sin(par.dmap["theta"])*0.01, 
                        0.0, 0.0};
-    move_vertex(par.shapes[0], trans, 2);
-    move_vertex(par.shapes[0], trans, 3);
+    move_vertex(par.shapes[0], trans, 4);
+    move_vertex(par.shapes[0], trans, 5);
+    move_vertex(par.shapes[0], trans, 6);
+    move_vertex(par.shapes[0], trans, 7);
     
 
 }
