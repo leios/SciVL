@@ -405,24 +405,29 @@ void test_pend_key(Param &par, SDL_Keysym* Keysym){
             if(par.shapes[1].vertices[0] - par.dmap["radius"] > -1){
                 glm::vec3 trans = {-0.01, 0.0, 0.0};
                 move_shape(par.shapes[1], trans);
-                //move_shape(par.shapes[0], trans);
-                move_vertex(par.shapes[0], trans, 0);
-                move_vertex(par.shapes[0], trans, 1);
-                move_vertex(par.shapes[0], trans, 2);
-                move_vertex(par.shapes[0], trans, 3);
-                par.dmap["theta"] -= asin(0.01/0.5);
+                move_shape(par.shapes[0], trans);
+                //move_vertex(par.shapes[0], trans, 0);
+                //move_vertex(par.shapes[0], trans, 1);
+                //move_vertex(par.shapes[0], trans, 2);
+                //move_vertex(par.shapes[0], trans, 3);
+                //par.dmap["theta"] -= asin(0.01/0.5);
             }
             break;
         case SDLK_RIGHT:
             if(par.shapes[1].vertices[0] + par.dmap["radius"] < 1){
                 glm::vec3 trans = {0.01, 0.0, 0.0};
                 move_shape(par.shapes[1], trans);
-                //move_shape(par.shapes[0], trans);
-                move_vertex(par.shapes[0], trans, 0);
-                move_vertex(par.shapes[0], trans, 1);
-                move_vertex(par.shapes[0], trans, 2);
-                move_vertex(par.shapes[0], trans, 3);
-                par.dmap["theta"] += asin(0.01/0.5);
+                move_shape(par.shapes[0], trans);
+                //move_vertex(par.shapes[0], trans, 0);
+                //move_vertex(par.shapes[0], trans, 1);
+                //move_vertex(par.shapes[0], trans, 2);
+                //move_vertex(par.shapes[0], trans, 3);
+                //par.dmap["theta"] += asin(0.01/0.5);
+            }
+            break;
+        case SDLK_UP:
+            if(par.shapes[1].vertices[0] + par.dmap["radius"] < 1){
+                par.dmap["yvel"] = 0.1;
             }
             break;
         default:
@@ -452,6 +457,12 @@ void test_pend_par(Param &par){
     par.end = 0;
 
     par.dmap["alpha"] = 0.0;
+    par.dmap["grav"] = -0.05;
+    par.dmap["xvel"] = 0.0;
+    par.dmap["yvel"] = 0.0;
+    par.dmap["xpos"] = 0.0;
+    par.dmap["ypos"] = 0.0;
+    par.dmap["y_prev"] = 0.0;
     par.dmap["theta"] = 0.0;
     par.dmap["theta_prev"] = 0.0;
     par.dmap["radius"] = 0.1;

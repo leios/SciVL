@@ -61,23 +61,34 @@ void play_pong(Param &par){
 void move_pendulum(Param &par){
 
     // For this we will be using the verlet algorithm
-    double theta_prev = par.dmap["theta_prev"];
-    double theta = par.dmap["theta"];
+    double y_prev = par.dmap["y_prev"];
+    double y = par.dmap["y"];
     double dt = par.dmap["timestep"];
-    par.dmap["alpha"] = -2*9.81*sin(theta);
+    double g;
+    
+    if (par.dmap["y"] >= -0.5) {
+       g = par.dmap["grav"];
+    }
+    else {
+        g = 0;
+        if (par.dmap["yvel"] < 0) {
+            par.dmap["yvel"] = 0;
+        }
+    }
+    double yvel  = par.dmap["yvel"];
 
-    par.dmap["theta"] = 2*theta + par.dmap["alpha"]*dt*dt - theta_prev;
-    par.dmap["theta_prev"] = theta;
+    double dy = yvel*dt + 0.5*g*dt*dt;
+    yvel += g*dt;
+    par.dmap["y"] += dy;
+    par.dmap["yvel"] = yvel;
+
 
     //now we need to move the appropriate indices, 12, 13, 18, 19
 
-    glm::vec3 trans = {sin(par.dmap["theta"])*0.01, 
-                       0.0, 0.0};
-    move_vertex(par.shapes[0], trans, 4);
-    move_vertex(par.shapes[0], trans, 5);
-    move_vertex(par.shapes[0], trans, 6);
-    move_vertex(par.shapes[0], trans, 7);
-    
+    glm::vec3 trans = {0.0,dy, 0.0};
+    move_shape(par.shapes[0], trans);
+    move_shape(par.shapes[1], trans);
+
 
 }
 
