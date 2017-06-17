@@ -7,6 +7,7 @@
 #include <glm/mat3x3.hpp>
 #include <glm/glm.hpp>
 #include <fftw3.h>
+#include "SDL.h"
 
 #include "../include/test_pong.h"
 #include "../include/shape_functions.h"
@@ -64,10 +65,26 @@ void move_pendulum(Param &par){
     double y_prev = par.dmap["y_prev"];
     double y = par.dmap["y"];
     double dt = par.dmap["timestep"];
+    double ymin = -1.0;
+    double xmin = par.dmap["platf_xc"] - 0.5 * par.dmap["platf_l"];
+    double xmax = par.dmap["platf_xc"] + 0.5 * par.dmap["platf_l"];
     double g;
-    
-    if (par.dmap["y"] >= -0.5) {
-       g = par.dmap["grav"];
+    // we're tracking the position of the head
+    if (par.dmap["x"] > xmin && par.dmap["x"] < xmax){
+        ymin = -1 + par.dmap["platf_h"];
+        if (par.dmap["y"] < ymin + 0.5) {
+            glm::vec3 trans = {0, - par.dmap["y"] + (ymin + 0.5), 0.0};
+            move_shape(par.shapes[1], trans);
+            move_shape(par.shapes[0], trans);
+            par.dmap["y"] = ymin + 0.5;
+        }
+    }
+    else {
+        ymin = -1.0;
+    }      
+    if (par.dmap["y"] > ymin + 0.5) {
+
+        g = par.dmap["grav"];
     }
     else {
         g = 0;
@@ -88,8 +105,26 @@ void move_pendulum(Param &par){
     glm::vec3 trans = {0.0,dy, 0.0};
     move_shape(par.shapes[0], trans);
     move_shape(par.shapes[1], trans);
+    // now we are going to move the character left and right
+    //Uint8 *keystate = SDL_GetKeyState(NULL);
+    //if (keystate[SDLK_LEFT]){
+    if (par.bmap["mv_left"] == true){
+        glm::vec3 trans = {-0.01, 0.0, 0.0};
+        move_shape(par.shapes[1], trans);
+        move_shape(par.shapes[0], trans);
+        par.bmap["mv_left"] = false;
+        par.dmap["x"] -= 0.01;
+    }
 
+    if (par.bmap["mv_right"] == true){
+        glm::vec3 trans = {0.01, 0.0, 0.0};
+        move_shape(par.shapes[1], trans);
+        move_shape(par.shapes[0], trans);
+        par.bmap["mv_right"] = false;
+        par.dmap["x"] += 0.01;
+    }
 
+    //SDL_PumpEvents();
 }
 
 // Function to update fft arrays

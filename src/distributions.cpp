@@ -403,31 +403,17 @@ void test_pend_key(Param &par, SDL_Keysym* Keysym){
             break;
         case SDLK_LEFT:
             if(par.shapes[1].vertices[0] - par.dmap["radius"] > -1){
-                glm::vec3 trans = {-0.01, 0.0, 0.0};
-                move_shape(par.shapes[1], trans);
-                move_shape(par.shapes[0], trans);
-                //move_vertex(par.shapes[0], trans, 0);
-                //move_vertex(par.shapes[0], trans, 1);
-                //move_vertex(par.shapes[0], trans, 2);
-                //move_vertex(par.shapes[0], trans, 3);
-                //par.dmap["theta"] -= asin(0.01/0.5);
+                par.bmap["mv_left"] = true;
             }
             break;
         case SDLK_RIGHT:
             if(par.shapes[1].vertices[0] + par.dmap["radius"] < 1){
-                glm::vec3 trans = {0.01, 0.0, 0.0};
-                move_shape(par.shapes[1], trans);
-                move_shape(par.shapes[0], trans);
-                //move_vertex(par.shapes[0], trans, 0);
-                //move_vertex(par.shapes[0], trans, 1);
-                //move_vertex(par.shapes[0], trans, 2);
-                //move_vertex(par.shapes[0], trans, 3);
-                //par.dmap["theta"] += asin(0.01/0.5);
+                par.bmap["mv_right"] = true;
             }
             break;
         case SDLK_UP:
             if(par.shapes[1].vertices[0] + par.dmap["radius"] < 1){
-                par.dmap["yvel"] = 0.1;
+                par.dmap["yvel"] = 0.2;
             }
             break;
         default:
@@ -460,14 +446,18 @@ void test_pend_par(Param &par){
     par.dmap["grav"] = -0.05;
     par.dmap["xvel"] = 0.0;
     par.dmap["yvel"] = 0.0;
-    par.dmap["xpos"] = 0.0;
-    par.dmap["ypos"] = 0.0;
+    par.dmap["x"] = 0.0;
+    par.dmap["y"] = 0.0;
     par.dmap["y_prev"] = 0.0;
     par.dmap["theta"] = 0.0;
     par.dmap["theta_prev"] = 0.0;
     par.dmap["radius"] = 0.1;
     par.dmap["timestep"] = 0.05;
     par.imap["res"] = 50;
+    par.bmap["mv_left"] = false;
+    par.bmap["mv_right"] = false;
+    par.dmap["platf_h"] = 0;
+    par.dmap["platf_l"] = 0;
 
     par.font = "fonts/LinLibertine_Rah.ttf";
     par.font_size = sqrt(par.width*par.width + par.height*par.height) / 34;
@@ -530,6 +520,16 @@ void test_pend_OGL(Param &par){
     create_circle(circle, cloc, rad, ccolor, par.imap["res"]); 
     par.shapes.push_back(circle);
 
+    Shape platform;
+    glm::vec3 ploc = {0.0, -0.9, 0.0}, 
+              psize = {0.5, 0.2, 0.0}, 
+              pcolor = {0.0, 0.0, 1.0};
+    par.dmap["platf_h"] = psize[1];
+    par.dmap["platf_l"] = psize[0];
+    par.dmap["platf_xc"] = ploc[0];
+
+    create_rectangle(platform, ploc, psize, pcolor); 
+    par.shapes.push_back(platform);
 }
 
 // Test functions using shader.h
