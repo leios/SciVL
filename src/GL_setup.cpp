@@ -108,8 +108,8 @@ void draw_screen(Param &par){
     par.draw_fn(par);
 }
 
-void key_down(Param &par,  SDL_Keysym* keysym){
-    par.key_fn(par, keysym);
+void key_down(Param &par,  SDL_Keysym* keysym, bool is_down){
+    par.key_fn(par, keysym, is_down);
 }
 
 // Function to process events in game loop
@@ -127,7 +127,12 @@ void process_events(Param &par){
             }
             case SDL_KEYDOWN:
             {
-                key_down(par, &event.key.keysym);
+                key_down(par, &event.key.keysym, true);
+                break;
+            }
+            case SDL_KEYUP:
+            {
+                key_down(par, &event.key.keysym, false);
                 break;
             }
         }

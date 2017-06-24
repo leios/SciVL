@@ -16,7 +16,7 @@
 #include "../include/operations.h"
 
 // STD functions
-void std_key(Param &par, SDL_Keysym* Keysym){
+void std_key(Param &par, SDL_Keysym* Keysym, bool is_down){
     switch(Keysym->sym){
         case SDLK_ESCAPE:
         case SDLK_q:
@@ -56,7 +56,7 @@ void std_OGL(Param &par){
 }
 
 // Test functions using shader.h
-void pong_key(Param &par, SDL_Keysym* Keysym){
+void pong_key(Param &par, SDL_Keysym* Keysym, bool is_down){
     switch(Keysym->sym){
         case SDLK_ESCAPE:
         case SDLK_q:
@@ -192,7 +192,7 @@ void pong_OGL(Param &par){
 }
 
 // Test functions using shader.h
-void fourier_key(Param &par, SDL_Keysym* Keysym){
+void fourier_key(Param &par, SDL_Keysym* Keysym, bool is_down){
     switch(Keysym->sym){
         case SDLK_ESCAPE:
         case SDLK_q:{
@@ -395,20 +395,30 @@ void fourier_OGL(Param &par){
 }
 
 // Test functions using shader.h
-void test_pend_key(Param &par, SDL_Keysym* Keysym){
+void test_pend_key(Param &par, SDL_Keysym* Keysym, bool is_down){
     switch(Keysym->sym){
         case SDLK_ESCAPE:
         case SDLK_q:
             par.end = 1;
             break;
         case SDLK_LEFT:
-            if(par.shapes[1].vertices[0] - par.dmap["radius"] > -1){
-                par.bmap["mv_left"] = true;
+            if (is_down){
+                if(par.shapes[1].vertices[0] - par.dmap["radius"] > -1){
+                    par.bmap["mv_left"] = true;
+                }
+            }
+            else{
+                par.bmap["mv_left"] = false;
             }
             break;
         case SDLK_RIGHT:
-            if(par.shapes[1].vertices[0] + par.dmap["radius"] < 1){
-                par.bmap["mv_right"] = true;
+            if (is_down){
+                if(par.shapes[1].vertices[0] + par.dmap["radius"] < 1){
+                    par.bmap["mv_right"] = true;
+                }
+            }
+            else{
+                par.bmap["mv_right"] = false;
             }
             break;
         case SDLK_UP:
@@ -533,7 +543,7 @@ void test_pend_OGL(Param &par){
 }
 
 // Test functions using shader.h
-void test_anim_key(Param &par, SDL_Keysym* Keysym){
+void test_anim_key(Param &par, SDL_Keysym* Keysym, bool is_down){
     switch(Keysym->sym){
         case SDLK_ESCAPE:
         case SDLK_q:

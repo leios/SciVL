@@ -90,7 +90,7 @@ struct Param{
     functionPtr draw_fn, par_fn, OGL_fn;
 
     // Function pointer for the key functions
-    typedef void (*functionPtr_key)(Param&, SDL_Keysym*);
+    typedef void (*functionPtr_key)(Param&, SDL_Keysym*, bool);
     functionPtr_key key_fn;
 
     // function to set all mapped functions
@@ -136,7 +136,7 @@ void SDL_init(Param &par);
 void draw_screen(Param &par);
 
 // Dealing with key presses
-void key_down(Param &par, SDL_Keysym* keysym);
+void key_down(Param &par, SDL_Keysym* keysym, bool is_down);
 
 // Processing with events
 void process_events(Param &par);

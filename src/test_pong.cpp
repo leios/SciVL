@@ -112,7 +112,6 @@ void move_pendulum(Param &par){
         glm::vec3 trans = {-0.01, 0.0, 0.0};
         move_shape(par.shapes[1], trans);
         move_shape(par.shapes[0], trans);
-        par.bmap["mv_left"] = false;
         par.dmap["x"] -= 0.01;
     }
 
@@ -120,7 +119,6 @@ void move_pendulum(Param &par){
         glm::vec3 trans = {0.01, 0.0, 0.0};
         move_shape(par.shapes[1], trans);
         move_shape(par.shapes[0], trans);
-        par.bmap["mv_right"] = false;
         par.dmap["x"] += 0.01;
     }
 
