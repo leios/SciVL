@@ -65,10 +65,14 @@ struct Shape{
     // Stage of simulation
     int stage;
 
-    double start_time, end_time;
-
     int rtype = GL_TRIANGLES;
     void destroy();
+
+    std::chrono::high_resolution_clock::time_point start_time = 
+        std::chrono::high_resolution_clock::now();
+    std::chrono::high_resolution_clock::time_point end_time = 
+        std::chrono::high_resolution_clock::now();
+    //double start_time, end_time;
 };
 
 // struct to hold most data
@@ -111,7 +115,10 @@ struct Param{
 
     bool fullscreen;
 
-    std::chrono::high_resolution_clock::time_point start_time;
+    std::chrono::high_resolution_clock::time_point start_time = 
+        std::chrono::high_resolution_clock::now();
+    std::chrono::high_resolution_clock::time_point curr_time = 
+        std::chrono::high_resolution_clock::now();
 
 };
 
@@ -120,7 +127,7 @@ struct Scene{
     Param par;
     std::vector<Shape> shapes;
 
-    std::chrono::high_resolution_clock::time_point start_time;
+    std::chrono::high_resolution_clock::time_point start_time, end_time;
 };
 
 // Function to set parameters

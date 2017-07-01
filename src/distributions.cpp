@@ -17,6 +17,9 @@
 
 // STD functions
 void std_key(Param &par, SDL_Keysym* Keysym, bool is_down){
+    if (!is_down){
+        return;
+    }
     switch(Keysym->sym){
         case SDLK_ESCAPE:
         case SDLK_q:
@@ -57,6 +60,9 @@ void std_OGL(Param &par){
 
 // Test functions using shader.h
 void pong_key(Param &par, SDL_Keysym* Keysym, bool is_down){
+    if (!is_down){
+        return;
+    }
     switch(Keysym->sym){
         case SDLK_ESCAPE:
         case SDLK_q:
@@ -193,6 +199,9 @@ void pong_OGL(Param &par){
 
 // Test functions using shader.h
 void fourier_key(Param &par, SDL_Keysym* Keysym, bool is_down){
+    if (!is_down){
+        return;
+    }
     switch(Keysym->sym){
         case SDLK_ESCAPE:
         case SDLK_q:{
@@ -422,6 +431,9 @@ void test_pend_key(Param &par, SDL_Keysym* Keysym, bool is_down){
             }
             break;
         case SDLK_UP:
+            if (!is_down){
+                return;
+            }
             if(par.shapes[1].vertices[0] + par.dmap["radius"] < 1){
                 par.dmap["yvel"] = 0.2;
             }
@@ -544,6 +556,9 @@ void test_pend_OGL(Param &par){
 
 // Test functions using shader.h
 void test_anim_key(Param &par, SDL_Keysym* Keysym, bool is_down){
+    if (!is_down){
+        return;
+    }
     switch(Keysym->sym){
         case SDLK_ESCAPE:
         case SDLK_q:
@@ -557,8 +572,6 @@ void test_anim_key(Param &par, SDL_Keysym* Keysym, bool is_down){
 }
 
 void test_anim_fn(Param &par){
-
-    move_pendulum(par);
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -606,11 +619,12 @@ void test_anim_OGL(Param &par){
     std::vector<glm::vec3> array(2);
 
     array[0] = {0.0, 0.0, 0.0};
-    array[1] = {0.0, -0.5, 0.0};
+    array[1] = {0.5, -0.5, 0.0};
 
     glm::vec3 licolor = {1.0, 0.0, 1.0};
 
     create_line(line, array, licolor);
+    add_keyframes(par, line, 1,2);
     par.shapes.push_back(line);
 
 }

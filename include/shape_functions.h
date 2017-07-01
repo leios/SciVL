@@ -11,11 +11,17 @@
 #include <glm/mat3x3.hpp>
 #include "../include/distributions.h"
 
+// Function to return location of vertex 
+glm::vec3 vertex_location(Shape &sh, int id);
+
 // Function to move a single vertex
 void move_vertex(Shape &sh, glm::vec3 &translate, int ind);
 
 // Function to draw a single shape
 void draw_shape(Param &par, std::string shapestr);
+
+// Function to animate a shape as it changes with time
+void animate_shape(Param &par, Shape &sh);
 
 // Function to draw all shapes in the par shape map
 void draw_shapes(Param &par);
@@ -60,5 +66,8 @@ void create_line(Shape &line, std::vector<glm::vec3> &array, glm::vec3 &color);
 
 // Function to update an array
 void update_line(Shape &sh, glm::vec3 *new_array);
+
+// Function to add keyframes to a shape for drawing
+void add_keyframes(Param &par, Shape &sh, double start_time, double end_time);
 
 #endif

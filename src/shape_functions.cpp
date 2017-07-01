@@ -8,11 +8,18 @@
 #include <operations.h>
 #include <ctime>
 
+// Function to return location of vertex 
+glm::vec3 vertex_location(Shape &sh, int id){
+    glm::vec3 location =
+        {sh.vertices[id*6], sh.vertices[id*6+1], sh.vertices[id*6+2]};
+    return location;
+}
+
 // Function to move a single vertex
 void move_vertex(Shape &sh, glm::vec3 &translate, int ind){
     sh.vertices[ind*6] += translate[0];
     sh.vertices[ind*6+1] += translate[1];
-    sh.vertices[ind*6+1] += translate[2];
+    sh.vertices[ind*6+2] += translate[2];
 
     // Binding the vertex array object
     glBindVertexArray(sh.VAO);
@@ -82,11 +89,64 @@ void draw_shape(Param &par, Shape &sh){
     glBindVertexArray(0);
 }
 
+// Function to animate a shape as it changes with time
+void animate_shape(Param &par, Shape &sh){
+
+    // First, we need to cast the time points onto doubles 
+    std::chrono::duration<double> total_time, curr_time;
+    total_time = std::chrono::duration_cast<std::chrono::duration<double>>
+        (sh.end_time - sh.start_time);
+    curr_time = std::chrono::duration_cast<std::chrono::duration<double>>
+        (par.curr_time - sh.start_time);
+    double ratio = curr_time / total_time;
+
+    // Finding appropraite translation matrix
+    glm::vec3 trans, start_loc, end_loc;
+    start_loc = vertex_location(sh,0);
+    end_loc = vertex_location(sh,4);
+    for (int i = 0; i < 3; ++i){
+        trans[i] = (1-ratio) * (start_loc[i] - end_loc[i]);
+    }
+
+    // moving all the vertices for the second part of the line
+    // TODO: generalize for arbitrary arrays
+
+    for (int i = 4; i <= 8; ++i){
+        move_vertex(sh, trans, i);
+    }
+
+    par.shmap["default"].Use();
+    glBindVertexArray(sh.VAO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sh.EBO);
+    glDrawElements(sh.rtype, sh.ind, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+
+    // Moving the point back
+    // NOTE: This is because for some reason we are influencing the pointer even
+    //       when calling const.
+    for (int i = 0; i < 3; ++i){
+        trans[i] *= -1;
+    }
+
+    for (int i = 4; i <= 8; ++i){
+        move_vertex(sh, trans, i);
+    }
+
+    
+}
+
+
 // Function to draw all shapes in the par shape map
 void draw_shapes(Param &par){
     if (par.shapes.size() > 0){
-        for (auto &sh : par.shapes){
-            draw_shape(par, sh);
+        for (size_t i = 0; i < par.shapes.size(); ++i){
+            if (par.curr_time > par.shapes[i].end_time){
+                draw_shape(par, par.shapes[i]);
+            }
+            if (par.curr_time >  par.shapes[i].start_time && 
+                par.curr_time <  par.shapes[i].end_time){
+                animate_shape(par, par.shapes[i]);
+            }
         }
     }
 
@@ -598,4 +658,16 @@ void create_line(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
 
     line.vnum = size*4;
     line.ind = (size-1)*12 +6;
+}
+
+// Function to add keyframs to shape for drawing
+void add_keyframes(Param &par, Shape &sh, double start_time, double end_time){
+
+    std::chrono::milliseconds start_offset = 
+        std::chrono::milliseconds((int)(start_time *1000));
+    std::chrono::milliseconds end_offset = 
+        std::chrono::milliseconds((int)(end_time *1000));
+    sh.start_time = par.start_time + start_offset;
+    sh.end_time = par.start_time + end_offset;
+    
 }

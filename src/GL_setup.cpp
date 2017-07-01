@@ -115,6 +115,9 @@ void key_down(Param &par,  SDL_Keysym* keysym, bool is_down){
 // Function to process events in game loop
 void process_events(Param &par){
 
+    // re-adjusting curr_time
+    par.curr_time = std::chrono::high_resolution_clock::now();
+
     // Creating an event
     SDL_Event event;
 
