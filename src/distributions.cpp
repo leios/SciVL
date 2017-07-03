@@ -213,23 +213,11 @@ void fourier_key(Param &par, SDL_Keysym* Keysym, bool is_down){
             
             par.factors[par.curr_factor] -= 0.1;
             update_fft(par);
-            std::chrono::high_resolution_clock::time_point curr_time 
-                = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> time_span;
-            time_span=std::chrono::duration_cast<std::chrono::duration<double>>
-                      (curr_time - par.start_time);
-            std::cout << "Current time is: " << time_span.count() << '\n';
             break;
         }
         case SDLK_RIGHT:{
             par.factors[par.curr_factor] += 0.1;
             update_fft(par);
-            std::chrono::high_resolution_clock::time_point curr_time 
-                = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> time_span;
-            time_span=std::chrono::duration_cast<std::chrono::duration<double>>
-                      (curr_time - par.start_time);
-            std::cout << "Current time is: " << time_span.count() << '\n';
             break;
         }
         case SDLK_DOWN:{
@@ -586,6 +574,8 @@ void test_anim_par(Param &par){
     par.dist = "test_anim";
     par.end = 0;
 
+    par.dmap["res"] = 100;
+
 }
 
 void test_anim_OGL(Param &par){
@@ -615,17 +605,25 @@ void test_anim_OGL(Param &par){
     glPointSize(10);
 
     // Creating a simple line
-    Shape line;
+    Shape line, circle;
     std::vector<glm::vec3> array(2);
 
     array[0] = {0.0, 0.0, 0.0};
     array[1] = {0.5, -0.5, 0.0};
 
     glm::vec3 licolor = {1.0, 0.0, 1.0};
+    glm::vec3 ccolor = {0.0, 0.0, 1.0};
 
     create_line(line, array, licolor);
-    add_keyframes(par, line, 1,2);
+
+    add_keyframes(par, line, 1, 2);
     par.shapes.push_back(line);
+
+    // Working with the circle
+    create_circle(circle, array[0], 0.25, ccolor, par.dmap["res"]);
+    add_keyframes(par, circle, 2,3);
+
+    par.shapes.push_back(circle);
 
 }
 

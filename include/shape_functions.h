@@ -21,7 +21,10 @@ void move_vertex(Shape &sh, glm::vec3 &translate, int ind);
 void draw_shape(Param &par, std::string shapestr);
 
 // Function to animate a shape as it changes with time
-void animate_shape(Param &par, Shape &sh);
+void animate_line(Param &par, Shape &sh);
+
+// Function to animate a circle as it changes with time
+void animate_line(Param &par, Shape &sh);
 
 // Function to draw all shapes in the par shape map
 void draw_shapes(Param &par);
@@ -52,10 +55,6 @@ void create_circle(Shape &circle, glm::vec3 &pos, double radius,
 // Function to animate the drawing of a circle
 void grow_circle(Shape &circle, glm::vec3 &pos, double radius, 
                  glm::vec3 color, double draw_time);
-
-// Function to animate the drawing of a line
-void animate_line(Shape &line, std::vector<glm::vec3> &array, glm::vec3 color,
-                  double start_time, double end_time);
 
 // Function to create text quads
 void create_quad(Shape &quad);

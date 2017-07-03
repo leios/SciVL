@@ -35,6 +35,9 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H  
 
+// enum for type of shape to draw
+enum Type {line, circle};
+
 // Struct to hold freetype character information
 struct Character{
     // glyph texture ID
@@ -57,6 +60,7 @@ struct Shape{
     GLuint* indices;
     GLuint VAO, VBO, EBO;
     double rad = 0.01;
+    Type type;
 
     // Integer for the number of vertices
     int vnum;

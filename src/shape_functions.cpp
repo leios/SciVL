@@ -89,8 +89,8 @@ void draw_shape(Param &par, Shape &sh){
     glBindVertexArray(0);
 }
 
-// Function to animate a shape as it changes with time
-void animate_shape(Param &par, Shape &sh){
+// Function to animate a line as it changes with time
+void animate_line(Param &par, Shape &sh){
 
     // First, we need to cast the time points onto doubles 
     std::chrono::duration<double> total_time, curr_time;
@@ -100,7 +100,7 @@ void animate_shape(Param &par, Shape &sh){
         (par.curr_time - sh.start_time);
     double ratio = curr_time / total_time;
 
-    // Finding appropraite translation matrix
+    // Finding appropriate translation matrix
     glm::vec3 trans, start_loc, end_loc;
     start_loc = vertex_location(sh,0);
     end_loc = vertex_location(sh,4);
@@ -135,6 +135,52 @@ void animate_shape(Param &par, Shape &sh){
     
 }
 
+// Function to animate a circle as it changes with time
+// TODO: add sinple animations
+void animate_circle(Param &par, Shape &sh){
+
+/*
+    // First, we need to cast the time points onto doubles 
+    std::chrono::duration<double> total_time, curr_time;
+    total_time = std::chrono::duration_cast<std::chrono::duration<double>>
+        (sh.end_time - sh.start_time);
+    curr_time = std::chrono::duration_cast<std::chrono::duration<double>>
+        (par.curr_time - sh.start_time);
+    double ratio = curr_time / total_time;
+
+    // Finding appropriate translation matrix
+    glm::vec3 trans, start_loc, end_loc;
+
+    int res = par.dmap["res"];
+
+    for (int i = 0; i < res; ++i){
+        start_loc = vertex_location(sh,0);
+        end_loc = vertex_location(sh,1);
+
+        trans[i] = (1-ratio) * (start_loc[i] - end_loc[i]);
+        move_vertex(sh, trans, i);
+    }
+
+    par.shmap["default"].Use();
+    glBindVertexArray(sh.VAO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sh.EBO);
+    glDrawElements(sh.rtype, sh.ind, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+
+    // Moving the point back
+    // NOTE: This is because for some reason we are influencing the pointer even
+    //       when calling const.
+    for (int i = 0; i < 3; ++i){
+        trans[i] *= -1;
+    }
+
+    for (int i = 4; i <= 8; ++i){
+        move_vertex(sh, trans, i);
+    }
+*/
+
+}
+
 
 // Function to draw all shapes in the par shape map
 void draw_shapes(Param &par){
@@ -145,7 +191,14 @@ void draw_shapes(Param &par){
             }
             if (par.curr_time >  par.shapes[i].start_time && 
                 par.curr_time <  par.shapes[i].end_time){
-                animate_shape(par, par.shapes[i]);
+                switch(par.shapes[i].type){
+                    case line: 
+                        animate_line(par, par.shapes[i]);
+                        break;
+                    case circle:
+                        animate_circle(par, par.shapes[i]);
+                        break;
+                }
             }
         }
     }
@@ -422,13 +475,6 @@ void grow_circle(Shape &circle, glm::vec3 &pos, double radius,
 
 }
 
-// Function to animate the drawing of a line
-void animate_line(Shape &line, std::vector<glm::vec3> &array, glm::vec3 color,
-                  double start_time, double end_time){
-
-
-}
-
 // Function to set up text quads
 void create_quad(Shape &quad){
 
@@ -658,6 +704,8 @@ void create_line(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
 
     line.vnum = size*4;
     line.ind = (size-1)*12 +6;
+
+    line.type = Type::line;
 }
 
 // Function to add keyframs to shape for drawing
