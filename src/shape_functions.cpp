@@ -139,7 +139,6 @@ void animate_line(Param &par, Shape &sh){
 // TODO: add sinple animations
 void animate_circle(Param &par, Shape &sh){
 
-/*
     // First, we need to cast the time points onto doubles 
     std::chrono::duration<double> total_time, curr_time;
     total_time = std::chrono::duration_cast<std::chrono::duration<double>>
@@ -149,16 +148,20 @@ void animate_circle(Param &par, Shape &sh){
     double ratio = curr_time / total_time;
 
     // Finding appropriate translation matrix
-    glm::vec3 trans, start_loc, end_loc;
+    glm::vec3 start_loc, end_loc;
 
     int res = par.dmap["res"];
 
-    for (int i = 0; i < res; ++i){
-        start_loc = vertex_location(sh,0);
-        end_loc = vertex_location(sh,1);
+    std::vector<glm::vec3> trans(res + 1);
 
-        trans[i] = (1-ratio) * (start_loc[i] - end_loc[i]);
-        move_vertex(sh, trans, i);
+    for (int i = 0; i < res + 1; ++i){
+        start_loc = vertex_location(sh,0);
+        end_loc = vertex_location(sh,i);
+
+        for (int j = 0; j < 3; ++j){
+            trans[i][j] = (1-ratio) * (start_loc[j] - end_loc[j]);
+        }
+        move_vertex(sh, trans[i], i);
     }
 
     par.shmap["default"].Use();
@@ -170,14 +173,14 @@ void animate_circle(Param &par, Shape &sh){
     // Moving the point back
     // NOTE: This is because for some reason we are influencing the pointer even
     //       when calling const.
-    for (int i = 0; i < 3; ++i){
-        trans[i] *= -1;
+    for (int i = 0; i < res + 1; ++i){
+
+        for (int j = 0; j < 3; ++j){
+            trans[i][j] *= -1;
+        }
+        move_vertex(sh, trans[i], i);
     }
 
-    for (int i = 4; i <= 8; ++i){
-        move_vertex(sh, trans, i);
-    }
-*/
 
 }
 
@@ -454,6 +457,7 @@ void create_circle(Shape &circle, glm::vec3 &pos, double radius,
 
     circle.vnum = res+1;
     circle.ind = res*3;
+    circle.type = Type::circle;
     std::cout << "index number is: " << circle.ind << '\n';
 
 }
