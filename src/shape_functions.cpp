@@ -82,11 +82,13 @@ void transform_shape(Shape &sh, glm::mat3 &transform){
 // Function to draw a single shape
 void draw_shape(Param &par, Shape &sh){
 
-    par.shmap["default"].Use();
-    glBindVertexArray(sh.VAO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sh.EBO);
-    glDrawElements(sh.rtype, sh.ind, GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
+    if(sh.draw){
+        par.shmap["default"].Use();
+        glBindVertexArray(sh.VAO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sh.EBO);
+        glDrawElements(sh.rtype, sh.ind, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
+    }
 }
 
 // Function to animate a line as it changes with time
@@ -712,7 +714,7 @@ void create_line(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
     line.type = Type::line;
 }
 
-// Function to add keyframs to shape for drawing
+// Function to add keyframes to shape for drawing
 void add_keyframes(Param &par, Shape &sh, double start_time, double end_time){
 
     std::chrono::milliseconds start_offset = 

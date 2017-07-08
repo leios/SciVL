@@ -30,6 +30,7 @@ void play_platformer(Param &par){
             glm::vec3 trans = {0, - par.dmap["y"] + (ymin + 0.5), 0.0};
             move_shape(par.shapes[1], trans);
             move_shape(par.shapes[0], trans);
+            move_shape(par.shapes[3], trans);
             par.dmap["y"] = ymin + 0.5;
         }
     }
@@ -59,6 +60,7 @@ void play_platformer(Param &par){
     glm::vec3 trans = {0.0,dy, 0.0};
     move_shape(par.shapes[0], trans);
     move_shape(par.shapes[1], trans);
+    move_shape(par.shapes[3], trans);
     // now we are going to move the character left and right
     //Uint8 *keystate = SDL_GetKeyState(NULL);
     //if (keystate[SDLK_LEFT]){
@@ -66,6 +68,7 @@ void play_platformer(Param &par){
         glm::vec3 trans = {-0.01, 0.0, 0.0};
         move_shape(par.shapes[1], trans);
         move_shape(par.shapes[0], trans);
+        move_shape(par.shapes[3], trans);
         par.dmap["x"] -= 0.01;
     }
 
@@ -73,6 +76,10 @@ void play_platformer(Param &par){
         glm::vec3 trans = {0.01, 0.0, 0.0};
         move_shape(par.shapes[1], trans);
         move_shape(par.shapes[0], trans);
+        move_shape(par.shapes[3], trans);
         par.dmap["x"] += 0.01;
     }
+}
+//function to shoot lasers
+void shoot_laser(Param &par){
 }

@@ -399,6 +399,17 @@ void platformer_key(Param &par, SDL_Keysym* Keysym, bool is_down){
         case SDLK_q:
             par.end = 1;
             break;
+        case SDLK_SPACE:
+            if (is_down){
+                par.shapes[3].draw = true;
+                std::chrono::duration<double> t;
+                t = std::chrono::duration_cast<std::chrono::duration<double>>
+                (par.curr_time - par.start_time);
+                add_keyframes(par, par.shapes[3], t.count(), t.count()+1);
+
+            }
+            break;
+
         case SDLK_LEFT:
             if (is_down){
                 if(par.shapes[1].vertices[0] - par.dmap["radius"] > -1){
@@ -525,7 +536,7 @@ void platformer_OGL(Param &par){
 
     // Creating a circle to work with
     Shape circle;
-    float rad = (float)par.dmap["radius"];
+    double rad = par.dmap["radius"];
     glm::vec3 cloc = {0.0, 0.0, 0.0},
               ccolor = {1.0, 0.0, 1.0};
     create_circle(circle, cloc, rad, ccolor, par.imap["res"]); 
@@ -541,6 +552,19 @@ void platformer_OGL(Param &par){
 
     create_rectangle(platform, ploc, psize, pcolor); 
     par.shapes.push_back(platform);
+
+    // Creating a laser to play with
+    Shape laser;
+    double offset = 0.05; 
+    array[0] = {rad + offset, 0.0, 0.0};
+    array[1] = {rad + offset*10, 0.0, 0.0};
+
+    glm::vec3 lascolor = {0.0, 1.0, 1.0};
+
+    create_line(laser, array, lascolor);
+    laser.draw = false;
+    par.shapes.push_back(laser);
+
 }
 
 // Test functions using shader.h
