@@ -10,7 +10,6 @@
 #include "../include/GL_setup.h"
 
 void play_pong(Param &par);
-void move_pendulum(Param &par);
 
 // Function to update fft arrays
 void update_fft(Param &par);

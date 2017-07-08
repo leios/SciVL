@@ -14,6 +14,7 @@
 #include "../include/test_pong.h"
 #include "../include/shaders.h"
 #include "../include/operations.h"
+#include "../include/platformer.h"
 
 // STD functions
 void std_key(Param &par, SDL_Keysym* Keysym, bool is_down){
@@ -392,7 +393,7 @@ void fourier_OGL(Param &par){
 }
 
 // Test functions using shader.h
-void test_pend_key(Param &par, SDL_Keysym* Keysym, bool is_down){
+void platformer_key(Param &par, SDL_Keysym* Keysym, bool is_down){
     switch(Keysym->sym){
         case SDLK_ESCAPE:
         case SDLK_q:
@@ -433,9 +434,9 @@ void test_pend_key(Param &par, SDL_Keysym* Keysym, bool is_down){
 
 }
 
-void test_pend_fn(Param &par){
+void platformer_fn(Param &par){
 
-    move_pendulum(par);
+    play_platformer(par);
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -448,8 +449,8 @@ void test_pend_fn(Param &par){
 
 }
 
-void test_pend_par(Param &par){
-    par.dist = "test_pend";
+void platformer_par(Param &par){
+    par.dist = "platformer";
     par.end = 0;
 
     par.dmap["alpha"] = 0.0;
@@ -474,7 +475,7 @@ void test_pend_par(Param &par){
 
 }
 
-void test_pend_OGL(Param &par){
+void platformer_OGL(Param &par){
     glewExperimental = GL_TRUE;
 
     if (glewInit() != GLEW_OK){

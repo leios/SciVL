@@ -17,11 +17,11 @@ void set_params(Param &par){
 
 // function to set the drawing functions in the Param struct
 void Param::set_fns(std::string dist){
-    if (dist == "test_pend"){
-        draw_fn = test_pend_fn;
-        key_fn = test_pend_key;
-        par_fn = test_pend_par;
-        OGL_fn = test_pend_OGL;
+    if (dist == "platformer"){
+        draw_fn = platformer_fn;
+        key_fn = platformer_key;
+        par_fn = platformer_par;
+        OGL_fn = platformer_OGL;
     }
     else if (dist == "test_anim"){
         draw_fn = test_anim_fn;

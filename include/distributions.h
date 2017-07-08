@@ -28,10 +28,10 @@ void fourier_par(Param &par);
 void fourier_OGL(Param &par);
 
 // test pend functions
-void test_pend_key(Param &par, SDL_Keysym* Keysym, bool is_down);
-void test_pend_fn(Param &par);
-void test_pend_par(Param &par);
-void test_pend_OGL(Param &par);
+void platformer_key(Param &par, SDL_Keysym* Keysym, bool is_down);
+void platformer_fn(Param &par);
+void platformer_par(Param &par);
+void platformer_OGL(Param &par);
 
 // test anim functions
 void test_anim_key(Param &par, SDL_Keysym* Keysym, bool is_down);
