@@ -10,6 +10,7 @@
 #include "GL_setup.h"
 
 void play_platformer(Param &par);
+void shoot_laser(Param &par);
 
 #endif
 

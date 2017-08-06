@@ -406,6 +406,7 @@ void platformer_key(Param &par, SDL_Keysym* Keysym, bool is_down){
                 t = std::chrono::duration_cast<std::chrono::duration<double>>
                 (par.curr_time - par.start_time);
                 add_keyframes(par, par.shapes[3], t.count(), t.count()+1);
+                par.dmap["shot_height"] = par.dmap["y"];
 
             }
             break;
@@ -480,6 +481,8 @@ void platformer_par(Param &par){
     par.bmap["mv_right"] = false;
     par.dmap["platf_h"] = 0;
     par.dmap["platf_l"] = 0;
+    par.dmap["laser_pos"] = 0 + par.dmap["radius"];
+    par.dmap["shot_height"] = 0;
 
     par.font = "fonts/LinLibertine_Rah.ttf";
     par.font_size = sqrt(par.width*par.width + par.height*par.height) / 34;
@@ -557,7 +560,7 @@ void platformer_OGL(Param &par){
     Shape laser;
     double offset = 0.05; 
     array[0] = {rad + offset, 0.0, 0.0};
-    array[1] = {rad + offset*10, 0.0, 0.0};
+    array[1] = {rad + offset*5, 0.0, 0.0};
 
     glm::vec3 lascolor = {0.0, 1.0, 1.0};
 

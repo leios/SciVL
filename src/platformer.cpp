@@ -30,7 +30,9 @@ void play_platformer(Param &par){
             glm::vec3 trans = {0, - par.dmap["y"] + (ymin + 0.5), 0.0};
             move_shape(par.shapes[1], trans);
             move_shape(par.shapes[0], trans);
-            move_shape(par.shapes[3], trans);
+            if(par.shapes[3].draw == false){
+                move_shape(par.shapes[3], trans);
+            }
             par.dmap["y"] = ymin + 0.5;
         }
     }
@@ -60,7 +62,9 @@ void play_platformer(Param &par){
     glm::vec3 trans = {0.0,dy, 0.0};
     move_shape(par.shapes[0], trans);
     move_shape(par.shapes[1], trans);
-    move_shape(par.shapes[3], trans);
+    if(par.shapes[3].draw == false){
+        move_shape(par.shapes[3], trans);
+    }
     // now we are going to move the character left and right
     //Uint8 *keystate = SDL_GetKeyState(NULL);
     //if (keystate[SDLK_LEFT]){
@@ -68,18 +72,39 @@ void play_platformer(Param &par){
         glm::vec3 trans = {-0.01, 0.0, 0.0};
         move_shape(par.shapes[1], trans);
         move_shape(par.shapes[0], trans);
-        move_shape(par.shapes[3], trans);
+        if(par.shapes[3].draw == false){
+            move_shape(par.shapes[3], trans);
+        }
         par.dmap["x"] -= 0.01;
+        par.dmap["laser_pos"] -= 0.01;
     }
 
     if (par.bmap["mv_right"] == true){
         glm::vec3 trans = {0.01, 0.0, 0.0};
         move_shape(par.shapes[1], trans);
         move_shape(par.shapes[0], trans);
-        move_shape(par.shapes[3], trans);
+        if(par.shapes[3].draw == false){
+            move_shape(par.shapes[3], trans);
+        }
         par.dmap["x"] += 0.01;
+        par.dmap["laser_pos"] += 0.01;
     }
+    shoot_laser(par);
 }
 //function to shoot lasers
 void shoot_laser(Param &par){
+    if (par.curr_time > par.shapes[3].end_time && par.shapes[3].draw){
+        glm::vec3 trans = {0.01, 0.0, 0.0};
+        par.dmap["laser_pos"] += 0.01;
+        move_shape(par.shapes[3],trans);
+    }
+    if (par.dmap["laser_pos"] > 1){
+        par.shapes[3].draw = false;
+        double x = par.dmap["x"] + par.dmap["radius"];
+        double y = par.dmap["y"];
+        double y0 = par.dmap["shot_height"];
+        glm::vec3 trans = {x-1.0, y-y0, 0.0}; 
+        move_shape(par.shapes[3],trans);
+        par.dmap["laser_pos"] = x;
+    }
 }
