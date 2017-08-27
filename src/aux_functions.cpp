@@ -9,7 +9,7 @@
 #include <fftw3.h>
 #include "SDL.h"
 
-#include "../include/test_pong.h"
+#include "../include/aux_functions.h"
 #include "../include/shape_functions.h"
 #include "../include/operations.h"
 

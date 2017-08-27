@@ -4,8 +4,8 @@
 *
 *-----------------------------------------------------------------------------*/
 
-#ifndef TEST_PONG_H
-#define TEST_PONG_H
+#ifndef AUX_FUNCTIONS_H
+#define AUX_FUNCTIONS_H
 
 #include "../include/GL_setup.h"
 

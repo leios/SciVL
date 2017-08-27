@@ -11,7 +11,7 @@
 
 #include "../include/distributions.h"
 #include "../include/shape_functions.h"
-#include "../include/test_pong.h"
+#include "../include/aux_functions.h"
 #include "../include/shaders.h"
 #include "../include/operations.h"
 #include "../include/platformer.h"
@@ -607,6 +607,91 @@ void test_anim_par(Param &par){
 }
 
 void test_anim_OGL(Param &par){
+    glewExperimental = GL_TRUE;
+
+    if (glewInit() != GLEW_OK){
+        std::cout << "You dun goofed!" << '\t' 
+                  << glewGetErrorString(glewInit()) << '\n';
+        exit(1);
+    }
+
+    glViewport(0,0,par.width,par.height);
+    //glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    // this should use shaders...
+    Shader defaultShader;
+    defaultShader.Load("shaders/default.vtx", "shaders/default.frg");
+    par.shmap["default"] = defaultShader;
+
+    glEnable(GL_LINE_SMOOTH);
+    glLineWidth(2);
+
+    glEnable(GL_POINT_SMOOTH);
+    glPointSize(10);
+
+    // Creating a simple line
+    Shape line, circle;
+    std::vector<glm::vec3> array(2);
+
+    array[0] = {0.0, 0.0, 0.0};
+    array[1] = {0.5, -0.5, 0.0};
+
+    glm::vec3 licolor = {1.0, 0.0, 1.0};
+    glm::vec3 ccolor = {0.0, 0.0, 1.0};
+
+    create_line(line, array, licolor);
+
+    add_keyframes(par, line, 1, 2);
+    par.shapes.push_back(line);
+
+    // Working with the circle
+    create_circle(circle, array[0], 0.25, ccolor, par.dmap["res"]);
+    add_keyframes(par, circle, 2,3);
+
+    par.shapes.push_back(circle);
+
+}
+
+// Test functions using shader.h
+void verlet_key(Param &par, SDL_Keysym* Keysym, bool is_down){
+    if (!is_down){
+        return;
+    }
+    switch(Keysym->sym){
+        case SDLK_ESCAPE:
+        case SDLK_q:
+            par.end = 1;
+            break;
+        default:
+            break;
+
+    }
+
+}
+
+void verlet_fn(Param &par){
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    draw_shapes(par);
+
+    SDL_GL_SwapWindow(par.screen);
+
+}
+
+void verlet_par(Param &par){
+    par.dist = "test_anim";
+    par.end = 0;
+
+    par.dmap["res"] = 100;
+
+}
+
+void verlet_OGL(Param &par){
     glewExperimental = GL_TRUE;
 
     if (glewInit() != GLEW_OK){

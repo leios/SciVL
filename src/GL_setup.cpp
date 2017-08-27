@@ -41,12 +41,19 @@ void Param::set_fns(std::string dist){
         par_fn = fourier_par;
         OGL_fn = fourier_OGL;
     }
+    else if (dist == "verlet"){
+        draw_fn = verlet_fn;
+        key_fn = verlet_key;
+        par_fn = verlet_par;
+        OGL_fn = verlet_OGL;
+    }
     else{
         if (dist != "std"){
             std::cout << "Simulation type " << dist << " does not exist!"
                       << '\n' << "Using standard output." << '\n';
             std::cout << "Try one of these: " << '\n'
                       << "pong" << '\n'
+                      << "verlet" << '\n'
                       << "fourier" << '\n';
         }
         draw_fn = std_fn;
