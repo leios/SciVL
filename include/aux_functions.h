@@ -15,4 +15,8 @@ void play_pong(Param &par);
 void update_fft(Param &par);
 void draw_fft(Param &par);
 
+// Functions to move asteroid for verlet visualization
+void find_verlet_acc(Param &par);
+void move_verlet_obj(Param &par);
+
 #endif

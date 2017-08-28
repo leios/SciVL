@@ -677,6 +677,7 @@ void verlet_fn(Param &par){
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    move_verlet_obj(par);
     draw_shapes(par);
 
     SDL_GL_SwapWindow(par.screen);
@@ -688,6 +689,19 @@ void verlet_par(Param &par){
     par.end = 0;
 
     par.dmap["res"] = 100;
+    par.dmap["dt"] = 0.0001;
+
+    par.positions.push_back({1.0, 1.0, 1.0});
+    par.positions.push_back({-1.0, -1.0, 1.0});
+    par.positions.push_back({1.0, -1.0, 1.0});
+    par.positions.push_back({-1.0, 0.5, 1.0});
+
+    par.v3map["prev_p"] = par.positions[par.positions.size() - 1];
+    par.v3map["temp"] = {-1.0, 0.5, 0.0};
+    par.v3map["acc"] = {0, 0, 0};
+
+    par.font = "fonts/LinLibertine_Rah.ttf";
+    par.font_size = sqrt(par.width*par.width + par.height*par.height) / 34;
 
 }
 
@@ -719,23 +733,34 @@ void verlet_OGL(Param &par){
 
     // Creating a simple line
     Shape line, circle;
-    std::vector<glm::vec3> array(2);
+    std::vector<glm::vec3> array(4);
 
-    array[0] = {0.0, 0.0, 0.0};
-    array[1] = {0.5, -0.5, 0.0};
+    array[0] = {1, 1, 0.0};
+    array[1] = {1, -1, 0.0};
+    array[2] = {-1, -1, 0.0};
+    array[3] = {-1, 0.5, 0.0};
 
-    glm::vec3 licolor = {1.0, 0.0, 1.0};
-    glm::vec3 ccolor = {0.0, 0.0, 1.0};
-
-    create_line(line, array, licolor);
-
-    add_keyframes(par, line, 1, 2);
-    par.shapes.push_back(line);
+    std::vector<glm::vec3> carray(4);
+    carray[0] = {0.5, 0.0, 0.5};
+    carray[1] = {0.0, 0.5, 0.5};
+    carray[2] = {0.0, 0.0, 0.5};
+    carray[3] = {1.0, 1.0, 1.0};
 
     // Working with the circle
-    create_circle(circle, array[0], 0.25, ccolor, par.dmap["res"]);
-    add_keyframes(par, circle, 2,3);
+    create_circle(circle, array[0], 0.5, carray[0], par.dmap["res"]);
+    add_keyframes(par, circle, 0, 0.25);
+    par.shapes.push_back(circle);
 
+    create_circle(circle, array[1], 0.3, carray[1], par.dmap["res"]);
+    add_keyframes(par, circle, 0.25, 0.5);
+    par.shapes.push_back(circle);
+
+    create_circle(circle, array[2], 1, carray[2], par.dmap["res"]);
+    add_keyframes(par, circle, 0.5, 0.75);
+    par.shapes.push_back(circle);
+
+    create_circle(circle, array[3], 0.1, carray[3], par.dmap["res"]);
+    add_keyframes(par, circle, 0.75, 1.0);
     par.shapes.push_back(circle);
 
 }

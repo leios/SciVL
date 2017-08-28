@@ -128,3 +128,44 @@ void draw_fft(Param &par){
     }
 
 }
+
+// Functions to move asteroid for verlet visualization
+void find_verlet_acc(Param &par){
+
+    // Finding rad to find acc
+    glm::vec3 acc = {0,0,0};
+    glm::vec3 rad = {0,0,0};
+    for (int i = 0; i < par.positions.size() -1; ++i){
+        rad = par.positions[i] - par.positions[par.positions.size() -1];
+        acc += par.positions[i][2] / rad;
+        acc[2] = 0.0;
+    }
+
+    par.v3map["acc"] = acc;
+}
+
+void move_verlet_obj(Param &par){
+
+    find_verlet_acc(par);
+
+    // Grabbing necessary values
+    glm::vec3 mult_acc, mult_pos, pos, acc;
+    acc = par.v3map["acc"];
+    size_t index = par.positions.size()-1;
+    pos = par.positions[index];
+    double dt = par.dmap["dt"];
+
+    // Creating variable for verlet integration
+    mult_acc = {acc[0]*dt, acc[1]*dt, acc[2]*dt};
+    mult_pos = {pos[0]*2, pos[1]*2, pos[2]*2};
+
+    // Verlet integration
+    par.v3map["temp"] = par.positions[index];
+    par.positions[index] = mult_pos - par.v3map["prev_p"] + mult_acc;
+    par.v3map["prev_p"] = par.v3map["temp"];
+
+    // Creating translation vector and moving shape
+    glm::vec3 trans = par.positions[index] - par.v3map["prev_p"];
+    std::cout << par.positions[index][0] << '\t' << par.positions[index][1] << '\n';
+    move_shape(par.shapes[index], trans);
+}
