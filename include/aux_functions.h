@@ -19,4 +19,6 @@ void draw_fft(Param &par);
 void find_verlet_acc(Param &par);
 void move_verlet_obj(Param &par);
 
+glm::vec3 mult(glm::vec3 vec, double val);
+
 #endif

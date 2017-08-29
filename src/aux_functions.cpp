@@ -152,26 +152,49 @@ void find_verlet_acc(Param &par){
 
 void move_verlet_obj(Param &par){
 
-    find_verlet_acc(par);
+    if (par.bmap["move"]){
+        //find_verlet_acc(par);
 
-    // Grabbing necessary values
-    glm::vec3 mult_acc, mult_pos, pos, acc;
-    acc = par.v3map["acc"];
-    size_t index = par.positions.size()-1;
-    pos = par.positions[index];
-    double dt = par.dmap["dt"];
+        // Grabbing necessary values
+        glm::vec3 mult_acc, mult_vel, vel, pos, acc;
+        acc = par.v3map["acc"];
+        vel = par.v3map["vel"];
+        size_t index = par.positions.size()-1;
+        pos = par.positions[index];
+        double dt = par.dmap["dt"];
 
-    // Creating variable for verlet integration
-    mult_acc = {acc[0]*dt, acc[1]*dt, acc[2]*dt};
-    mult_pos = {pos[0]*2, pos[1]*2, pos[2]*2};
+        // Creating variable for verlet integration
+        // Verlet integration
+        par.v3map["temp"] = par.positions[index];
+        par.positions[index] += vel*(float)dt + acc*(float)(0.5*dt*dt);
+        find_verlet_acc(par);
+        acc = par.v3map["acc"];
+        vel += acc*(float)(dt*0.5);
+        par.v3map["prev_p"] = par.v3map["temp"];
 
-    // Verlet integration
-    par.v3map["temp"] = par.positions[index];
-    par.positions[index] = mult_pos - par.v3map["prev_p"] + mult_acc;
-    par.v3map["prev_p"] = par.v3map["temp"];
+        // Creating translation vector and moving shape
+        glm::vec3 trans = par.positions[index] - par.v3map["prev_p"];
+        //std::cout << vel[0] << '\t' << vel[1] << '\n';
+        move_shape(par.shapes[index], trans);
 
-    // Creating translation vector and moving shape
-    glm::vec3 trans = par.positions[index] - par.v3map["prev_p"];
-    std::cout << par.positions[index][0] << '\t' << par.positions[index][1] << '\n';
-    move_shape(par.shapes[index], trans);
+        par.v3map["vel"] = vel;
+    }
+    else{
+        if (par.bmap["move_up"]){
+            glm::vec3 trans = {0.0, 0.01, 0.0};
+            int index = par.positions.size() -1;
+            move_shape(par.shapes[index], trans);
+            par.positions[index] += trans;
+        }
+        if (par.bmap["move_down"]){
+            glm::vec3 trans = {0.0, -0.01, 0.0};
+            int index = par.positions.size() -1;
+            move_shape(par.shapes[index], trans);
+            par.positions[index] += trans;
+        }
+    }
+}
+
+glm::vec3 mult(glm::vec3 vec, double val){
+    return {vec[0]*val, vec[1]*val, vec[2]*val};
 }

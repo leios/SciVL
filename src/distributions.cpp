@@ -657,14 +657,44 @@ void test_anim_OGL(Param &par){
 
 // Test functions using shader.h
 void verlet_key(Param &par, SDL_Keysym* Keysym, bool is_down){
-    if (!is_down){
-        return;
-    }
     switch(Keysym->sym){
         case SDLK_ESCAPE:
         case SDLK_q:
             par.end = 1;
             break;
+        case SDLK_SPACE:
+            if (is_down){
+                par.bmap["move"] = true;
+            }
+            break;
+        case SDLK_UP:
+            if (is_down){
+                par.bmap["move_up"] = true;
+            }
+            else{
+                par.bmap["move_up"] = false;
+            }
+            break;
+        case SDLK_DOWN:
+            if (is_down){
+                par.bmap["move_down"] = true;
+            }
+            else{
+                par.bmap["move_down"] = false;
+            }
+            break;
+        case SDLK_RIGHT:
+           if (is_down){
+               glm::vec3 trans = {0.1, 0, 0};
+               par.v3map["vel"] += trans;
+           }
+           break;
+        case SDLK_LEFT:
+           if (is_down){
+               glm::vec3 trans = {0.1, 0, 0};
+               par.v3map["vel"] -= trans;
+           }
+           break;
         default:
             break;
 
@@ -689,14 +719,19 @@ void verlet_par(Param &par){
     par.end = 0;
 
     par.dmap["res"] = 100;
-    par.dmap["dt"] = 0.0001;
+    par.dmap["dt"] = 0.005;
+
+    par.bmap["move"] = false;
+    par.bmap["move_up"] = false;
+    par.bmap["move_down"] = false;
 
     par.positions.push_back({1.0, 1.0, 10.0});
-    par.positions.push_back({-1.0, -1.0, 1.0});
-    par.positions.push_back({1.0, -1.0, 1.0});
+    par.positions.push_back({1.0, -1.0, 10.0});
+    par.positions.push_back({-1.0, -1.0, 2.0});
     par.positions.push_back({-1.0, 0.5, 1.0});
 
     par.v3map["prev_p"] = par.positions[par.positions.size() - 1];
+    par.v3map["vel"] = {0,0,0};
     par.v3map["temp"] = {-1.0, 0.5, 0.0};
     par.v3map["acc"] = {0, 0, 0};
 
@@ -735,10 +770,11 @@ void verlet_OGL(Param &par){
     Shape line, circle;
     std::vector<glm::vec3> array(4);
 
-    array[0] = {1, 1, 0.0};
-    array[1] = {1, -1, 0.0};
-    array[2] = {-1, -1, 0.0};
-    array[3] = {-1, 0.5, 0.0};
+    array = par.positions;
+    for (int i = 0; i < par.positions.size(); ++i){
+        array[i][2] = 0.0f;
+    }
+
 
     std::vector<glm::vec3> carray(4);
     carray[0] = {0.5, 0.0, 0.5};
