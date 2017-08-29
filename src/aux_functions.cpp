@@ -135,11 +135,17 @@ void find_verlet_acc(Param &par){
     // Finding rad to find acc
     glm::vec3 acc = {0,0,0};
     glm::vec3 rad = {0,0,0};
+    double mag_rad, mag_acc;
     for (int i = 0; i < par.positions.size() -1; ++i){
         rad = par.positions[i] - par.positions[par.positions.size() -1];
-        acc += par.positions[i][2] / rad;
-        acc[2] = 0.0;
+        mag_rad = rad[0]*rad[0] + rad[1]*rad[1];
+        rad = {rad[0] / mag_rad, rad[1]/mag_rad, 0};
+
+        mag_acc = par.positions[i][2] / mag_rad;
+        acc[0] += rad[0]*mag_acc;
+        acc[1] += rad[1]*mag_acc;
     }
+    acc[2] = 0.0;
 
     par.v3map["acc"] = acc;
 }

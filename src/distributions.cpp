@@ -691,7 +691,7 @@ void verlet_par(Param &par){
     par.dmap["res"] = 100;
     par.dmap["dt"] = 0.0001;
 
-    par.positions.push_back({1.0, 1.0, 1.0});
+    par.positions.push_back({1.0, 1.0, 10.0});
     par.positions.push_back({-1.0, -1.0, 1.0});
     par.positions.push_back({1.0, -1.0, 1.0});
     par.positions.push_back({-1.0, 0.5, 1.0});

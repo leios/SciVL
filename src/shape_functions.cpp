@@ -460,7 +460,7 @@ void create_circle(Shape &circle, glm::vec3 &pos, double radius,
     circle.vnum = res+1;
     circle.ind = res*3;
     circle.type = Type::circle;
-    std::cout << "index number is: " << circle.ind << '\n';
+    //std::cout << "index number is: " << circle.ind << '\n';
 
 }
 
