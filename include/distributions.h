@@ -45,4 +45,9 @@ void verlet_fn(Param &par);
 void verlet_par(Param &par);
 void verlet_OGL(Param &par);
 
+// test anim functions
+void traverse_key(Param &par, SDL_Keysym* Keysym, bool is_down);
+void traverse_fn(Param &par);
+void traverse_par(Param &par);
+void traverse_OGL(Param &par);
 #endif

@@ -1,4 +1,4 @@
-/*-------------test_pong.h----------------------------------------------------//
+/*-------------aux_function.h-------------------------------------------------//
 *
 * Purpose: Work with the test function to make a pong game
 *
@@ -8,6 +8,25 @@
 #define AUX_FUNCTIONS_H
 
 #include "../include/GL_setup.h"
+
+struct node{
+    std::vector<node> children;
+    glm::vec3 pos;
+    int ID;
+};
+
+// Function to create simple tree
+void create_tree(Param &par, node& root, int num_row, int num_child, 
+                 double offset_x, int max_row, double radius);
+
+// Function to do a depth-first search recursively
+void DFS_recursive(const node& root);
+
+// Function to do a depth-first search with a stack
+void DFS_stack(const node& root);
+
+// Function to do a breadth-first search with a queue
+void BFS_queue(const node& root);
 
 void play_pong(Param &par);
 

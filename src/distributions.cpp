@@ -801,3 +801,108 @@ void verlet_OGL(Param &par){
 
 }
 
+// Test functions using shader.h
+void traverse_key(Param &par, SDL_Keysym* Keysym, bool is_down){
+    switch(Keysym->sym){
+        case SDLK_ESCAPE:
+        case SDLK_q:
+            par.end = 1;
+            break;
+        default:
+            break;
+
+    }
+
+}
+
+void traverse_fn(Param &par){
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    draw_shapes(par);
+
+    SDL_GL_SwapWindow(par.screen);
+
+}
+
+void traverse_par(Param &par){
+    par.dist = "traverse";
+    par.end = 0;
+
+    int row_num = 2;
+    int child_num = 3;
+
+    par.imap["row_num"] = row_num;
+    par.imap["child_num"] = child_num;
+    par.imap["node_num"] = (pow(child_num,row_num+1)-1)/(row_num);
+
+    par.dmap["res"] = 100;
+    par.dmap["radius"] = 0.1;
+
+    par.font = "fonts/LinLibertine_Rah.ttf";
+    par.font_size = sqrt(par.width*par.width + par.height*par.height) / 34;
+
+}
+
+void traverse_OGL(Param &par){
+    glewExperimental = GL_TRUE;
+
+    if (glewInit() != GLEW_OK){
+        std::cout << "You dun goofed!" << '\t' 
+                  << glewGetErrorString(glewInit()) << '\n';
+        exit(1);
+    }
+
+    glViewport(0,0,par.width,par.height);
+    //glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    // this should use shaders...
+    Shader defaultShader;
+    defaultShader.Load("shaders/default.vtx", "shaders/default.frg");
+    par.shmap["default"] = defaultShader;
+
+    glEnable(GL_LINE_SMOOTH);
+    glLineWidth(2);
+
+    glEnable(GL_POINT_SMOOTH);
+    glPointSize(10);
+
+    // Create a simple tree
+    node root;
+    int row_num = par.imap["row_num"];
+    int child_num = par.imap["child_num"];
+    int node_num = par.imap["node_num"];
+    std::cout << node_num << '\n';
+    create_tree(par, root, row_num, child_num, 0, row_num, par.dmap["radius"]);
+
+    // Creating a simple line
+    Shape line, circle;
+    std::vector<glm::vec3> array(4);
+
+    array = par.positions;
+    for (int i = 0; i < par.positions.size(); ++i){
+        array[i][2] = 0.0f;
+    }
+
+
+    std::vector<glm::vec3> carray(4);
+    carray[0] = {0.5, 0.0, 0.5};
+    carray[1] = {0.0, 0.5, 0.5};
+    carray[2] = {0.0, 0.0, 0.5};
+    carray[3] = {1.0, 1.0, 1.0};
+
+    // Working with the circle
+    for (int i = 0; i < par.positions.size(); ++i){
+        std::cout << par.positions[i][0] << '\t' << par.positions[i][1] << '\t'
+                  << par.positions[i][2] << '\n';
+        create_circle(circle, par.positions[i], par.dmap["radius"], carray[0],
+                      par.dmap["res"]);
+        par.shapes.push_back(circle);
+    }
+
+}
+

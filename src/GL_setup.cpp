@@ -47,6 +47,12 @@ void Param::set_fns(std::string dist){
         par_fn = verlet_par;
         OGL_fn = verlet_OGL;
     }
+    else if (dist == "traverse"){
+        draw_fn = traverse_fn;
+        key_fn = traverse_key;
+        par_fn = traverse_par;
+        OGL_fn = traverse_OGL;
+    }
     else{
         if (dist != "std"){
             std::cout << "Simulation type " << dist << " does not exist!"

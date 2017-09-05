@@ -1,4 +1,4 @@
-/*-------------test_pong.cpp--------------------------------------------------//
+/*-------------aux_functions.cpp----------------------------------------------//
 *
 * Purpose: Work with the test function to make a pong game
 *
@@ -7,6 +7,8 @@
 #include <glm/mat3x3.hpp>
 #include <glm/glm.hpp>
 #include <fftw3.h>
+#include <stack>
+#include <queue>
 #include "SDL.h"
 
 #include "../include/aux_functions.h"
@@ -198,3 +200,73 @@ void move_verlet_obj(Param &par){
 glm::vec3 mult(glm::vec3 vec, double val){
     return {vec[0]*val, vec[1]*val, vec[2]*val};
 }
+
+// Function to create simple tree
+void create_tree(Param &par, node& root, int num_row, int num_child,
+                  double offset_x, int max_row, double radius){
+
+    double offset;
+
+    root.ID = num_row;
+    root.pos[0] = offset_x;
+    root.pos[1] = (2-2*radius)*(num_row-1)/(max_row);
+    root.pos[2] = 0;
+
+    par.positions.push_back(root.pos);
+    if (num_row == 0){
+        return;
+    }
+    root.children.reserve(num_child);
+    for (int i = 0; i < num_child; ++i){
+        node child;
+        offset = offset_x + ((num_child / 2) -i)/(2 - radius*2);
+        create_tree(par, child, num_row - 1, num_child, offset, num_row, 
+                    radius);
+        root.children.push_back(child);
+    }
+}
+
+// Function to do a depth-first search recursively
+void DFS_recursive(const node& root){
+    std::cout << root.ID << '\n';
+    if (root.children.size() == 0){
+        return;
+    }
+    for (int i = 0; i < root.children.size(); ++i){
+        DFS_recursive(root.children[i]);
+    }
+}
+
+// Function to do a depth-first search with a stack
+void DFS_stack(const node& root){
+
+    std::stack<node> s;
+    s.push(root);
+    node temp;
+
+    while (s.size() > 0){
+        temp = s.top();
+        s.pop();
+        for (int i = 0; i < temp.children.size(); ++i){
+            s.push(temp.children[i]);
+        }
+        std::cout << temp.ID << '\n';
+    }
+}
+
+// Function to do a breadth-first search with a queue
+void BFS_queue(const node& root){
+    std::queue<node> q;
+    q.push(root);
+    node temp;
+
+    while (q.size() > 0){
+        std::cout << q.front().ID << '\n';
+        temp = q.front();
+        q.pop();
+        for (int i = 0; i < temp.children.size(); ++i){
+            q.push(temp.children[i]);
+        }
+    }
+}
+
