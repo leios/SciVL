@@ -830,7 +830,7 @@ void traverse_par(Param &par){
     par.dist = "traverse";
     par.end = 0;
 
-    int row_num = 2;
+    int row_num = 3;
     int child_num = 3;
 
     par.imap["row_num"] = row_num;
@@ -838,7 +838,7 @@ void traverse_par(Param &par){
     par.imap["node_num"] = (pow(child_num,row_num+1)-1)/(row_num);
 
     par.dmap["res"] = 100;
-    par.dmap["radius"] = 0.1;
+    par.dmap["radius"] = 0.05;
 
     par.font = "fonts/LinLibertine_Rah.ttf";
     par.font_size = sqrt(par.width*par.width + par.height*par.height) / 34;

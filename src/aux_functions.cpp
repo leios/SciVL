@@ -233,9 +233,9 @@ void create_tree(Param &par, node& root, int num_row, int num_child,
     root.children.reserve(num_child);
     for (int i = 0; i < num_child; ++i){
         node child;
-        box_size = 2 / (pow(num_child, max_row-num_row));
+        box_size = abs((2-2*radius) / (pow(num_child, max_row-num_row)));
         offset = offset_x -0.5*box_size + (i+0.5)*box_size / num_child;
-        create_tree(par, child, num_row - 1, num_child, offset, num_row, 
+        create_tree(par, child, num_row - 1, num_child, offset, max_row, 
                     radius, licolor, cicolor, lines, circles);
         root.children.push_back(child);
 
