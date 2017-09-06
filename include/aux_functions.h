@@ -17,7 +17,9 @@ struct node{
 
 // Function to create simple tree
 void create_tree(Param &par, node& root, int num_row, int num_child, 
-                 double offset_x, int max_row, double radius);
+                 double offset_x, int max_row, double radius,
+                 glm::vec3 licolor, glm::vec3 cicolor, 
+                 std::vector<Shape> &lines, std::vector<Shape> &circles);
 
 // Function to do a depth-first search recursively
 void DFS_recursive(const node& root);

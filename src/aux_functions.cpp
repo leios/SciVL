@@ -138,7 +138,7 @@ void find_verlet_acc(Param &par){
     glm::vec3 acc = {0,0,0};
     glm::vec3 rad = {0,0,0};
     double mag_rad, mag_acc;
-    for (int i = 0; i < par.positions.size() -1; ++i){
+    for (size_t i = 0; i < par.positions.size() -1; ++i){
         rad = par.positions[i] - par.positions[par.positions.size() -1];
         mag_rad = rad[0]*rad[0] + rad[1]*rad[1];
         rad = {rad[0] / mag_rad, rad[1]/mag_rad, 0};
@@ -203,15 +203,29 @@ glm::vec3 mult(glm::vec3 vec, double val){
 
 // Function to create simple tree
 void create_tree(Param &par, node& root, int num_row, int num_child,
-                  double offset_x, int max_row, double radius){
+                 double offset_x, int max_row, double radius,
+                 glm::vec3 licolor, glm::vec3 cicolor,
+                 std::vector<Shape> &lines, std::vector<Shape> &circles){
 
+    // Creating the circle for this node
+    Shape line, circle;
+    glm::vec3 position = {offset_x, 
+                          -(((2-2*radius)/(max_row))*(max_row - num_row) 
+                          - 1 + radius), 0};
+
+    create_circle(circle, position, radius, cicolor, 100);
+    circles.push_back(circle);
+
+    // Aux variables for drawing
     double offset;
+    double box_size;
+    std::vector<glm::vec3> array(2);
 
+    // Defining node parameters
     root.ID = num_row;
-    root.pos[0] = offset_x;
-    root.pos[1] = (2-2*radius)*(num_row-1)/(max_row);
-    root.pos[2] = 0;
+    root.pos = position;
 
+    // Returning is leaf node
     par.positions.push_back(root.pos);
     if (num_row == 0){
         return;
@@ -219,10 +233,20 @@ void create_tree(Param &par, node& root, int num_row, int num_child,
     root.children.reserve(num_child);
     for (int i = 0; i < num_child; ++i){
         node child;
-        offset = offset_x + ((num_child / 2) -i)/(2 - radius*2);
+        box_size = 2 / (pow(num_child, max_row-num_row));
+        offset = offset_x -0.5*box_size + (i+0.5)*box_size / num_child;
         create_tree(par, child, num_row - 1, num_child, offset, num_row, 
-                    radius);
+                    radius, licolor, cicolor, lines, circles);
         root.children.push_back(child);
+
+        // Creating array for drawing line
+        array[0] = position;
+        array[1] = {offset, 
+                    -(((2-2*radius)/(max_row))*(max_row - num_row+1) 
+                     - 1 + radius), 0};
+        create_line(line, array, licolor);
+        lines.push_back(line);
+
     }
 }
 
@@ -232,7 +256,7 @@ void DFS_recursive(const node& root){
     if (root.children.size() == 0){
         return;
     }
-    for (int i = 0; i < root.children.size(); ++i){
+    for (size_t i = 0; i < root.children.size(); ++i){
         DFS_recursive(root.children[i]);
     }
 }
@@ -247,7 +271,7 @@ void DFS_stack(const node& root){
     while (s.size() > 0){
         temp = s.top();
         s.pop();
-        for (int i = 0; i < temp.children.size(); ++i){
+        for (size_t i = 0; i < temp.children.size(); ++i){
             s.push(temp.children[i]);
         }
         std::cout << temp.ID << '\n';
@@ -264,7 +288,7 @@ void BFS_queue(const node& root){
         std::cout << q.front().ID << '\n';
         temp = q.front();
         q.pop();
-        for (int i = 0; i < temp.children.size(); ++i){
+        for (size_t i = 0; i < temp.children.size(); ++i){
             q.push(temp.children[i]);
         }
     }
