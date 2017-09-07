@@ -15,11 +15,47 @@ glm::vec3 vertex_location(Shape &sh, int id){
     return location;
 }
 
+glm::vec3 vertex_color(Shape &sh, int id){
+    glm::vec3 color = 
+        {sh.vertices[id*6+3], sh.vertices[id*6+4], sh.vertices[id*6+5]};
+    return color;
+}
+
 // Function to move a single vertex
 void move_vertex(Shape &sh, glm::vec3 &translate, int ind){
     sh.vertices[ind*6] += translate[0];
     sh.vertices[ind*6+1] += translate[1];
     sh.vertices[ind*6+2] += translate[2];
+
+    // Binding the vertex array object
+    glBindVertexArray(sh.VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, sh.VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * sh.vnum*6, sh.vertices, 
+                 GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sh.EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint) * sh.ind, 
+                 sh.indices, GL_STATIC_DRAW);
+
+    // position attribute
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+
+    // color attribute
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat),
+                          (GLvoid*)(3*sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
+}
+
+// Function to change the color of all vertices in a shape
+void change_color(Shape &sh, glm::vec3 &color){
+    for (int i = 0; i < sh.vnum; ++i){
+        sh.vertices[i*6+3] = color[0];
+        sh.vertices[i*6+4] = color[1];
+        sh.vertices[i*6+5] = color[2];
+    }
 
     // Binding the vertex array object
     glBindVertexArray(sh.VAO);
@@ -204,6 +240,13 @@ void draw_shapes(Param &par){
                         animate_circle(par, par.shapes[i]);
                         break;
                 }
+            }
+            if (par.shapes[i].color_keyframes.size() > 0 &&
+                par.curr_time > 
+                    par.shapes[i].color_keyframes[par.shapes[i].color_index]){
+                change_color(par.shapes[i],
+                             par.shapes[i].colors[par.shapes[i].color_index]);
+                par.shapes[i].color_index++;
             }
         }
     }
@@ -723,5 +766,15 @@ void add_keyframes(Param &par, Shape &sh, double start_time, double end_time){
         std::chrono::milliseconds((int)(end_time *1000));
     sh.start_time = par.start_time + start_offset;
     sh.end_time = par.start_time + end_offset;
+    
+}
+
+// Function to add keyframes to shape for drawing
+void add_color_keyframe(Param &par, Shape &sh, glm::vec3 &color, double time){
+
+    std::chrono::milliseconds time_offset = 
+        std::chrono::milliseconds((int)(time *1000));
+    sh.color_keyframes.push_back(par.start_time + time_offset);
+    sh.colors.push_back(color);
     
 }

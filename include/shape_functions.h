@@ -14,8 +14,14 @@
 // Function to return location of vertex 
 glm::vec3 vertex_location(Shape &sh, int id);
 
+// Function to return color of vertex
+glm::vec3 vertex_color(Shape &sh, int id);
+
 // Function to move a single vertex
 void move_vertex(Shape &sh, glm::vec3 &translate, int ind);
+
+// Function to change color of all vertices
+void change_color(Shape &sh, glm::vec3 &color);
 
 // Function to draw a single shape
 void draw_shape(Param &par, std::string shapestr);
@@ -68,5 +74,6 @@ void update_line(Shape &sh, glm::vec3 *new_array);
 
 // Function to add keyframes to a shape for drawing
 void add_keyframes(Param &par, Shape &sh, double start_time, double end_time);
+void add_color_keyframe(Param &par, Shape &sh, glm::vec3 &color, double time);
 
 #endif

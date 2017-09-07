@@ -68,6 +68,7 @@ struct Shape{
 
     // Stage of simulation
     int stage;
+    int color_index = 0;
 
     int rtype = GL_TRIANGLES;
     void destroy();
@@ -76,6 +77,8 @@ struct Shape{
         std::chrono::high_resolution_clock::now();
     std::chrono::high_resolution_clock::time_point end_time = 
         std::chrono::high_resolution_clock::now();
+    std::vector<std::chrono::high_resolution_clock::time_point> color_keyframes;
+    std::vector<glm::vec3> colors;
     //double start_time, end_time;
     bool draw = true;
 };
