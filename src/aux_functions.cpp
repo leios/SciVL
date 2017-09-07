@@ -203,8 +203,8 @@ glm::vec3 mult(glm::vec3 vec, double val){
 
 // Function to create simple tree
 void create_tree(Param &par, node& root, int num_row, int num_child,
-                 double offset_x, int max_row, double radius,
-                 glm::vec3 licolor, glm::vec3 cicolor,
+                 double offset_x, int max_row, double radius, int &id,
+                 glm::vec3 licolor, glm::vec3 cicolor, double time,
                  std::vector<Shape> &lines, std::vector<Shape> &circles){
 
     // Creating the circle for this node
@@ -214,19 +214,24 @@ void create_tree(Param &par, node& root, int num_row, int num_child,
                           - 1 + radius), 0};
 
     create_circle(circle, position, radius, cicolor, 100);
+    add_keyframes(par, circle, time, time + 0.5);
     circles.push_back(circle);
 
     // Aux variables for drawing
     double offset;
     double box_size;
+    int new_id;
     std::vector<glm::vec3> array(2);
 
     // Defining node parameters
-    root.ID = num_row;
+    root.ID = id;
+    id += 1;
     root.pos = position;
 
+    std::cout << root.ID << '\n';
+
     // Returning is leaf node
-    par.positions.push_back(root.pos);
+    //par.positions.push_back(root.pos);
     if (num_row == 0){
         return;
     }
@@ -236,7 +241,7 @@ void create_tree(Param &par, node& root, int num_row, int num_child,
         box_size = abs((2-2*radius) / (pow(num_child, max_row-num_row)));
         offset = offset_x -0.5*box_size + (i+0.5)*box_size / num_child;
         create_tree(par, child, num_row - 1, num_child, offset, max_row, 
-                    radius, licolor, cicolor, lines, circles);
+                    radius, id, licolor, cicolor, time+0.5, lines, circles);
         root.children.push_back(child);
 
         // Creating array for drawing line
@@ -245,6 +250,7 @@ void create_tree(Param &par, node& root, int num_row, int num_child,
                     -(((2-2*radius)/(max_row))*(max_row - num_row+1) 
                      - 1 + radius), 0};
         create_line(line, array, licolor);
+        add_keyframes(par, line, time, time + 0.5);
         lines.push_back(line);
 
     }

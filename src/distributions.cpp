@@ -775,7 +775,6 @@ void verlet_OGL(Param &par){
         array[i][2] = 0.0f;
     }
 
-
     std::vector<glm::vec3> carray(4);
     carray[0] = {0.5, 0.0, 0.5};
     carray[1] = {0.0, 0.5, 0.5};
@@ -807,6 +806,10 @@ void traverse_key(Param &par, SDL_Keysym* Keysym, bool is_down){
         case SDLK_ESCAPE:
         case SDLK_q:
             par.end = 1;
+            break;
+        case SDLK_d:
+            break;
+        case SDLK_b:
             break;
         default:
             break;
@@ -882,8 +885,9 @@ void traverse_OGL(Param &par){
     std::vector<Shape> lines, circles;
     lines.reserve(node_num - 1);
     circles.reserve(node_num);
+    int id = 0;
     create_tree(par, root, row_num, child_num, 0, row_num, par.dmap["radius"],
-                licolor, cicolor, lines, circles);
+                id, licolor, cicolor, 0, lines, circles);
 
     // We need the circles to come after the lines for appropriate visualization
     for (size_t i = 0; i < lines.size(); ++i){
@@ -892,9 +896,6 @@ void traverse_OGL(Param &par){
     for (size_t i = 0; i < circles.size(); ++i){
         par.shapes.push_back(circles[i]);
     }
-
-    glm::vec3 new_color = {0,1,0};
-    add_color_keyframe(par, par.shapes[3], new_color, 1);
 
 }
 
