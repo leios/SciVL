@@ -228,8 +228,6 @@ void create_tree(Param &par, node& root, int num_row, int num_child,
     id += 1;
     root.pos = position;
 
-    std::cout << root.ID << '\n';
-
     // Returning is leaf node
     //par.positions.push_back(root.pos);
     if (num_row == 0){
@@ -257,13 +255,19 @@ void create_tree(Param &par, node& root, int num_row, int num_child,
 }
 
 // Function to do a depth-first search recursively
-void DFS_recursive(const node& root){
-    std::cout << root.ID << '\n';
+void DFS_recursive(Param &par, const node& root, double &time){
+
+    int id = par.shapes.size()/2 + root.ID;
+    glm::vec3 new_color = {0,0,1};
+    glm::vec3 old_color = vertex_color(par.shapes[id],0);
+    add_color_keyframe(par, par.shapes[id], new_color, time);
+    time += 1;
+    add_color_keyframe(par, par.shapes[id], old_color, time);
     if (root.children.size() == 0){
         return;
     }
     for (size_t i = 0; i < root.children.size(); ++i){
-        DFS_recursive(root.children[i]);
+        DFS_recursive(par, root.children[i], time);
     }
 }
 
@@ -285,18 +289,26 @@ void DFS_stack(const node& root){
 }
 
 // Function to do a breadth-first search with a queue
-void BFS_queue(const node& root){
+void BFS_queue(Param &par, const node& root, double &time){
     std::queue<node> q;
     q.push(root);
     node temp;
 
+
+
     while (q.size() > 0){
-        std::cout << q.front().ID << '\n';
         temp = q.front();
         q.pop();
         for (size_t i = 0; i < temp.children.size(); ++i){
             q.push(temp.children[i]);
         }
+        int id = par.shapes.size()/2 + temp.ID;
+        glm::vec3 new_color = {0,0,1};
+        glm::vec3 old_color = vertex_color(par.shapes[id],0);
+        add_color_keyframe(par, par.shapes[id], new_color, time);
+        time += 1;
+        add_color_keyframe(par, par.shapes[id], old_color, time);
+
     }
 }
 

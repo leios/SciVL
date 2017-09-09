@@ -242,6 +242,7 @@ void draw_shapes(Param &par){
                 }
             }
             if (par.shapes[i].color_keyframes.size() > 0 &&
+                par.shapes[i].color_index < par.shapes[i].colors.size() &&
                 par.curr_time > 
                     par.shapes[i].color_keyframes[par.shapes[i].color_index]){
                 change_color(par.shapes[i],

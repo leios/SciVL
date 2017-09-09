@@ -9,13 +9,6 @@
 
 #include "../include/GL_setup.h"
 
-struct node{
-    std::vector<node> children;
-    glm::vec3 pos;
-    int ID;
-
-};
-
 // Function to create simple tree
 void create_tree(Param &par, node& root, int num_row, int num_child, 
                  double offset_x, int max_row, double radius, int &id,
@@ -23,13 +16,13 @@ void create_tree(Param &par, node& root, int num_row, int num_child,
                  std::vector<Shape> &lines, std::vector<Shape> &circles);
 
 // Function to do a depth-first search recursively
-void DFS_recursive(const node& root);
+void DFS_recursive(Param &par, const node& root, double &time);
 
 // Function to do a depth-first search with a stack
 void DFS_stack(const node& root);
 
 // Function to do a breadth-first search with a queue
-void BFS_queue(const node& root);
+void BFS_queue(Param &par, const node& root, double &time);
 
 void play_pong(Param &par);
 

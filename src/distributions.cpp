@@ -808,8 +808,17 @@ void traverse_key(Param &par, SDL_Keysym* Keysym, bool is_down){
             par.end = 1;
             break;
         case SDLK_d:
-            break;
+            if (is_down){
+                double ctime = curr_time(par);
+                DFS_recursive(par, par.tree, ctime);
+                break;
+            }
         case SDLK_b:
+            if (is_down){
+                double ctime = curr_time(par);
+                BFS_queue(par, par.tree, ctime);
+                break;
+            }
             break;
         default:
             break;
@@ -841,7 +850,7 @@ void traverse_par(Param &par){
     par.imap["node_num"] = (pow(child_num,row_num+1)-1)/(row_num);
 
     par.dmap["res"] = 100;
-    par.dmap["radius"] = 0.1;
+    par.dmap["radius"] = 0.09;
 
     par.font = "fonts/LinLibertine_Rah.ttf";
     par.font_size = sqrt(par.width*par.width + par.height*par.height) / 34;
@@ -888,6 +897,8 @@ void traverse_OGL(Param &par){
     int id = 0;
     create_tree(par, root, row_num, child_num, 0, row_num, par.dmap["radius"],
                 id, licolor, cicolor, 0, lines, circles);
+
+    par.tree = root;
 
     // We need the circles to come after the lines for appropriate visualization
     for (size_t i = 0; i < lines.size(); ++i){

@@ -298,3 +298,10 @@ void Param::destroy(){
     SDL_Quit();
 
 }
+
+double curr_time(Param &par){
+    std::chrono::high_resolution_clock::time_point time = 
+        std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> ctime = std::chrono::duration_cast<std::chrono::duration<double>>(time -par.start_time);
+    return ctime.count(); 
+}

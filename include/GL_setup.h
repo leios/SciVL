@@ -38,6 +38,13 @@
 // enum for type of shape to draw
 enum Type {line, circle};
 
+struct node{
+    std::vector<node> children;
+    glm::vec3 pos;
+    int ID;
+
+};
+
 // Struct to hold freetype character information
 struct Character{
     // glyph texture ID
@@ -125,6 +132,8 @@ struct Param{
 
     bool fullscreen;
 
+    node tree;
+
     std::chrono::high_resolution_clock::time_point start_time = 
         std::chrono::high_resolution_clock::now();
     std::chrono::high_resolution_clock::time_point curr_time = 
@@ -164,5 +173,8 @@ void write_string(Param &par, std::string text, glm::vec3 pos, GLfloat scale,
 
 // function to set up freetype
 void setup_freetype(Param &par);
+
+// Function to find the current time
+double curr_time(Param &par);
 
 #endif
