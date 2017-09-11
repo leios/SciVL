@@ -36,4 +36,13 @@ void move_verlet_obj(Param &par);
 
 glm::vec3 mult(glm::vec3 vec, double val);
 
+// Euclidean algorithm with mod
+void euclid_mod(Param &par, int a, int b);
+
+// Euclidean algorithm with subtraction
+void euclid_sub(Param &par, int a, int b);
+
+// Euclidean clear screen
+void euclid_clear(Param &par);
+
 #endif

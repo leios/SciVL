@@ -312,3 +312,132 @@ void BFS_queue(Param &par, const node& root, double &time){
     }
 }
 
+// Euclidean algorithm with mod
+void euclid_mod(Param &par, int a, int b){
+
+    int max_val;
+    if (a > b){
+        max_val = a;
+    }
+    else{
+        max_val = b;
+    }
+
+    std::vector<int> divisors;
+    if (a > b){
+        divisors.push_back(a);
+        divisors.push_back(b);
+    }
+    else{
+        divisors.push_back(b);
+        divisors.push_back(a);
+    }
+    int temp;
+    while (b != 0){
+        temp = b;
+        b = a%b;
+        a = temp;
+        if (a > b){
+            divisors.push_back(a);
+            divisors.push_back(b);
+        }
+        else{
+            divisors.push_back(b);
+            divisors.push_back(a);
+        }
+    }
+
+    Shape line;
+    std::vector<glm::vec3> pos(2);
+    glm::vec3 color = {1,1,1};
+    glm::vec3 color2 = {0,0,1};
+    double time = curr_time(par);
+    for (int i = 0; i < divisors.size(); i+=2){
+        pos[0] = {i*1.8/divisors.size()-0.9,0,0};
+        pos[1] = {i*1.8/divisors.size()-0.9,divisors[i]/(double)max_val,0};
+        create_line(line, pos, color);
+        add_keyframes(par, line, time, time+1);
+        par.shapes.push_back(line);
+
+        pos[0] = {i*1.8/divisors.size()-0.9,0,0};
+        pos[1] = {i*1.8/divisors.size()-0.9,divisors[i+1]/(double)max_val,0};
+        create_line(line, pos, color2);
+        add_keyframes(par, line, time, time+1);
+        par.shapes.push_back(line);
+        time += 1;
+    }
+
+}
+
+// Euclidean algorithm with subtraction
+void euclid_sub(Param &par, int a, int b){
+
+    int max_val;
+    if (a > b){
+        max_val = a;
+    }
+    else{
+        max_val = b;
+    }
+
+    std::vector<int> divisors;
+    if (a > b){
+        divisors.push_back(a);
+        divisors.push_back(b);
+    }
+    else{
+        divisors.push_back(b);
+        divisors.push_back(a);
+    }
+    while (a != b){
+        if (a > b){
+            a = a - b;
+            divisors.push_back(a);
+            divisors.push_back(b);
+        }
+        else{
+            b = b - a;
+            divisors.push_back(b);
+            divisors.push_back(a);
+        }
+    }
+
+    Shape line;
+    std::vector<glm::vec3> pos(2);
+    glm::vec3 color = {1,1,1};
+    glm::vec3 color2 = {0,0,1};
+    double time = curr_time(par);
+    for (int i = 0; i < divisors.size(); i+=2){
+        pos[0] = {i*1.8/divisors.size()-0.9,0,0};
+        pos[1] = {i*1.8/divisors.size()-0.9,divisors[i]/(double)max_val,0};
+        create_line(line, pos, color);
+        add_keyframes(par, line, time, time+1);
+        par.shapes.push_back(line);
+
+        pos[0] = {i*1.8/divisors.size()-0.9,0,0};
+        pos[1] = {i*1.8/divisors.size()-0.9,divisors[i+1]/(double)max_val,0};
+        create_line(line, pos, color2);
+        add_keyframes(par, line, time, time+1);
+        par.shapes.push_back(line);
+        time += 1;
+    }
+
+}
+
+// Euclidean clear screen
+void euclid_clear(Param &par){
+
+    clear_shapes(par);
+
+    // Creating line that stretches across screen
+    Shape line;
+    std::vector<glm::vec3> pos(2);
+    glm::vec3 color = {1,1,1};
+
+    pos[0] = {-1,0,0};
+    pos[1] = {1,0,0};
+    create_line(line, pos, color);
+    par.shapes.push_back(line);
+
+}
+

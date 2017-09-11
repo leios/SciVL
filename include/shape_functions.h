@@ -11,6 +11,9 @@
 #include <glm/mat3x3.hpp>
 #include "../include/distributions.h"
 
+// Function to clear shapes
+void clear_shapes(Param &par);
+
 // Function to return location of vertex 
 glm::vec3 vertex_location(Shape &sh, int id);
 

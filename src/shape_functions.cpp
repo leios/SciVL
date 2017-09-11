@@ -8,6 +8,12 @@
 #include <operations.h>
 #include <ctime>
 
+// Function to clear shapes
+void clear_shapes(Param &par){
+    std::vector<Shape> temp;
+    par.shapes = temp;
+}
+
 // Function to return location of vertex 
 glm::vec3 vertex_location(Shape &sh, int id){
     glm::vec3 location =

@@ -910,3 +910,95 @@ void traverse_OGL(Param &par){
 
 }
 
+// Test functions using shader.h
+void euclid_key(Param &par, SDL_Keysym* Keysym, bool is_down){
+    switch(Keysym->sym){
+        case SDLK_ESCAPE:
+        case SDLK_q:
+            par.end = 1;
+            break;
+        case SDLK_s:
+            if (is_down){
+                euclid_clear(par);
+                euclid_sub(par, par.imap["element1"], par.imap["element2"]);
+                break;
+            }
+        case SDLK_m:
+            if (is_down){
+                euclid_clear(par);
+                euclid_mod(par, par.imap["element1"], par.imap["element2"]);
+                break;
+            }
+        case SDLK_c:
+            if (is_down){
+                euclid_clear(par);
+                break;
+            }
+        default:
+            break;
+
+    }
+
+}
+
+void euclid_fn(Param &par){
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    draw_shapes(par);
+
+    SDL_GL_SwapWindow(par.screen);
+
+}
+
+void euclid_par(Param &par){
+    par.dist = "euclid";
+    par.end = 0;
+
+    par.imap["element1"] = 128*8;
+    par.imap["element2"] = 128*9;
+
+    par.font = "fonts/LinLibertine_Rah.ttf";
+    par.font_size = sqrt(par.width*par.width + par.height*par.height) / 34;
+
+}
+
+void euclid_OGL(Param &par){
+    glewExperimental = GL_TRUE;
+
+    if (glewInit() != GLEW_OK){
+        std::cout << "You dun goofed!" << '\t' 
+                  << glewGetErrorString(glewInit()) << '\n';
+        exit(1);
+    }
+
+    glViewport(0,0,par.width,par.height);
+    //glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    // this should use shaders...
+    Shader defaultShader;
+    defaultShader.Load("shaders/default.vtx", "shaders/default.frg");
+    par.shmap["default"] = defaultShader;
+
+    glEnable(GL_LINE_SMOOTH);
+    glLineWidth(2);
+
+    glEnable(GL_POINT_SMOOTH);
+    glPointSize(10);
+
+    // Creating line that stretches across screen
+    Shape line;
+    std::vector<glm::vec3> pos(2);
+    glm::vec3 color = {1,1,1};
+
+    pos[0] = {-1,0,0};
+    pos[1] = {1,0,0};
+    create_line(line, pos, color);
+    par.shapes.push_back(line);
+
+}
+
