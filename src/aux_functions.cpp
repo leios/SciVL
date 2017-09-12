@@ -347,20 +347,24 @@ void euclid_mod(Param &par, int a, int b){
         }
     }
 
+    par.imap["gcd"] = a;
+
     Shape line;
     std::vector<glm::vec3> pos(2);
     glm::vec3 color = {1,1,1};
     glm::vec3 color2 = {0,0,1};
     double time = curr_time(par);
     for (int i = 0; i < divisors.size(); i+=2){
-        pos[0] = {i*1.8/divisors.size()-0.9,0,0};
-        pos[1] = {i*1.8/divisors.size()-0.9,divisors[i]/(double)max_val,0};
+        pos[0] = {i*1.8/divisors.size()-0.9,-0.45,0};
+        pos[1] = {i*1.8/divisors.size()-0.9,
+                  1.45*divisors[i]/(double)max_val-0.45,0};
         create_line(line, pos, color);
         add_keyframes(par, line, time, time+1);
         par.shapes.push_back(line);
 
-        pos[0] = {i*1.8/divisors.size()-0.9,0,0};
-        pos[1] = {i*1.8/divisors.size()-0.9,divisors[i+1]/(double)max_val,0};
+        pos[0] = {i*1.8/divisors.size()-0.9,-0.45,0};
+        pos[1] = {i*1.8/divisors.size()-0.9,
+                  1.45*divisors[i+1]/(double)max_val-0.45,0};
         create_line(line, pos, color2);
         add_keyframes(par, line, time, time+1);
         par.shapes.push_back(line);
@@ -402,20 +406,24 @@ void euclid_sub(Param &par, int a, int b){
         }
     }
 
+    par.imap["gcd"] = a;
+
     Shape line;
     std::vector<glm::vec3> pos(2);
     glm::vec3 color = {1,1,1};
     glm::vec3 color2 = {0,0,1};
     double time = curr_time(par);
     for (int i = 0; i < divisors.size(); i+=2){
-        pos[0] = {i*1.8/divisors.size()-0.9,0,0};
-        pos[1] = {i*1.8/divisors.size()-0.9,divisors[i]/(double)max_val,0};
+        pos[0] = {i*1.8/divisors.size()-0.9,-0.45,0};
+        pos[1] = {i*1.8/divisors.size()-0.9,
+                  1.45*divisors[i]/(double)max_val-0.45,0};
         create_line(line, pos, color);
         add_keyframes(par, line, time, time+1);
         par.shapes.push_back(line);
 
-        pos[0] = {i*1.8/divisors.size()-0.9,0,0};
-        pos[1] = {i*1.8/divisors.size()-0.9,divisors[i+1]/(double)max_val,0};
+        pos[0] = {i*1.8/divisors.size()-0.9,-0.45,0};
+        pos[1] = {i*1.8/divisors.size()-0.9,
+                  1.45 * divisors[i+1]/(double)max_val-0.45,0};
         create_line(line, pos, color2);
         add_keyframes(par, line, time, time+1);
         par.shapes.push_back(line);
@@ -427,17 +435,10 @@ void euclid_sub(Param &par, int a, int b){
 // Euclidean clear screen
 void euclid_clear(Param &par){
 
-    clear_shapes(par);
-
-    // Creating line that stretches across screen
-    Shape line;
-    std::vector<glm::vec3> pos(2);
-    glm::vec3 color = {1,1,1};
-
-    pos[0] = {-1,0,0};
-    pos[1] = {1,0,0};
-    create_line(line, pos, color);
-    par.shapes.push_back(line);
+    std::vector<Shape> elements(2);
+    elements[0] = par.shapes[0];
+    elements[1] = par.shapes[1];
+    par.shapes = elements;
 
 }
 

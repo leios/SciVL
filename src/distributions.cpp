@@ -7,6 +7,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <stdlib.h>
 #include <fftw3.h>
 
 #include "../include/distributions.h"
@@ -454,8 +455,8 @@ void platformer_fn(Param &par){
     glClear(GL_COLOR_BUFFER_BIT);
 
     draw_shapes(par);
-    glm::vec3 pos = {20.0f, 20.0f, 0.0f};
-    write_string(par, "sample text", pos, 1.0f, glm::vec3(0.5, 0.0f, 0.5f));
+    glm::vec3 pos = {-0.6f, 0.9f, 0.0f};
+    write_string(par, "REAL", pos, 1.0f, glm::vec3(0.25, 0.25, 1.0));
 
     SDL_GL_SwapWindow(par.screen);
 
@@ -920,13 +921,13 @@ void euclid_key(Param &par, SDL_Keysym* Keysym, bool is_down){
         case SDLK_s:
             if (is_down){
                 euclid_clear(par);
-                euclid_sub(par, par.imap["element1"], par.imap["element2"]);
+                euclid_sub(par, par.factors[0], par.factors[1]);
                 break;
             }
         case SDLK_m:
             if (is_down){
                 euclid_clear(par);
-                euclid_mod(par, par.imap["element1"], par.imap["element2"]);
+                euclid_mod(par, par.factors[0], par.factors[1]);
                 break;
             }
         case SDLK_c:
@@ -934,6 +935,42 @@ void euclid_key(Param &par, SDL_Keysym* Keysym, bool is_down){
                 euclid_clear(par);
                 break;
             }
+        case SDLK_LEFT:{
+            if(is_down){
+                par.factors[par.curr_factor] -= 1;
+                break;
+            }
+        }
+        case SDLK_RIGHT:{
+            if(is_down){
+                par.factors[par.curr_factor] += 1;
+                break;
+            }
+        }
+        case SDLK_DOWN:{
+            if(is_down){
+                if (par.curr_factor < 1){
+                    par.curr_factor += 1;
+                    if (par.curr_factor > par.factors.size()-1){
+                        par.factors.push_back((double)par.curr_factor + 1);
+                    }
+                    glm::vec3 trans = {0.0, -0.15, 0.0};
+                    move_shape(par.shapes[1], trans);
+                }
+                break;
+            }
+        }
+        case SDLK_UP:{
+            if(is_down){
+                if (par.curr_factor > 0){
+                    par.curr_factor -= 1;
+                    glm::vec3 trans = {0.0, 0.15, 0.0};
+                    move_shape(par.shapes[1], trans);
+                }
+                break;
+            }
+        }
+
         default:
             break;
 
@@ -947,6 +984,25 @@ void euclid_fn(Param &par){
     glClear(GL_COLOR_BUFFER_BIT);
 
     draw_shapes(par);
+    glm::vec3 pos_text = {-.325f, -.55f, 0.0f};
+    write_string(par, "Euclidean Algorithm", 
+                 pos_text, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+    pos_text = {-.25f, -0.7f, 0.0f};
+    write_string(par, "Number 1: "+std::to_string((int)par.factors[0]), 
+                 pos_text, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+    pos_text = {-.25f, -0.85f, 0.0f};
+    write_string(par, "Number 2: "+std::to_string((int)par.factors[1]), 
+                 pos_text, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+    pos_text = {-1.0f, -0.99f, 0.0f};
+    write_string(par, "s - Subtraction based method; m - modulus-based method", 
+                 pos_text, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+    pos_text = {0.5f, 0.9f, 0.0f};
+    write_string(par, "GCD is: "+std::to_string((int)par.imap["gcd"]), 
+                 pos_text, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     SDL_GL_SwapWindow(par.screen);
 
@@ -956,8 +1012,10 @@ void euclid_par(Param &par){
     par.dist = "euclid";
     par.end = 0;
 
-    par.imap["element1"] = 128*8;
-    par.imap["element2"] = 128*9;
+    par.factors.push_back(128*8);
+    par.factors.push_back(128*9);
+    par.imap["gcd"] = 128;
+    par.curr_factor = 0;
 
     par.font = "fonts/LinLibertine_Rah.ttf";
     par.font_size = sqrt(par.width*par.width + par.height*par.height) / 34;
@@ -990,14 +1048,38 @@ void euclid_OGL(Param &par){
     glEnable(GL_POINT_SMOOTH);
     glPointSize(10);
 
+    Shader textShader;
+    textShader.Load("shaders/text.vtx", "shaders/text.frg");
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(par.width), 
+                                      0.0f, static_cast<GLfloat>(par.height));
+    textShader.Use();
+    glUniformMatrix4fv(glGetUniformLocation(textShader.Program, "projection"), 
+                       1, GL_FALSE, glm::value_ptr(projection));
+    par.shmap["text"] = textShader;
+    setup_freetype(par);
+    create_quad(par.text);
+
     // Creating line that stretches across screen
     Shape line;
     std::vector<glm::vec3> pos(2);
     glm::vec3 color = {1,1,1};
 
-    pos[0] = {-1,0,0};
-    pos[1] = {1,0,0};
+    pos[0] = {-1,-0.45,0};
+    pos[1] = {1,-0.45,0};
     create_line(line, pos, color);
+    par.shapes.push_back(line);
+
+    // Creating the box around the text for our current factor that we are using
+    std::vector<glm::vec3> box(6);
+    box[0] = {-0.7, -0.7, 0.0};
+    box[1] = {-0.7, -0.6, 0.0};
+    box[2] = {0.7, -0.6, 0.0};
+    box[3] = {0.7, -0.75, 0.0};
+    box[4] = {-0.7, -0.75, 0.0};
+    box[5] = {-0.7, -0.7, 0.0};
+
+    glm::vec3 box_color = {1.0, 1.0, 1.0};
+    create_line(line, box, box_color);
     par.shapes.push_back(line);
 
 }
