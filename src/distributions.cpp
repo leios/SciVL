@@ -955,7 +955,7 @@ void euclid_key(Param &par, SDL_Keysym* Keysym, bool is_down){
                         par.factors.push_back((double)par.curr_factor + 1);
                     }
                     glm::vec3 trans = {0.0, -0.15, 0.0};
-                    move_shape(par.shapes[1], trans);
+                    move_shape(par.shapes[0], trans);
                 }
                 break;
             }
@@ -965,7 +965,7 @@ void euclid_key(Param &par, SDL_Keysym* Keysym, bool is_down){
                 if (par.curr_factor > 0){
                     par.curr_factor -= 1;
                     glm::vec3 trans = {0.0, 0.15, 0.0};
-                    move_shape(par.shapes[1], trans);
+                    move_shape(par.shapes[0], trans);
                 }
                 break;
             }
@@ -990,14 +990,14 @@ void euclid_fn(Param &par){
 
     pos_text = {-.25f, -0.7f, 0.0f};
     write_string(par, "Number 1: "+std::to_string((int)par.factors[0]), 
-                 pos_text, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+                 pos_text, 1.0f, glm::vec3(0.5f, 0.0f, 0.5f));
 
     pos_text = {-.25f, -0.85f, 0.0f};
     write_string(par, "Number 2: "+std::to_string((int)par.factors[1]), 
-                 pos_text, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+                 pos_text, 1.0f, glm::vec3(0.25f, 0.25f, 1.0f));
 
     pos_text = {-1.0f, -0.99f, 0.0f};
-    write_string(par, "s - Subtraction based method; m - modulus-based method", 
+    write_string(par, "s - Subtraction-based method; m - Modulus-based method", 
                  pos_text, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 
     pos_text = {0.5f, 0.9f, 0.0f};
@@ -1012,9 +1012,9 @@ void euclid_par(Param &par){
     par.dist = "euclid";
     par.end = 0;
 
-    par.factors.push_back(128*8);
-    par.factors.push_back(128*9);
-    par.imap["gcd"] = 128;
+    par.factors.push_back(3*8);
+    par.factors.push_back(3*9);
+    par.imap["gcd"] = 3;
     par.curr_factor = 0;
 
     par.font = "fonts/LinLibertine_Rah.ttf";
@@ -1064,11 +1064,6 @@ void euclid_OGL(Param &par){
     std::vector<glm::vec3> pos(2);
     glm::vec3 color = {1,1,1};
 
-    pos[0] = {-1,-0.45,0};
-    pos[1] = {1,-0.45,0};
-    create_line(line, pos, color);
-    par.shapes.push_back(line);
-
     // Creating the box around the text for our current factor that we are using
     std::vector<glm::vec3> box(6);
     box[0] = {-0.7, -0.7, 0.0};
@@ -1082,5 +1077,9 @@ void euclid_OGL(Param &par){
     create_line(line, box, box_color);
     par.shapes.push_back(line);
 
+    pos[0] = {-1,-0.45,0};
+    pos[1] = {1,-0.45,0};
+    create_line(line, pos, color);
+    par.shapes.push_back(line);
 }
 

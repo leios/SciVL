@@ -324,52 +324,48 @@ void euclid_mod(Param &par, int a, int b){
     }
 
     std::vector<int> divisors;
-    if (a > b){
-        divisors.push_back(a);
-        divisors.push_back(b);
-    }
-    else{
-        divisors.push_back(b);
-        divisors.push_back(a);
-    }
     int temp;
     while (b != 0){
+        divisors.push_back(a);
+        divisors.push_back(b);
         temp = b;
         b = a%b;
         a = temp;
-        if (a > b){
-            divisors.push_back(a);
-            divisors.push_back(b);
-        }
-        else{
-            divisors.push_back(b);
-            divisors.push_back(a);
-        }
     }
+
+    divisors.push_back(a);
+    divisors.push_back(0);
 
     par.imap["gcd"] = a;
 
     Shape line;
     std::vector<glm::vec3> pos(2);
-    glm::vec3 color = {1,1,1};
-    glm::vec3 color2 = {0,0,1};
+    glm::vec3 color = {0.5,0,0.5};
+    glm::vec3 color2 = {0.25,0.25,1};
     double time = curr_time(par);
     for (int i = 0; i < divisors.size(); i+=2){
-        pos[0] = {i*1.8/divisors.size()-0.9,-0.45,0};
-        pos[1] = {i*1.8/divisors.size()-0.9,
-                  1.45*divisors[i]/(double)max_val-0.45,0};
+        pos[0] = {i*1.8/divisors.size()-0.9-line.rad,-0.45,0};
+        pos[1] = {i*1.8/divisors.size()-0.9-line.rad,
+                  1.45*divisors[i]
+                  /(double)max_val-0.45,0};
         create_line(line, pos, color);
         add_keyframes(par, line, time, time+1);
         par.shapes.push_back(line);
 
-        pos[0] = {i*1.8/divisors.size()-0.9,-0.45,0};
-        pos[1] = {i*1.8/divisors.size()-0.9,
-                  1.45*divisors[i+1]/(double)max_val-0.45,0};
-        create_line(line, pos, color2);
-        add_keyframes(par, line, time, time+1);
-        par.shapes.push_back(line);
+        pos[0] = {i*1.8/divisors.size()-0.9+line.rad,-0.45,0};
+        pos[1] = {i*1.8/divisors.size()-0.9+line.rad,
+                 1.45*divisors[i+1]
+                  /(double)max_val-0.45,0};
+        if(abs(pos[0][1] - pos[1][1]) != 0.0){ 
+            create_line(line, pos, color2);
+            add_keyframes(par, line, time, time+1);
+            par.shapes.push_back(line);
+        }
         time += 1;
+
     }
+
+    std::swap(par.shapes[par.shapes.size()-1], par.shapes[1]);
 
 }
 
@@ -385,50 +381,51 @@ void euclid_sub(Param &par, int a, int b){
     }
 
     std::vector<int> divisors;
-    if (a > b){
-        divisors.push_back(a);
-        divisors.push_back(b);
-    }
-    else{
-        divisors.push_back(b);
-        divisors.push_back(a);
-    }
+
+    divisors.push_back(a);
+    divisors.push_back(b);
+
     while (a != b){
         if (a > b){
             a = a - b;
-            divisors.push_back(a);
-            divisors.push_back(b);
         }
         else{
             b = b - a;
-            divisors.push_back(b);
-            divisors.push_back(a);
         }
+        divisors.push_back(a);
+        divisors.push_back(b);
     }
 
     par.imap["gcd"] = a;
 
     Shape line;
+    double x_pos, y_pos;
     std::vector<glm::vec3> pos(2);
-    glm::vec3 color = {1,1,1};
-    glm::vec3 color2 = {0,0,1};
+    glm::vec3 color = {0.5,0,0.5};
+    glm::vec3 color2 = {0.25,0.25,1};
     double time = curr_time(par);
     for (int i = 0; i < divisors.size(); i+=2){
-        pos[0] = {i*1.8/divisors.size()-0.9,-0.45,0};
-        pos[1] = {i*1.8/divisors.size()-0.9,
+
+        // Line a
+        pos[0] = {i*1.8/divisors.size()-0.9-line.rad,-0.45,0};
+        pos[1] = {i*1.8/divisors.size()-0.9-line.rad,
                   1.45*divisors[i]/(double)max_val-0.45,0};
         create_line(line, pos, color);
         add_keyframes(par, line, time, time+1);
         par.shapes.push_back(line);
 
-        pos[0] = {i*1.8/divisors.size()-0.9,-0.45,0};
-        pos[1] = {i*1.8/divisors.size()-0.9,
-                  1.45 * divisors[i+1]/(double)max_val-0.45,0};
+        // Line b
+        pos[0] = {i*1.8/divisors.size()-0.9+line.rad,-0.45,0};
+        pos[1] = {i*1.8/divisors.size()-0.9+line.rad,
+                  1.45*divisors[i+1]/(double)max_val-0.45,0};
         create_line(line, pos, color2);
         add_keyframes(par, line, time, time+1);
         par.shapes.push_back(line);
+
         time += 1;
     }
+
+    std::swap(par.shapes[par.shapes.size()-1], par.shapes[1]);
 
 }
 
@@ -437,7 +434,7 @@ void euclid_clear(Param &par){
 
     std::vector<Shape> elements(2);
     elements[0] = par.shapes[0];
-    elements[1] = par.shapes[1];
+    elements[1] = par.shapes[par.shapes.size()-1];
     par.shapes = elements;
 
 }
