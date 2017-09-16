@@ -341,7 +341,7 @@ void euclid_mod(Param &par, int a, int b){
     Shape line;
     std::vector<glm::vec3> pos(2);
     glm::vec3 color = {0.5,0,0.5};
-    glm::vec3 color2 = {0.25,0.25,1};
+    glm::vec3 color2 = {0.25,0.25,1.0};
     double time = curr_time(par);
     for (int i = 0; i < divisors.size(); i+=2){
         pos[0] = {i*1.8/divisors.size()-0.9-line.rad,-0.45,0};
@@ -402,7 +402,7 @@ void euclid_sub(Param &par, int a, int b){
     double x_pos, y_pos;
     std::vector<glm::vec3> pos(2);
     glm::vec3 color = {0.5,0,0.5};
-    glm::vec3 color2 = {0.25,0.25,1};
+    glm::vec3 color2 = {0.25,0.25,1.0};
     double time = curr_time(par);
     for (int i = 0; i < divisors.size(); i+=2){
 

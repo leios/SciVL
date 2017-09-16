@@ -980,29 +980,33 @@ void euclid_key(Param &par, SDL_Keysym* Keysym, bool is_down){
 
 void euclid_fn(Param &par){
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+     glm::vec3 color1 = {1.0f, 1.0f, 1.0f};
+     glm::vec3 color2 = {0.5f, 0.0f, 0.5f};
+     glm::vec3 color3 = {0.25f, 0.25f, 1.0f};
+
     draw_shapes(par);
-    glm::vec3 pos_text = {-.325f, -.55f, 0.0f};
+    glm::vec3 pos_text = {-.35f, -.55f, 0.0f};
     write_string(par, "Euclidean Algorithm", 
-                 pos_text, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+                 pos_text, 1.0f, color1);
 
-    pos_text = {-.25f, -0.7f, 0.0f};
-    write_string(par, "Number 1: "+std::to_string((int)par.factors[0]), 
-                 pos_text, 1.0f, glm::vec3(0.5f, 0.0f, 0.5f));
+    pos_text = {-.1f, -0.7f, 0.0f};
+    write_string(par, "A: "+std::to_string((int)par.factors[0]), 
+                 pos_text, 1.0f, color2);
 
-    pos_text = {-.25f, -0.85f, 0.0f};
-    write_string(par, "Number 2: "+std::to_string((int)par.factors[1]), 
-                 pos_text, 1.0f, glm::vec3(0.25f, 0.25f, 1.0f));
+    pos_text = {-.1f, -0.85f, 0.0f};
+    write_string(par, "B: "+std::to_string((int)par.factors[1]), 
+                 pos_text, 1.0f, color3);
 
     pos_text = {-1.0f, -0.99f, 0.0f};
     write_string(par, "s - Subtraction-based method; m - Modulus-based method", 
-                 pos_text, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+                 pos_text, 0.5f, color1);
 
     pos_text = {0.5f, 0.9f, 0.0f};
     write_string(par, "GCD is: "+std::to_string((int)par.imap["gcd"]), 
-                 pos_text, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+                 pos_text, 1.0f, color1);
 
     SDL_GL_SwapWindow(par.screen);
 
