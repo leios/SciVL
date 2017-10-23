@@ -422,7 +422,7 @@ void euclid_sub(Param &par, int a, int b){
         add_keyframes(par, line, time, time+1);
         par.shapes.push_back(line);
 
-        time += 1;
+        time += 1.1;
     }
 
     std::swap(par.shapes[par.shapes.size()-1], par.shapes[1]);

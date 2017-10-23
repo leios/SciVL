@@ -8,6 +8,7 @@ Here are the commandline options:
 -r 1000x1000        Set resolution
 -s test             Set simulation type
 -f                  Set fullscreen mode (if available)
+-p                  Set print mode (black, white, grey)
 
 More arguments to come!
 

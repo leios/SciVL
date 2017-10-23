@@ -200,6 +200,105 @@ void pong_OGL(Param &par){
 }
 
 // Test functions using shader.h
+void fft_key(Param &par, SDL_Keysym* Keysym, bool is_down){
+    if (!is_down){
+        return;
+    }
+    switch(Keysym->sym){
+        case SDLK_ESCAPE:
+        case SDLK_q:{
+            par.end = 1;
+            break;
+        }
+
+        default:
+            break;
+
+    }
+
+}
+
+void fft_fn(Param &par){
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    draw_shapes(par);
+
+    SDL_GL_SwapWindow(par.screen);
+
+}
+
+void fft_par(Param &par){
+    par.dist = "fft";
+    par.end = 0;
+
+
+    par.factors.push_back(1.0);
+    par.imap["res"] = 100;
+
+    par.font = "fonts/LinLibertine_Rah.ttf";
+    par.font_size = sqrt(par.width*par.width + par.height*par.height) / 34;
+
+    par.start_time = std::chrono::high_resolution_clock::now();
+
+}
+
+void fft_OGL(Param &par){
+    glewExperimental = GL_TRUE;
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    if (glewInit() != GLEW_OK){
+        std::cout << "You dun goofed!" << '\t' 
+                  << glewGetErrorString(glewInit()) << '\n';
+        exit(1);
+    }
+
+    glViewport(0,0,par.width,par.height);
+    //glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    // this should use shaders...
+    Shader defaultShader;
+    defaultShader.Load("shaders/default.vtx", "shaders/default.frg");
+    par.shmap["default"] = defaultShader;
+
+    glEnable(GL_LINE_SMOOTH);
+    glLineWidth(2);
+
+    glEnable(GL_POINT_SMOOTH);
+    glPointSize(10);
+
+    Shader textShader;
+    textShader.Load("shaders/text.vtx", "shaders/text.frg");
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(par.width), 
+                                      0.0f, static_cast<GLfloat>(par.height));
+    textShader.Use();
+    glUniformMatrix4fv(glGetUniformLocation(textShader.Program, "projection"), 
+                       1, GL_FALSE, glm::value_ptr(projection));
+    par.shmap["text"] = textShader;
+    setup_freetype(par);
+    create_quad(par.text);
+
+    Shape line;
+    std::vector<glm::vec3> array(2);
+    array[0] = {-0.8,0.875,0};
+    array[1] = {0.8,0.875,0};
+
+    glm::vec3 licolor = {1.0, 1.0, 1.0};
+    for (int i = 0; i < 8; ++i){
+        create_line(line, array, licolor);
+        add_keyframes(par, line, 0, 1);
+        par.shapes.push_back(line);
+        array[0][1] -= 0.25;
+        array[1][1] -= 0.25;
+    }
+}
+
+
+// Test functions using shader.h
 void fourier_key(Param &par, SDL_Keysym* Keysym, bool is_down){
     if (!is_down){
         return;
@@ -634,7 +733,7 @@ void test_anim_OGL(Param &par){
     glPointSize(10);
 
     // Creating a simple line
-    Shape line, circle;
+    Shape line, circle, rect;
     std::vector<glm::vec3> array(2);
 
     array[0] = {0.0, 0.0, 0.0};
@@ -653,6 +752,12 @@ void test_anim_OGL(Param &par){
     add_keyframes(par, circle, 2,3);
 
     par.shapes.push_back(circle);
+
+    glm::vec3 rect_size = {0.25, 0.25, 0};
+    glm::vec3 recolor = {0.0, 1.0, 0.0};
+    create_rectangle(rect, array[1], rect_size, recolor); 
+    add_keyframes(par, rect, 3,4);
+    par.shapes.push_back(rect);
 
 }
 

@@ -33,7 +33,10 @@ void draw_shape(Param &par, std::string shapestr);
 void animate_line(Param &par, Shape &sh);
 
 // Function to animate a circle as it changes with time
-void animate_line(Param &par, Shape &sh);
+void animate_circle(Param &par, Shape &sh);
+
+// Function to animate a rect as it changes with time
+void animate_rect(Param &par, Shape &sh);
 
 // Function to draw all shapes in the par shape map
 void draw_shapes(Param &par);

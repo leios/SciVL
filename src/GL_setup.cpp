@@ -41,6 +41,12 @@ void Param::set_fns(std::string dist){
         par_fn = fourier_par;
         OGL_fn = fourier_OGL;
     }
+    else if (dist == "fft"){
+        draw_fn = fft_fn;
+        key_fn = fft_key;
+        par_fn = fft_par;
+        OGL_fn = fft_OGL;
+    }
     else if (dist == "verlet"){
         draw_fn = verlet_fn;
         key_fn = verlet_key;

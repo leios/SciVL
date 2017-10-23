@@ -79,6 +79,14 @@ Param parse_args(int argc, char** argv){
                 exit(0);
                 break;
             }
+            case 'p':
+            {
+                std::cout << "entering print mode" << '\n';
+                std::cout << "This will change the colors to bwg." << '\n';
+                std::cout << "Not yet implemented!" << '\n';
+                par.print = true;
+                break;
+            }
             case 'f':
             {
                 std::cout << "entering fullscreen mode" << '\n';

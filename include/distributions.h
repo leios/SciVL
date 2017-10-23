@@ -27,6 +27,12 @@ void fourier_fn(Param &par);
 void fourier_par(Param &par);
 void fourier_OGL(Param &par);
 
+// test fft functions
+void fft_key(Param &par, SDL_Keysym* Keysym, bool is_down);
+void fft_fn(Param &par);
+void fft_par(Param &par);
+void fft_OGL(Param &par);
+
 // test pend functions
 void platformer_key(Param &par, SDL_Keysym* Keysym, bool is_down);
 void platformer_fn(Param &par);

@@ -225,8 +225,60 @@ void animate_circle(Param &par, Shape &sh){
         move_vertex(sh, trans[i], i);
     }
 
+}
+
+// Function to animate a circle as it changes with time
+void animate_rect(Param &par, Shape &sh){
+
+    // First, we need to cast the time points onto doubles 
+    std::chrono::duration<double> total_time, curr_time;
+    total_time = std::chrono::duration_cast<std::chrono::duration<double>>
+        (sh.end_time - sh.start_time);
+    curr_time = std::chrono::duration_cast<std::chrono::duration<double>>
+        (par.curr_time - sh.start_time);
+    double ratio = curr_time / total_time;
+
+    // Finding appropriate translation matrix
+    glm::vec3 start_loc, end_loc, temp_loc;
+
+    // Finding the starting location
+    for (int i = 0; i < 2; ++i){
+        end_loc = vertex_location(sh,i+1);
+        temp_loc = vertex_location(sh,i+2);
+        start_loc[i] = (end_loc[i] + temp_loc[i]) / 2;
+    }
+    start_loc[2] = 0.0;
+
+    std::vector<glm::vec3> trans(4);
+
+    for (int i = 0; i < 4; ++i){
+        end_loc = vertex_location(sh,i);
+
+        for (int j = 0; j < 3; ++j){
+            trans[i][j] = (1-ratio) * (start_loc[j] - end_loc[j]);
+        }
+        move_vertex(sh, trans[i], i);
+    }
+
+    par.shmap["default"].Use();
+    glBindVertexArray(sh.VAO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sh.EBO);
+    glDrawElements(sh.rtype, sh.ind, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+
+    // Moving the point back
+    // NOTE: This is because for some reason we are influencing the pointer even
+    //       when calling const.
+    for (int i = 0; i < 4; ++i){
+
+        for (int j = 0; j < 3; ++j){
+            trans[i][j] *= -1;
+        }
+        move_vertex(sh, trans[i], i);
+    }
 
 }
+
 
 
 // Function to draw all shapes in the par shape map
@@ -244,6 +296,9 @@ void draw_shapes(Param &par){
                         break;
                     case circle:
                         animate_circle(par, par.shapes[i]);
+                        break;
+                    case rect:
+                        animate_rect(par, par.shapes[i]);
                         break;
                 }
             }
@@ -331,6 +386,8 @@ void create_rectangle(Shape &rect, glm::vec3 &pos,
 
     rect.vnum = 4;
     rect.ind = 6;
+
+    rect.type = Type::rect;
 
 }
 
