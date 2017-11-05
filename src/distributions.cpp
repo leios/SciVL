@@ -210,6 +210,10 @@ void fft_key(Param &par, SDL_Keysym* Keysym, bool is_down){
             par.end = 1;
             break;
         }
+        case SDLK_b:
+            if (is_down){
+                break;
+            }
 
         default:
             break;
@@ -295,6 +299,38 @@ void fft_OGL(Param &par){
         array[0][1] -= 0.25;
         array[1][1] -= 0.25;
     }
+
+    int bnum = 4;
+    double ypos = 0.875;
+    double xpos = -0.8;
+    double stride;
+    for (int i = 0; i < 3; ++i){
+        stride = 4 / bnum;
+        std::cout << stride << '\n';
+
+        for (int j = 0; j < bnum; ++j){
+            for (int k = 0; k < stride; ++k){
+                array[0] = {xpos, ypos, 0};
+                array[1] = {xpos + 0.4, ypos - (0.25*stride), 0};
+                create_line(line, array, licolor);
+                add_keyframes(par, line, 0, 1);
+                par.shapes.push_back(line);
+
+                array[0] = {xpos, ypos - (0.25*stride), 0};
+                array[1] = {xpos + 0.4, ypos, 0};
+                create_line(line, array, licolor);
+                add_keyframes(par, line, 0, 1);
+                par.shapes.push_back(line);
+                ypos -= 0.25;
+            }
+
+            ypos -= 0.25*stride;
+        }
+
+        xpos += 0.6;
+        ypos = 0.875;
+        bnum /= 2;
+    }    
 }
 
 
