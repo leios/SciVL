@@ -45,4 +45,7 @@ void euclid_sub(Param &par, int a, int b);
 // Euclidean clear screen
 void euclid_clear(Param &par);
 
+// function to write text on butterfly diagram
+void write_butterfly(Param &par);
+
 #endif

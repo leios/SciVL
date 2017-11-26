@@ -228,6 +228,7 @@ void fft_fn(Param &par){
     glClear(GL_COLOR_BUFFER_BIT);
 
     draw_shapes(par);
+    write_butterfly(par);
 
     SDL_GL_SwapWindow(par.screen);
 
@@ -236,7 +237,6 @@ void fft_fn(Param &par){
 void fft_par(Param &par){
     par.dist = "fft";
     par.end = 0;
-
 
     par.factors.push_back(1.0);
     par.imap["res"] = 100;
@@ -287,6 +287,7 @@ void fft_OGL(Param &par){
     create_quad(par.text);
 
     Shape line;
+    line.rad = 0.002;
     std::vector<glm::vec3> array(2);
     array[0] = {-0.8,0.875,0};
     array[1] = {0.8,0.875,0};
@@ -302,7 +303,7 @@ void fft_OGL(Param &par){
 
     int bnum = 4;
     double ypos = 0.875;
-    double xpos = -0.8;
+    double xpos = -0.75;
     double stride;
     for (int i = 0; i < 3; ++i){
         stride = 4 / bnum;
@@ -327,7 +328,7 @@ void fft_OGL(Param &par){
             ypos -= 0.25*stride;
         }
 
-        xpos += 0.6;
+        xpos += 0.525;
         ypos = 0.875;
         bnum /= 2;
     }    
@@ -521,6 +522,7 @@ void fourier_OGL(Param &par){
         }
         //std::cout << wave[i][0] << '\t' << ftwave[i][0] << '\n';
     }
+
     create_line(line, sinarr, licolor);
     par.shapes.push_back(line);
     create_line(line, fftarr, licolor);

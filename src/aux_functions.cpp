@@ -439,3 +439,51 @@ void euclid_clear(Param &par){
 
 }
 
+// Function to write text on butterfly diagram
+void write_butterfly(Param &par){
+
+    std::vector<int> reverse_order = {0,4,2,6,1,5,3,7};
+    double ypos = 0.85;
+    double xpos = -0.35;
+    double offset;
+    std::string temp, val_string;
+    for (int i = 0; i < 8; ++i){
+        // Lowercase a
+        temp = "a[";
+        temp.append(std::to_string(reverse_order[i]));
+        temp.append("]");
+        glm::vec3 pos = {-0.975,ypos,0};
+        write_string(par, temp, pos, 1.0f, glm::vec3(1, 1, 1));
+
+        // Capital A
+        temp = "A[";
+        temp.append(std::to_string(i));
+        temp.append("]");
+        pos = {0.825,ypos,0};
+        write_string(par, temp, pos, 1.0f, glm::vec3(1, 1, 1));
+
+        xpos = -0.35;
+        for (int j = 0; j < 3; ++j){
+            if (i%(int)pow(2,j+1) >= (int)pow(2,j+1)/2){
+                val_string = "-W";
+                offset = 0.08;
+            }
+            else{
+                val_string = "W";
+                offset = 0.06;
+            }
+            pos = {xpos,ypos-0.03,0};
+            write_string(par, val_string, pos, 0.75f, glm::vec3(1, 1, 1));
+
+            pos = {xpos+offset,ypos-0.035,0};
+            temp = std::to_string((int)pow(2,j+1));
+            write_string(par, temp, pos, 0.5f, glm::vec3(1, 1, 1));
+
+            pos = {xpos+offset,ypos-0.005,0};
+            temp = std::to_string((i%(int)pow(2,j))%(int)pow(2,j+1));
+            write_string(par, temp, pos, 0.5f, glm::vec3(1, 1, 1));
+            xpos += 0.525;
+        }
+        ypos -= 0.25;
+    }
+}
