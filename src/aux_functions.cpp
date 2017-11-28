@@ -9,6 +9,7 @@
 #include <fftw3.h>
 #include <stack>
 #include <queue>
+#include <fstream>
 #include "SDL.h"
 
 #include "../include/aux_functions.h"
@@ -487,3 +488,22 @@ void write_butterfly(Param &par){
         ypos -= 0.25;
     }
 }
+
+// function to find all the people we need to thank
+std::vector<std::string> find_names(std::string filename){
+
+    std::ifstream input(filename);
+
+    std::vector<std::string> names;
+
+    std::string line;
+    while (std::getline(input, line)){
+        names.push_back(line);
+    }
+
+    input.close();
+
+    return names;
+
+}
+

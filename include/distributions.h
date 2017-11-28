@@ -63,4 +63,10 @@ void euclid_fn(Param &par);
 void euclid_par(Param &par);
 void euclid_OGL(Param &par);
 
+// test anim functions
+void thanks_key(Param &par, SDL_Keysym* Keysym, bool is_down);
+void thanks_fn(Param &par);
+void thanks_par(Param &par);
+void thanks_OGL(Param &par);
+
 #endif

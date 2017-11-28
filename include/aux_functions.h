@@ -48,4 +48,7 @@ void euclid_clear(Param &par);
 // function to write text on butterfly diagram
 void write_butterfly(Param &par);
 
+// function to find all the people we need to thank
+std::vector<std::string> find_names(std::string filename);
+
 #endif

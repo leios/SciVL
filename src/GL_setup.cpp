@@ -65,6 +65,12 @@ void Param::set_fns(std::string dist){
         par_fn = euclid_par;
         OGL_fn = euclid_OGL;
     }
+    else if (dist == "thanks"){
+        draw_fn = thanks_fn;
+        key_fn = thanks_key;
+        par_fn = thanks_par;
+        OGL_fn = thanks_OGL;
+    }
     else{
         if (dist != "std"){
             std::cout << "Simulation type " << dist << " does not exist!"
