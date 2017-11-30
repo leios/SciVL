@@ -51,4 +51,7 @@ void write_butterfly(Param &par);
 // function to find all the people we need to thank
 std::vector<std::string> find_names(std::string filename);
 
+// Function to display text for bit visualization
+void write_bits(Param &par);
+
 #endif

@@ -71,6 +71,12 @@ void Param::set_fns(std::string dist){
         par_fn = thanks_par;
         OGL_fn = thanks_OGL;
     }
+    else if (dist == "bits"){
+        draw_fn = bits_fn;
+        key_fn = bits_key;
+        par_fn = bits_par;
+        OGL_fn = bits_OGL;
+    }
     else{
         if (dist != "std"){
             std::cout << "Simulation type " << dist << " does not exist!"

@@ -10,6 +10,7 @@
 #include <stack>
 #include <queue>
 #include <fstream>
+#include <bitset>
 #include "SDL.h"
 
 #include "../include/aux_functions.h"
@@ -507,3 +508,23 @@ std::vector<std::string> find_names(std::string filename){
 
 }
 
+// Function to display text for bit visualization
+void write_bits(Param &par){
+    glm::vec3 color = {1, 1, 1};
+    if (par.bmap["is_int"]){
+        glm::vec3 pos = {-0.9,0,0};
+
+        std::bitset<32> val ((int)par.factors[0]);
+        std::string val_string  = val.to_string();
+        write_string(par, val_string, pos, 1.5f, color);
+    }
+    else{
+        glm::vec3 pos = {-0.9,0,0};
+
+        //std::bitset<32> val (par.factors[0]);
+        float f = (float)par.factors[0];
+        std::bitset<32> val (*reinterpret_cast<unsigned long*>(&f));
+        std::string val_string  = val.to_string();
+        write_string(par, val_string, pos, 1.5f, color);
+    }
+}

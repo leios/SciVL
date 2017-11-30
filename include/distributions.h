@@ -69,4 +69,10 @@ void thanks_fn(Param &par);
 void thanks_par(Param &par);
 void thanks_OGL(Param &par);
 
+// test anim functions
+void bits_key(Param &par, SDL_Keysym* Keysym, bool is_down);
+void bits_fn(Param &par);
+void bits_par(Param &par);
+void bits_OGL(Param &par);
+
 #endif
