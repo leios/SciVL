@@ -1065,30 +1065,30 @@ void euclid_key(Param &par, SDL_Keysym* Keysym, bool is_down){
             if (is_down){
                 euclid_clear(par);
                 euclid_sub(par, par.factors[0], par.factors[1]);
-                break;
             }
+            break;
         case SDLK_m:
             if (is_down){
                 euclid_clear(par);
                 euclid_mod(par, par.factors[0], par.factors[1]);
-                break;
             }
+            break;
         case SDLK_c:
             if (is_down){
                 euclid_clear(par);
-                break;
             }
+            break;
         case SDLK_LEFT:{
             if(is_down){
                 par.factors[par.curr_factor] -= 1;
-                break;
             }
+            break;
         }
         case SDLK_RIGHT:{
             if(is_down){
                 par.factors[par.curr_factor] += 1;
-                break;
             }
+            break;
         }
         case SDLK_DOWN:{
             if(is_down){
@@ -1100,8 +1100,8 @@ void euclid_key(Param &par, SDL_Keysym* Keysym, bool is_down){
                     glm::vec3 trans = {0.0, -0.15, 0.0};
                     move_shape(par.shapes[0], trans);
                 }
-                break;
             }
+            break;
         }
         case SDLK_UP:{
             if(is_down){
@@ -1110,8 +1110,8 @@ void euclid_key(Param &par, SDL_Keysym* Keysym, bool is_down){
                     glm::vec3 trans = {0.0, 0.15, 0.0};
                     move_shape(par.shapes[0], trans);
                 }
-                break;
             }
+            break;
         }
 
         default:
@@ -1331,32 +1331,49 @@ void bits_key(Param &par, SDL_Keysym* Keysym, bool is_down){
         case SDLK_f:
             if (is_down){
                 par.bmap["is_int"] = false;
-                break;
             }
+            break;
         case SDLK_i:
             if (is_down){
                 par.bmap["is_int"] = true;
-                break;
             }
+            break;
         case SDLK_c:
             if (is_down){
-                break;
             }
+            break;
         case SDLK_LEFT:{
             if(is_down){
                 if (par.bmap["is_int"]){
+                    int index = par.shapes.size() - 1;
                     par.factors[0] = (int)par.factors[0] << 1;
+                    par.shapes[index].draw = true;
                 }
-                break;
             }
+            else{
+                par.shapes[par.shapes.size() -1].draw = false;
+            }
+            break;
         }
         case SDLK_RIGHT:{
             if(is_down){
                 if (par.bmap["is_int"]){
                     par.factors[0] = (int)par.factors[0] >> 1;
+                    int index = par.shapes.size() - 1;
+                    glm::vec3 vloc = vertex_location(par.shapes[index], 0);
+                    if (vloc[0] < 0){
+                        glm::vec3 translate = {1.6, 0, 0};
+                        move_shape(par.shapes[index], translate);
+                        par.shapes[index].draw = true;
+                    }
                 }
-                break;
             }
+            else{
+                glm::vec3 translate = {-1.6, 0, 0};
+                move_shape(par.shapes[par.shapes.size() -1], translate);
+                par.shapes[par.shapes.size() -1].draw = false;
+            }
+            break;
         }
         case SDLK_DOWN:{
             if(is_down){
@@ -1366,8 +1383,8 @@ void bits_key(Param &par, SDL_Keysym* Keysym, bool is_down){
                 else{
                     par.factors[0] -= 0.1;
                 }
-                break;
             }
+            break;
         }
         case SDLK_UP:{
             if(is_down){
@@ -1377,8 +1394,8 @@ void bits_key(Param &par, SDL_Keysym* Keysym, bool is_down){
                 else{
                     par.factors[0] += 0.1;
                 }
-                break;
             }
+            break;
         }
 
         default:
@@ -1399,21 +1416,31 @@ void bits_fn(Param &par){
 
     draw_shapes(par);
     write_bits(par);
-    glm::vec3 pos_text = {-.35f, -.55f, 0.0f};
+    glm::vec3 pos_text = {-0.5f, -.7f, 0.0f};
 
-    pos_text = {-.1f, -0.7f, 0.0f};
+    write_string(par, "Value is: ", pos_text, .5f, color1);
+
+    pos_text[0] += 0.5;
+
     if (par.bmap["is_int"]){
+        pos_text[0] = -0.9;
+        pos_text[1] -= 0.001;
+        write_string(par, "<<", pos_text, 1.0f, color1);
+        pos_text[0] = 0.7;
+        write_string(par, ">>", pos_text, 1.0f, color1);
+        pos_text[1] += 0.001;
+        pos_text[0] = 0;
         write_string(par, std::to_string((int)par.factors[0]), 
-                     pos_text, 1.0f, color1);
+                     pos_text, .5f, color1);
     }
     else{
         write_string(par, std::to_string(par.factors[0]), 
-                     pos_text, 1.0f, color1);
+                     pos_text, .5f, color1);
     }
 
     pos_text = {-1.0f, -0.99f, 0.0f};
     write_string(par, "f -- floats; i -- ints; up -- value up; down -- value down; left -- bitshift left; right -- bitshift right", 
-                 pos_text, 0.5f, color1);
+                 pos_text, 0.25f, color1);
 
     SDL_GL_SwapWindow(par.screen);
 
@@ -1430,7 +1457,7 @@ void bits_par(Param &par){
     par.curr_factor = 0;
 
     par.font = "fonts/LinLibertine_Rah.ttf";
-    par.font_size = sqrt(par.width*par.width + par.height*par.height) / 34;
+    par.font_size = sqrt(par.width*par.width + par.height*par.height) / 16;
 
 }
 
@@ -1475,15 +1502,16 @@ void bits_OGL(Param &par){
 
     // Creating the box around the text for our current factor that we are using
     std::vector<glm::vec3> box(6);
-    box[0] = {-0.7, -0.7, 0.0};
-    box[1] = {-0.7, -0.6, 0.0};
-    box[2] = {0.7, -0.6, 0.0};
-    box[3] = {0.7, -0.75, 0.0};
-    box[4] = {-0.7, -0.75, 0.0};
-    box[5] = {-0.7, -0.7, 0.0};
+    box[0] = {-0.92, -0.69, 0.0};
+    box[1] = {-0.92, -0.59, 0.0};
+    box[2] = {-0.68, -0.59, 0.0};
+    box[3] = {-0.68, -0.73, 0.0};
+    box[4] = {-0.92, -0.73, 0.0};
+    box[5] = {-0.92, -0.69, 0.0};
 
     glm::vec3 box_color = {1.0, 1.0, 1.0};
     create_line(line, box, box_color);
+    line.draw = false;
     par.shapes.push_back(line);
 
 }

@@ -516,15 +516,20 @@ void write_bits(Param &par){
 
         std::bitset<32> val ((int)par.factors[0]);
         std::string val_string  = val.to_string();
-        write_string(par, val_string, pos, 1.5f, color);
+        write_string(par, val_string, pos, 0.7f, color);
     }
     else{
-        glm::vec3 pos = {-0.9,0,0};
+        glm::vec3 pos = {-.95,0,0};
 
         //std::bitset<32> val (par.factors[0]);
         float f = (float)par.factors[0];
         std::bitset<32> val (*reinterpret_cast<unsigned long*>(&f));
         std::string val_string  = val.to_string();
-        write_string(par, val_string, pos, 1.5f, color);
+        write_string(par, val_string.substr(0,1), pos, 0.7, color);
+        pos[0] += 0.08;
+        write_string(par, val_string.substr(1,8), pos, 0.7, color);
+        pos[0] += 0.5;
+        write_string(par, val_string.substr(9,val_string.size()-9), 
+                     pos, 0.7, color);
     }
 }
