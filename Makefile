@@ -10,7 +10,7 @@ endif
 SDLFLAGS = `sdl2-config --cflags --libs` 
 
 BINS = SciVL
-OBJ = SDL_test.o GL_setup.o distributions.o shape_functions.o aux_functions.o shaders.o operations.o parser.o parg.o platformer.o
+OBJ = SDL_test.o GL_setup.o distributions.o shape_functions.o aux_functions.o shaders.o operations.o parser.o parg.o platformer.o pong.o fourier.o test_animation.o euclid.o bits.o fft.o verlet.o traverse.o thanks.o 
 #DEPS = include/SDL_test.h include/GL_setup.h include/distributions.h include/operations.h include/parser.h include/parg.h include/aux_functions 
 
 %.o: ./src/%.cpp $(DEPS)

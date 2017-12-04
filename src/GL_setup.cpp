@@ -6,6 +6,15 @@
 
 #include "../include/GL_setup.h"
 #include "../include/distributions.h"
+#include "../include/bits.h"
+#include "../include/euclid.h"
+#include "../include/fft.h"
+#include "../include/fourier.h"
+#include "../include/pong.h"
+#include "../include/test_animation.h"
+#include "../include/thanks.h"
+#include "../include/traverse.h"
+#include "../include/verlet.h"
 #include FT_FREETYPE_H
 
 
