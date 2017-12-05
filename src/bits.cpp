@@ -16,12 +16,90 @@
 #include "../include/shaders.h"
 #include "../include/operations.h"
 
+void color_gates(Param &par){
+    int index = par.shapes.size() - 16;
+    glm::vec3 color1 = {1, 1, 1};
+    glm::vec3 color2 = {1, 0, 0};
+    for (int i = 0; i < 4; ++i){
+        if (par.strings[6+i][0] == '0'){
+            add_color_keyframe(par, par.shapes[index], color1, curr_time(par));
+        }
+        else{
+            add_color_keyframe(par, par.shapes[index], color2, curr_time(par));
+        }
+        index++;
+
+        if (par.strings[6+i][1] == '0'){
+            add_color_keyframe(par, par.shapes[index], color1, curr_time(par));
+        }
+        else{
+            add_color_keyframe(par, par.shapes[index], color2, curr_time(par));
+        }
+        index++;
+
+        if (par.strings[10+i][0] == '0'){
+            add_color_keyframe(par, par.shapes[index], color1, curr_time(par));
+        }
+        else{
+            add_color_keyframe(par, par.shapes[index], color2, curr_time(par));
+        }
+        index++;
+    }
+}
+
 void gate_change(Param &par, int change){
     if(change < 0 && par.curr_factor > 0){
         par.curr_factor += change;
+        if (par.curr_factor == 3){
+            int index = par.shapes.size() - 16;
+            for(int i = index; i < par.shapes.size(); ++i){
+                if(par.shapes[i].draw){
+                    par.shapes[i].draw = false;
+                }
+                else{
+                    par.shapes[i].draw = true;
+                }
+            }
+        }
+        if(par.curr_factor == 2){
+            int index = par.shapes.size() - 16;
+            for(int i = index; i < par.shapes.size(); ++i){
+                if(par.shapes[i].draw){
+                    par.shapes[i].draw = false;
+                }
+                else{
+                    par.shapes[i].draw = true;
+                }
+            }
+
+        }
     }
     if(change > 0 && par.curr_factor < 5){
         par.curr_factor += change;
+        if (par.curr_factor == 3){
+            int index = par.shapes.size() - 16;
+            for(int i = index; i < par.shapes.size(); ++i){
+                if(par.shapes[i].draw){
+                    par.shapes[i].draw = false;
+                }
+                else{
+                    par.shapes[i].draw = true;
+                }
+            }
+        }
+        if(par.curr_factor == 4){ 
+            int index = par.shapes.size() - 16;
+            for(int i = index; i < par.shapes.size(); ++i){
+                if(par.shapes[i].draw){
+                    par.shapes[i].draw = false;
+                }
+                else{
+                    par.shapes[i].draw = true;
+                }
+            }
+
+        }
+
     }
 
     if (par.strings[par.curr_factor] == "AND"){
@@ -63,6 +141,7 @@ void gate_change(Param &par, int change){
         par.strings[12] = "0";
         par.strings[13] = "0";
     }
+    color_gates(par);
 }
 
 void set_gates(Param &par){
@@ -130,7 +209,7 @@ void bits_key(Param &par, SDL_Keysym* Keysym, bool is_down){
         case SDLK_g:
             if (is_down){
                 par.bmap["is_gate"] = true;
-                for (int i = 1; i < par.shapes.size(); ++i){
+                for (int i = 1; i < par.shapes.size()-4; ++i){
                     par.shapes[i].draw = true;
                 }
             }
@@ -364,5 +443,53 @@ void bits_OGL(Param &par){
     par.shapes.push_back(line);
 
     set_gates(par);
+
+    // Lines for gate input and output
+    for (int i = 0; i < 4; ++i){
+        endpoints[0] = {0.3, 0.25-i*0.25, 0};    
+        endpoints[1] = {0.55, 0.25-i*0.25, 0};    
+        create_line(line, endpoints, box_color);
+        line.draw = false;
+        par.shapes.push_back(line);
+
+        endpoints[0] = {0.3, 0.2-i*0.25, 0};    
+        endpoints[1] = {0.55, 0.2-i*0.25, 0};    
+        create_line(line, endpoints, box_color);
+        line.draw = false;
+        par.shapes.push_back(line);
+
+        endpoints[0] = {0.55, 0.225-i*0.25, 0};    
+        endpoints[1] = {0.8, 0.225-i*0.25, 0};    
+        create_line(line, endpoints, box_color);
+        line.draw = false;
+        par.shapes.push_back(line);
+    }
+
+    // for NOT gate
+    glm::vec3 color2 = {1, 0, 0};
+    for (int i = 0; i < 2; ++i){
+        glm::vec3 temp_color = box_color;
+        if(i == 1){
+            temp_color = color2;
+        }
+        endpoints[0] = {0.3, -0.025-i*0.25, 0};    
+        endpoints[1] = {0.55, -0.025-i*0.25, 0};    
+        create_line(line, endpoints, temp_color);
+        line.draw = false;
+        par.shapes.push_back(line);
+
+        temp_color = color2;
+        if(i == 1){
+            temp_color = box_color;
+        }
+        endpoints[0] = {0.55, -0.025-i*0.25, 0};    
+        endpoints[1] = {0.8, -0.025-i*0.25, 0};    
+        create_line(line, endpoints, temp_color);
+        line.draw = false;
+        par.shapes.push_back(line);
+
+    }
+
+    color_gates(par);
 
 }
