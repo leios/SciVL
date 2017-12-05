@@ -121,7 +121,7 @@ struct Param{
     std::string font;
     int font_size;
     std::map<GLchar, Character> chmap;
-    std::vector<std::string> lines;
+    std::vector<std::string> strings;
 
     // Adding in a vector for fft factors
     std::vector<double> factors;

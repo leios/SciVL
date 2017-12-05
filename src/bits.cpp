@@ -16,6 +16,110 @@
 #include "../include/shaders.h"
 #include "../include/operations.h"
 
+void gate_change(Param &par, int change){
+    if(change < 0 && par.curr_factor > 0){
+        par.curr_factor += change;
+    }
+    if(change > 0 && par.curr_factor < 5){
+        par.curr_factor += change;
+    }
+
+    if (par.strings[par.curr_factor] == "AND"){
+        par.strings[10] = "0";
+        par.strings[11] = "0";
+        par.strings[12] = "0";
+        par.strings[13] = "1";
+    }
+
+    if (par.strings[par.curr_factor] == "OR"){
+        par.strings[10] = "0";
+        par.strings[11] = "1";
+        par.strings[12] = "1";
+        par.strings[13] = "1";
+    }
+
+    if (par.strings[par.curr_factor] == "XOR"){
+        par.strings[10] = "0";
+        par.strings[11] = "1";
+        par.strings[12] = "1";
+        par.strings[13] = "0";
+    }
+
+    if (par.strings[par.curr_factor] == "NOT"){
+        par.strings[10] = "1";
+        par.strings[11] = "0";
+    }
+
+    if (par.strings[par.curr_factor] == "NAND"){
+        par.strings[10] = "1";
+        par.strings[11] = "1";
+        par.strings[12] = "1";
+        par.strings[13] = "0";
+    }
+
+    if (par.strings[par.curr_factor] == "NOR"){
+        par.strings[10] = "1";
+        par.strings[11] = "0";
+        par.strings[12] = "0";
+        par.strings[13] = "0";
+    }
+}
+
+void set_gates(Param &par){
+    par.strings.push_back("AND");
+    par.strings.push_back("OR");
+    par.strings.push_back("XOR");
+    par.strings.push_back("NOT");
+    par.strings.push_back("NAND");
+    par.strings.push_back("NOR");
+
+    par.strings.push_back("00");
+    par.strings.push_back("01");
+    par.strings.push_back("10");
+    par.strings.push_back("11");
+
+    par.strings.push_back("0");
+    par.strings.push_back("0");
+    par.strings.push_back("0");
+    par.strings.push_back("1");
+}
+
+void draw_gate(Param &par){
+    glm::vec3 color = {1, 1, 1};
+
+    glm::vec3 text_pos = {-0.8, 0.45, 0};
+    write_string(par, "IN", text_pos, 1.0f, color);
+
+    text_pos = {-0.45, 0.45, 0};
+    write_string(par, "OUT", text_pos, 1.0f, color);
+
+    if (par.strings[par.curr_factor] != "NOT"){
+        for (int i = 0; i < 4; ++i){
+            text_pos = {-0.8, 0.2 - 0.25*i, 0};
+            write_string(par, par.strings[i+6], text_pos, 1.0f, color);
+
+            text_pos = {-0.35, 0.2 - 0.25*i, 0};
+            write_string(par, par.strings[i+10], text_pos, 1.0f, color);
+        }
+    }
+    else{
+        text_pos = {-0.8, 0.2 - 0.25, 0};
+        write_string(par, "0", text_pos, 1.0f, color);
+
+        text_pos = {-0.35, 0.2 - 0.25, 0};
+        write_string(par, par.strings[10], text_pos, 1.0f, color);
+
+        text_pos = {-0.8, 0.2 - 0.5, 0};
+        write_string(par, "1", text_pos, 1.0f, color);
+
+        text_pos = {-0.35, 0.2 - 0.5, 0};
+        write_string(par, par.strings[11], text_pos, 1.0f, color);
+    }
+
+    text_pos = {0.5, 0.8, 0};
+    write_string(par, par.strings[par.curr_factor], text_pos, 1.0f, color);
+}
+
 // Test functions using shader.h
 void bits_key(Param &par, SDL_Keysym* Keysym, bool is_down){
     switch(Keysym->sym){
@@ -23,71 +127,103 @@ void bits_key(Param &par, SDL_Keysym* Keysym, bool is_down){
         case SDLK_q:
             par.end = 1;
             break;
-        case SDLK_f:
+        case SDLK_g:
             if (is_down){
-                par.bmap["is_int"] = false;
+                par.bmap["is_gate"] = true;
+                for (int i = 1; i < par.shapes.size(); ++i){
+                    par.shapes[i].draw = true;
+                }
+            }
+            break;
+        case SDLK_b:
+            if (is_down){
+                par.bmap["is_gate"] = false;
+                for (int i = 1; i < par.shapes.size(); ++i){
+                    par.shapes[i].draw = false;
+                }
+            }
+            break;
+        case SDLK_f:
+            if (!par.bmap["is_gate"]){
+                if (is_down){
+                    par.bmap["is_int"] = false;
+                }
             }
             break;
         case SDLK_i:
-            if (is_down){
-                par.bmap["is_int"] = true;
-            }
-            break;
-        case SDLK_c:
-            if (is_down){
+            if (!par.bmap["is_gate"]){
+                if (is_down){
+                    par.bmap["is_int"] = true;
+                }
             }
             break;
         case SDLK_LEFT:{
-            if(is_down){
-                if (par.bmap["is_int"]){
-                    int index = par.shapes.size() - 1;
-                    par.factors[0] = (int)par.factors[0] << 1;
-                    par.shapes[index].draw = true;
+            if (!par.bmap["is_gate"]){
+                if(is_down){
+                    if (par.bmap["is_int"]){
+                        par.factors[0] = (int)par.factors[0] << 1;
+                        par.shapes[0].draw = true;
+                    }
+                }
+                else{
+                    par.shapes[0].draw = false;
                 }
             }
             else{
-                par.shapes[par.shapes.size() -1].draw = false;
+                if(is_down){
+                    gate_change(par, -1);
+                }
             }
             break;
         }
         case SDLK_RIGHT:{
-            if(is_down){
-                if (par.bmap["is_int"]){
-                    par.factors[0] = (int)par.factors[0] >> 1;
-                    int index = par.shapes.size() - 1;
-                    glm::vec3 vloc = vertex_location(par.shapes[index], 0);
-                    if (vloc[0] < 0){
-                        glm::vec3 translate = {1.6, 0, 0};
-                        move_shape(par.shapes[index], translate);
-                        par.shapes[index].draw = true;
+            if (!par.bmap["is_gate"]){
+                if(is_down){
+                    if (par.bmap["is_int"]){
+                        par.factors[0] = (int)par.factors[0] >> 1;
+                        glm::vec3 vloc = vertex_location(par.shapes[0], 0);
+                        if (vloc[0] < 0){
+                            glm::vec3 translate = {1.6, 0, 0};
+                            move_shape(par.shapes[0], translate);
+                            par.shapes[0].draw = true;
+                        }
                     }
+                }
+                else{
+                    glm::vec3 translate = {-1.6, 0, 0};
+                    move_shape(par.shapes[0], translate);
+                    par.shapes[0].draw = false;
                 }
             }
             else{
-                glm::vec3 translate = {-1.6, 0, 0};
-                move_shape(par.shapes[par.shapes.size() -1], translate);
-                par.shapes[par.shapes.size() -1].draw = false;
+                if (is_down){
+                    gate_change(par, 1);
+                }
             }
             break;
         }
         case SDLK_DOWN:{
-            if(is_down){
-                if (par.bmap["is_int"]){
-                    par.factors[0] -= 1;
-                }
-                else{
-                    par.factors[0] -= 0.1;
+            if (!par.bmap["is_gate"]){
+                if(is_down){
+                    if (par.bmap["is_int"]){
+                        par.factors[0] -= 1;
+                    }
+                    else{
+                        par.factors[0] -= 0.1;
+                    }
                 }
             }
             break;
         }
         case SDLK_UP:{
-            if(is_down){
-                if (par.bmap["is_int"]){
-                    par.factors[0] += 1;
-                }
-                else{
-                    par.factors[0] += 0.1;
+            if (!par.bmap["is_gate"]){
+                if(is_down){
+                    if (par.bmap["is_int"]){
+                        par.factors[0] += 1;
+                    }
+                    else{
+                        par.factors[0] += 0.1;
+                    }
                 }
             }
             break;
@@ -105,37 +241,40 @@ void bits_fn(Param &par){
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glm::vec3 color1 = {1.0f, 1.0f, 1.0f};
-    glm::vec3 color2 = {0.5f, 0.0f, 0.5f};
-    glm::vec3 color3 = {0.25f, 0.25f, 1.0f};
+    glm::vec3 color = {1.0f, 1.0f, 1.0f};
 
     draw_shapes(par);
-    write_bits(par);
-    glm::vec3 pos_text = {-0.5f, -.7f, 0.0f};
-
-    write_string(par, "Value is: ", pos_text, .5f, color1);
-
-    pos_text[0] += 0.5;
-
-    if (par.bmap["is_int"]){
-        pos_text[0] = -0.9;
-        pos_text[1] -= 0.001;
-        write_string(par, "<<", pos_text, 1.0f, color1);
-        pos_text[0] = 0.7;
-        write_string(par, ">>", pos_text, 1.0f, color1);
-        pos_text[1] += 0.001;
-        pos_text[0] = 0;
-        write_string(par, std::to_string((int)par.factors[0]), 
-                     pos_text, .5f, color1);
+    if (!par.bmap["is_gate"]){
+        write_bits(par);
+        glm::vec3 pos_text = {-0.5f, -.7f, 0.0f};
+    
+        write_string(par, "Value is: ", pos_text, .5f, color);
+    
+        pos_text[0] += 0.5;
+    
+        if (par.bmap["is_int"]){
+            pos_text[0] = -0.9;
+            pos_text[1] -= 0.001;
+            write_string(par, "<<", pos_text, 1.0f, color);
+            pos_text[0] = 0.7;
+            write_string(par, ">>", pos_text, 1.0f, color);
+            pos_text[1] += 0.001;
+            pos_text[0] = 0;
+            write_string(par, std::to_string((int)par.factors[0]), 
+                         pos_text, .5f, color);
+        }
+        else{
+            write_string(par, std::to_string(par.factors[0]), 
+                         pos_text, .5f, color);
+        }
+    
+        pos_text = {-1.0f, -0.99f, 0.0f};
+        write_string(par, "f -- floats; i -- ints; up -- value up; down -- value down; left -- bitshift left; right -- bitshift right", 
+                     pos_text, 0.25f, color);
     }
     else{
-        write_string(par, std::to_string(par.factors[0]), 
-                     pos_text, .5f, color1);
+        draw_gate(par);
     }
-
-    pos_text = {-1.0f, -0.99f, 0.0f};
-    write_string(par, "f -- floats; i -- ints; up -- value up; down -- value down; left -- bitshift left; right -- bitshift right", 
-                 pos_text, 0.25f, color1);
 
     SDL_GL_SwapWindow(par.screen);
 
@@ -146,6 +285,7 @@ void bits_par(Param &par){
     par.end = 0;
 
     par.bmap["is_int"] = true;
+    par.bmap["is_gate"] = false;
 
     par.factors.push_back(0);
     par.imap["gcd"] = 3;
@@ -208,5 +348,21 @@ void bits_OGL(Param &par){
     create_line(line, box, box_color);
     line.draw = false;
     par.shapes.push_back(line);
+
+    // Creating all the endpoints for the gate visualization
+    std::vector<glm::vec3> endpoints(2);
+    endpoints[0] = {-0.5, 0.6, 0};    
+    endpoints[1] = {-0.5, -0.8, 0};    
+    create_line(line, endpoints, box_color);
+    line.draw = false;
+    par.shapes.push_back(line);
+
+    endpoints[0] = {-0.9, 0.4, 0};    
+    endpoints[1] = {-0.1, 0.4, 0};    
+    create_line(line, endpoints, box_color);
+    line.draw = false;
+    par.shapes.push_back(line);
+
+    set_gates(par);
 
 }

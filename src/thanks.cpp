@@ -35,20 +35,20 @@ void thanks_fn(Param &par){
     glm::vec3 color = {1.0f, 1.0f, 1.0f};
 
     glm::vec3 pos_text = {-.65, 0.8, 0};
-    write_string(par, par.lines[0], pos_text, 1.0f, color);
+    write_string(par, par.strings[0], pos_text, 1.0f, color);
 
     // Finding time
     //std::cout << curr_time(par) << '\n';
 
     pos_text[0] -= 0.25;
     pos_text[1] -= 0.2;
-    int half = par.lines.size() / 2;
-    for (int i = 1; i < par.lines.size(); ++i){
+    int half = par.strings.size() / 2;
+    for (int i = 1; i < par.strings.size(); ++i){
         if (i == half+1){
             pos_text[0] += 1;
             pos_text[1] = 0.6;
         }
-        write_string(par, par.lines[i], pos_text, 1.0f, color);
+        write_string(par, par.strings[i], pos_text, 1.0f, color);
         pos_text[1] -= 0.15;
     }
 
@@ -103,6 +103,6 @@ void thanks_OGL(Param &par){
     setup_freetype(par);
     create_quad(par.text);
 
-    par.lines = find_names("CONTRIBUTORS.md");
+    par.strings = find_names("CONTRIBUTORS.md");
 
 }
