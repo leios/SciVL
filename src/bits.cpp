@@ -16,8 +16,25 @@
 #include "../include/shaders.h"
 #include "../include/operations.h"
 
+void create_and(Shape &sh, glm::vec3 location, double scale){
+    // first, we need to create the appropriate array
+    std::vector<glm::vec3> array(50);
+    array[0] = {location[0] - scale, location[1] - scale, location[2]};
+    array[1] = {location[0] - scale, location[1] + scale, location[2]};
+    array[2] = {location[0], location[1] + scale, location[2]};
+    array[48] = {location[0], location[1] - scale, location[2]};
+    array[49] = {location[0] - scale, location[1] - scale, location[2]};
+    for (int i = 3; i < 48; ++i){
+        double theta = M_PI * 0.5 - (i-3)*M_PI/45;
+        array[i] = {location[0] + scale*cos(theta), 
+                    location[1] + scale*sin(theta), 0};
+    }
+    glm::vec3 color = {1, 1, 1};
+    create_line(sh, array, color);
+}
+
 void color_gates(Param &par){
-    int index = par.shapes.size() - 16;
+    int index = par.shapes.size() - 22;
     glm::vec3 color1 = {1, 1, 1};
     glm::vec3 color2 = {1, 0, 0};
     for (int i = 0; i < 4; ++i){
@@ -43,7 +60,7 @@ void color_gates(Param &par){
         else{
             add_color_keyframe(par, par.shapes[index], color2, curr_time(par));
         }
-        index++;
+        index += 2;
     }
 }
 
@@ -51,7 +68,7 @@ void gate_change(Param &par, int change){
     if(change < 0 && par.curr_factor > 0){
         par.curr_factor += change;
         if (par.curr_factor == 3){
-            int index = par.shapes.size() - 16;
+            int index = par.shapes.size() - 22;
             for(int i = index; i < par.shapes.size(); ++i){
                 if(par.shapes[i].draw){
                     par.shapes[i].draw = false;
@@ -62,7 +79,7 @@ void gate_change(Param &par, int change){
             }
         }
         if(par.curr_factor == 2){
-            int index = par.shapes.size() - 16;
+            int index = par.shapes.size() - 22;
             for(int i = index; i < par.shapes.size(); ++i){
                 if(par.shapes[i].draw){
                     par.shapes[i].draw = false;
@@ -77,7 +94,7 @@ void gate_change(Param &par, int change){
     if(change > 0 && par.curr_factor < 5){
         par.curr_factor += change;
         if (par.curr_factor == 3){
-            int index = par.shapes.size() - 16;
+            int index = par.shapes.size() - 22;
             for(int i = index; i < par.shapes.size(); ++i){
                 if(par.shapes[i].draw){
                     par.shapes[i].draw = false;
@@ -88,7 +105,7 @@ void gate_change(Param &par, int change){
             }
         }
         if(par.curr_factor == 4){ 
-            int index = par.shapes.size() - 16;
+            int index = par.shapes.size() - 22;
             for(int i = index; i < par.shapes.size(); ++i){
                 if(par.shapes[i].draw){
                     par.shapes[i].draw = false;
@@ -209,7 +226,7 @@ void bits_key(Param &par, SDL_Keysym* Keysym, bool is_down){
         case SDLK_g:
             if (is_down){
                 par.bmap["is_gate"] = true;
-                for (int i = 1; i < par.shapes.size()-4; ++i){
+                for (int i = 1; i < par.shapes.size()-6; ++i){
                     par.shapes[i].draw = true;
                 }
             }
@@ -463,6 +480,9 @@ void bits_OGL(Param &par){
         create_line(line, endpoints, box_color);
         line.draw = false;
         par.shapes.push_back(line);
+
+        create_and(line, {0.5,0.225-i*0.25,0}, 0.1);
+        par.shapes.push_back(line);
     }
 
     // for NOT gate
@@ -485,6 +505,10 @@ void bits_OGL(Param &par){
         endpoints[0] = {0.55, -0.025-i*0.25, 0};    
         endpoints[1] = {0.8, -0.025-i*0.25, 0};    
         create_line(line, endpoints, temp_color);
+        line.draw = false;
+        par.shapes.push_back(line);
+
+        create_and(line, {0.5,-0.025-i*0.25,0}, 0.1);
         line.draw = false;
         par.shapes.push_back(line);
 
