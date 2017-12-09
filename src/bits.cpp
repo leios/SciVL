@@ -16,6 +16,24 @@
 #include "../include/shaders.h"
 #include "../include/operations.h"
 
+void create_xor_line(Shape &sh, glm::vec3 location, double scale){
+    // first, we need to create the appropriate array
+    std::vector<glm::vec3> array(30);
+    for (int i = 0; i < 30; ++i){
+        double theta = M_PI * 0.5 - (i+30)*M_PI/90;
+        array[i] = {location[0] + scale*2*cos(theta) - scale*3.5, 
+                    location[1] + scale*2*sin(theta), 0};
+    }
+    glm::vec3 color = {1, 1, 1};
+    create_line(sh, array, color);
+
+}
+
+void create_dot(Shape &sh, glm::vec3 location, double scale){
+    glm::vec3 loc = {location[0]+scale+0.025, location[1], 0};
+    create_circle(sh, loc, 0.02, {1, 1, 1}, 50);
+}
+
 void create_and(Shape &sh, glm::vec3 location, double scale){
     // first, we need to create the appropriate array
     std::vector<glm::vec3> array(50);
@@ -33,8 +51,43 @@ void create_and(Shape &sh, glm::vec3 location, double scale){
     create_line(sh, array, color);
 }
 
+void create_or(Shape &sh, glm::vec3 location, double scale){
+    // first, we need to create the appropriate array
+    std::vector<glm::vec3> array(90);
+    for (int i = 0; i < 30; ++i){
+        double theta = M_PI * 0.5 - (i+30)*M_PI/90;
+        array[i] = {location[0] + scale*2*cos(theta) - scale*2.8, 
+                    location[1] + scale*2*sin(theta), 0};
+    }
+    for (int i = 30; i < 60; ++i){
+        double theta = -M_PI * 0.5 + (i-20)*M_PI/165;
+        array[i] = {location[0] + scale*4*cos(theta) - scale*1.8, 
+                    location[1] + scale*4*sin(theta) + scale*2.9, 0};
+    }
+    for (int i = 60; i < 90; ++i){
+        double theta = M_PI * 0.5 + (i-100)*M_PI/165;
+        array[i] = {location[0] + scale*4*cos(theta) - scale*1.8, 
+                    location[1] + scale*4*sin(theta) - scale*2.9, 0};
+    }
+    glm::vec3 color = {1, 1, 1};
+    create_line(sh, array, color);
+}
+
+
+void create_not(Shape &sh, glm::vec3 location, double scale){
+    // first, we need to create the appropriate array
+    std::vector<glm::vec3> array(4);
+    array[0] = {location[0] - scale, location[1] - scale, location[2]};
+    array[1] = {location[0] - scale, location[1] + scale, location[2]};
+    array[2] = {location[0] + scale, location[1], location[2]};
+    array[3] = {location[0] - scale, location[1] - scale, location[2]};;
+    glm::vec3 color = {1, 1, 1};
+    create_line(sh, array, color);
+}
+
+
 void color_gates(Param &par){
-    int index = par.shapes.size() - 22;
+    int index = par.shapes.size() - 26;
     glm::vec3 color1 = {1, 1, 1};
     glm::vec3 color2 = {1, 0, 0};
     for (int i = 0; i < 4; ++i){
@@ -60,7 +113,7 @@ void color_gates(Param &par){
         else{
             add_color_keyframe(par, par.shapes[index], color2, curr_time(par));
         }
-        index += 2;
+        index += 3;
     }
 }
 
@@ -68,7 +121,7 @@ void gate_change(Param &par, int change){
     if(change < 0 && par.curr_factor > 0){
         par.curr_factor += change;
         if (par.curr_factor == 3){
-            int index = par.shapes.size() - 22;
+            int index = par.shapes.size() - 26;
             for(int i = index; i < par.shapes.size(); ++i){
                 if(par.shapes[i].draw){
                     par.shapes[i].draw = false;
@@ -79,7 +132,7 @@ void gate_change(Param &par, int change){
             }
         }
         if(par.curr_factor == 2){
-            int index = par.shapes.size() - 22;
+            int index = par.shapes.size() - 26;
             for(int i = index; i < par.shapes.size(); ++i){
                 if(par.shapes[i].draw){
                     par.shapes[i].draw = false;
@@ -94,7 +147,7 @@ void gate_change(Param &par, int change){
     if(change > 0 && par.curr_factor < 5){
         par.curr_factor += change;
         if (par.curr_factor == 3){
-            int index = par.shapes.size() - 22;
+            int index = par.shapes.size() - 26;
             for(int i = index; i < par.shapes.size(); ++i){
                 if(par.shapes[i].draw){
                     par.shapes[i].draw = false;
@@ -105,7 +158,7 @@ void gate_change(Param &par, int change){
             }
         }
         if(par.curr_factor == 4){ 
-            int index = par.shapes.size() - 22;
+            int index = par.shapes.size() - 26;
             for(int i = index; i < par.shapes.size(); ++i){
                 if(par.shapes[i].draw){
                     par.shapes[i].draw = false;
@@ -124,6 +177,10 @@ void gate_change(Param &par, int change){
         par.strings[11] = "0";
         par.strings[12] = "0";
         par.strings[13] = "1";
+        for (int i = 0; i < 4; ++i){
+            create_and(par.shapes[6 + 5*i], {0.55,0.225-i*0.25,0},0.1);
+            par.shapes[7 +5*i].draw = false;
+        }
     }
 
     if (par.strings[par.curr_factor] == "OR"){
@@ -131,6 +188,10 @@ void gate_change(Param &par, int change){
         par.strings[11] = "1";
         par.strings[12] = "1";
         par.strings[13] = "1";
+        for (int i = 0; i < 4; ++i){
+            create_or(par.shapes[6 + 5*i], {0.55,0.225-i*0.25,0},0.1);
+            par.shapes[7 +5*i].draw = false;
+        }
     }
 
     if (par.strings[par.curr_factor] == "XOR"){
@@ -138,6 +199,11 @@ void gate_change(Param &par, int change){
         par.strings[11] = "1";
         par.strings[12] = "1";
         par.strings[13] = "0";
+        for (int i = 0; i < 4; ++i){
+            create_or(par.shapes[6 + 5*i], {0.55,0.225-i*0.25,0},0.1);
+            create_xor_line(par.shapes[7 + 5*i], {0.55,0.225-i*0.25,0},0.1);
+            par.shapes[7 +5*i].draw = true;
+        }
     }
 
     if (par.strings[par.curr_factor] == "NOT"){
@@ -150,6 +216,11 @@ void gate_change(Param &par, int change){
         par.strings[11] = "1";
         par.strings[12] = "1";
         par.strings[13] = "0";
+        for (int i = 0; i < 4; ++i){
+            create_and(par.shapes[6 + 5*i], {0.55,0.225-i*0.25,0},0.1);
+            create_dot(par.shapes[7 + 5*i], {0.55,0.225-i*0.25,0},0.1);
+            par.shapes[7 +5*i].draw = true;
+        }
     }
 
     if (par.strings[par.curr_factor] == "NOR"){
@@ -157,6 +228,11 @@ void gate_change(Param &par, int change){
         par.strings[11] = "0";
         par.strings[12] = "0";
         par.strings[13] = "0";
+        for (int i = 0; i < 4; ++i){
+            create_or(par.shapes[6 + 5*i], {0.55,0.225-i*0.25,0},0.1);
+            create_dot(par.shapes[7 + 5*i], {0.55,0.225-i*0.25,0},0.1);
+            par.shapes[7 +5*i].draw = true;
+        }
     }
     color_gates(par);
 }
@@ -183,22 +259,44 @@ void set_gates(Param &par){
 void draw_gate(Param &par){
     glm::vec3 color = {1, 1, 1};
 
-    glm::vec3 text_pos = {-0.8, 0.45, 0};
-    write_string(par, "IN", text_pos, 1.0f, color);
-
-    text_pos = {-0.45, 0.45, 0};
+    glm::vec3 text_pos = {-0.45, 0.45, 0};
     write_string(par, "OUT", text_pos, 1.0f, color);
 
     if (par.strings[par.curr_factor] != "NOT"){
         for (int i = 0; i < 4; ++i){
-            text_pos = {-0.8, 0.2 - 0.25*i, 0};
-            write_string(par, par.strings[i+6], text_pos, 1.0f, color);
+            text_pos = {-0.85, 0.45, 0};
+            write_string(par, "A", text_pos, 1.0f, color);
+
+            text_pos = {-0.7, 0.45, 0};
+            write_string(par, "B", text_pos, 1.0f, color);
+
+            std::string write_num;
+            if (par.strings[i+6][0] == '0'){
+                write_num = "0";
+            }
+            else{
+                write_num = "1";
+            }
+            text_pos = {-0.85, 0.2 - 0.25*i, 0};
+            write_string(par, write_num, text_pos, 1.0f, color);
+
+            if (par.strings[i+6][1] == '0'){
+                write_num = "0";
+            }
+            else{
+                write_num = "1";
+            }
+            text_pos = {-0.7, 0.2 - 0.25*i, 0};
+            write_string(par, write_num, text_pos, 1.0f, color);
 
             text_pos = {-0.35, 0.2 - 0.25*i, 0};
             write_string(par, par.strings[i+10], text_pos, 1.0f, color);
         }
     }
     else{
+        text_pos = {-0.825, 0.45, 0};
+        write_string(par, "IN", text_pos, 1.0f, color);
+
         text_pos = {-0.8, 0.2 - 0.25, 0};
         write_string(par, "0", text_pos, 1.0f, color);
 
@@ -228,6 +326,9 @@ void bits_key(Param &par, SDL_Keysym* Keysym, bool is_down){
                 par.bmap["is_gate"] = true;
                 for (int i = 1; i < par.shapes.size()-6; ++i){
                     par.shapes[i].draw = true;
+                }
+                for (int i = 0; i < 4; ++i){
+                    par.shapes[7 + i*5].draw = false;
                 }
             }
             break;
@@ -365,7 +466,7 @@ void bits_fn(Param &par){
         }
     
         pos_text = {-1.0f, -0.99f, 0.0f};
-        write_string(par, "f -- floats; i -- ints; up -- value up; down -- value down; left -- bitshift left; right -- bitshift right", 
+        write_string(par, "f -- floats; i -- ints; up -- value up; down -- value down; left -- bitshift left; right -- bitshift right; g -- gates", 
                      pos_text, 0.25f, color);
     }
     else{
@@ -463,25 +564,30 @@ void bits_OGL(Param &par){
 
     // Lines for gate input and output
     for (int i = 0; i < 4; ++i){
-        endpoints[0] = {0.3, 0.25-i*0.25, 0};    
-        endpoints[1] = {0.55, 0.25-i*0.25, 0};    
+        endpoints[0] = {0.3, 0.275-i*0.25, 0};    
+        endpoints[1] = {0.45, 0.275-i*0.25, 0};    
         create_line(line, endpoints, box_color);
         line.draw = false;
         par.shapes.push_back(line);
 
-        endpoints[0] = {0.3, 0.2-i*0.25, 0};    
-        endpoints[1] = {0.55, 0.2-i*0.25, 0};    
+        endpoints[0] = {0.3, 0.175-i*0.25, 0};    
+        endpoints[1] = {0.45, 0.175-i*0.25, 0};    
         create_line(line, endpoints, box_color);
         line.draw = false;
         par.shapes.push_back(line);
 
-        endpoints[0] = {0.55, 0.225-i*0.25, 0};    
+        endpoints[0] = {0.65, 0.225-i*0.25, 0};    
         endpoints[1] = {0.8, 0.225-i*0.25, 0};    
         create_line(line, endpoints, box_color);
         line.draw = false;
         par.shapes.push_back(line);
 
-        create_and(line, {0.5,0.225-i*0.25,0}, 0.1);
+        create_and(line, {0.55,0.225-i*0.25,0}, 0.1);
+        line.draw = false;
+        par.shapes.push_back(line);
+
+        create_xor_line(line, {0.55,0.225-i*0.25,0}, 0.1);
+        line.draw = false;
         par.shapes.push_back(line);
     }
 
@@ -493,7 +599,7 @@ void bits_OGL(Param &par){
             temp_color = color2;
         }
         endpoints[0] = {0.3, -0.025-i*0.25, 0};    
-        endpoints[1] = {0.55, -0.025-i*0.25, 0};    
+        endpoints[1] = {0.45, -0.025-i*0.25, 0};    
         create_line(line, endpoints, temp_color);
         line.draw = false;
         par.shapes.push_back(line);
@@ -502,13 +608,13 @@ void bits_OGL(Param &par){
         if(i == 1){
             temp_color = box_color;
         }
-        endpoints[0] = {0.55, -0.025-i*0.25, 0};    
+        endpoints[0] = {0.65, -0.025-i*0.25, 0};    
         endpoints[1] = {0.8, -0.025-i*0.25, 0};    
         create_line(line, endpoints, temp_color);
         line.draw = false;
         par.shapes.push_back(line);
 
-        create_and(line, {0.5,-0.025-i*0.25,0}, 0.1);
+        create_not(line, {0.55,-0.025-i*0.25,0}, 0.1);
         line.draw = false;
         par.shapes.push_back(line);
 
