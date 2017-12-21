@@ -98,6 +98,7 @@ struct Param{
     std::unordered_map<std::string, double> dmap;
     std::unordered_map<std::string, GLuint> uimap;
     std::unordered_map<std::string, Shader> shmap;
+    std::unordered_map<std::string, std::vector<double>> vdmap;
     std::vector<Shape> shapes;
     std::vector<glm::vec3> positions;
     int end, width, height;
