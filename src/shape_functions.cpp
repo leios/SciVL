@@ -134,49 +134,54 @@ void draw_shape(Param &par, Shape &sh){
 }
 
 // Function to animate a line as it changes with time
+// TODO: finish array drawing
 void animate_line(Param &par, Shape &sh){
+    // Find the total number of elements
+    int element_num = sh.vnum / 4 - 1;
 
     // First, we need to cast the time points onto doubles 
-    std::chrono::duration<double> total_time, curr_time;
-    total_time = std::chrono::duration_cast<std::chrono::duration<double>>
+    std::chrono::milliseconds total_time, curr_time;
+    total_time = std::chrono::duration_cast<std::chrono::milliseconds>
         (sh.end_time - sh.start_time);
-    curr_time = std::chrono::duration_cast<std::chrono::duration<double>>
+    curr_time = std::chrono::duration_cast<std::chrono::milliseconds>
         (par.curr_time - sh.start_time);
-    double ratio = curr_time / total_time;
+    double dt = total_time.count() / (double)element_num;
+
+    int i = floor(curr_time.count() / dt);
+    double ratio = (curr_time.count() - (double)i*dt) / (dt);
 
     // Finding appropriate translation matrix
     glm::vec3 trans, start_loc, end_loc;
-    start_loc = vertex_location(sh,0);
-    end_loc = vertex_location(sh,4);
-    for (int i = 0; i < 3; ++i){
-        trans[i] = (1-ratio) * (start_loc[i] - end_loc[i]);
+    start_loc = vertex_location(sh,i*4);
+    end_loc = vertex_location(sh,i*4+4);
+    for (int j = 0; j < 3; ++j){
+        trans[j] = (1-ratio) * (start_loc[j] - end_loc[j]);
     }
 
     // moving all the vertices for the second part of the line
-    // TODO: generalize for arbitrary arrays
-
-    for (int i = 4; i <= 8; ++i){
-        move_vertex(sh, trans, i);
+    for (int j = i*4+4; j <= i*4+8; ++j){
+        move_vertex(sh, trans, j);
     }
+
+    int index = (i+1)*12 + 6;
 
     par.shmap["default"].Use();
     glBindVertexArray(sh.VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sh.EBO);
-    glDrawElements(sh.rtype, sh.ind, GL_UNSIGNED_INT, 0);
+    glDrawElements(sh.rtype, index, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 
     // Moving the point back
-    // NOTE: This is because for some reason we are influencing the pointer even
-    //       when calling const.
-    for (int i = 0; i < 3; ++i){
-        trans[i] *= -1;
+    // NOTE: This is because for some reason we are influencing the pointer
+    //       even when calling const.
+    for (int j = 0; j < 3; ++j){
+        trans[j] *= -1;
     }
 
-    for (int i = 4; i <= 8; ++i){
-        move_vertex(sh, trans, i);
+    for (int j = i*4+4; j <= i*4+8; ++j){
+        move_vertex(sh, trans, j);
     }
 
-    
 }
 
 // Function to animate a circle as it changes with time

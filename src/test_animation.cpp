@@ -80,29 +80,31 @@ void test_anim_OGL(Param &par){
 
     // Creating a simple line
     Shape line, circle, rect;
-    std::vector<glm::vec3> array(2);
+    std::vector<glm::vec3> array(4);
 
     array[0] = {0.0, 0.0, 0.0};
     array[1] = {0.5, -0.5, 0.0};
+    array[2] = {0.5, 0.5, 0.0};
+    array[3] = {-0.5, 0.5, 0.0};
 
     glm::vec3 licolor = {1.0, 0.0, 1.0};
     glm::vec3 ccolor = {0.0, 0.0, 1.0};
 
     create_line(line, array, licolor);
 
-    add_keyframes(par, line, 1, 2);
+    add_keyframes(par, line, 1, 7);
     par.shapes.push_back(line);
 
     // Working with the circle
     create_circle(circle, array[0], 0.25, ccolor, par.dmap["res"]);
-    add_keyframes(par, circle, 2,3);
+    add_keyframes(par, circle, 7,8);
 
     par.shapes.push_back(circle);
 
     glm::vec3 rect_size = {0.25, 0.25, 0};
     glm::vec3 recolor = {0.0, 1.0, 0.0};
     create_rectangle(rect, array[1], rect_size, recolor); 
-    add_keyframes(par, rect, 3,4);
+    add_keyframes(par, rect, 8,9);
     par.shapes.push_back(rect);
 
 }

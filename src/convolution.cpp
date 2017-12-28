@@ -16,10 +16,46 @@
 #include "../include/shaders.h"
 #include "../include/operations.h"
 
+// Function to animate linear convolution
+void animate_linear_conv(Param &par){
+    std::cout << "animating linear conv..." << '\n';
+}
+
+// Function to animate fft convolution
+void animate_fft_conv(Param &par){
+    std::cout << "animating fft conv..." << '\n';
+}
+
+// Function to perform a convolution
+void conv(Param &par){
+    double sum = 0;
+    std::vector<std::vector<double>> signals(3);
+    signals[0] = par.vdmap["sig1"];
+    signals[1] = par.vdmap["sig2"];
+
+    int n = signals[0].size() + signals[1].size();
+    signals[2].reserve(n);
+
+    for (int i = 0; i < n; ++i){
+        for (int j = 0; j < i; ++j){
+            if (i-j < signals[1].size()-1){
+                if (j < signals[0].size()){
+                    sum += signals[0][j] * signals[1][i-j];
+                }
+            }
+        }
+        signals[2].push_back(sum);
+        sum = 0;
+    }
+
+    normalize(signals[2].data(),n);
+
+    par.vdmap["sig3"] = signals[2];
+}
+
 // Function to perform FFT-based convolution
 void fft_conv(Param &par){
     int n = par.imap["res"];
-    std::cout << n << '\n';
 
     std::vector<std::vector<double>> signals(3);
     signals[0] = par.vdmap["sig1"];
@@ -82,6 +118,16 @@ void convolution_key(Param &par, SDL_Keysym* Keysym, bool is_down){
         case SDLK_q:
             par.end = 1;
             break;
+        case SDLK_f:
+            if (is_down){
+                animate_fft_conv(par);            
+            }
+            break;
+        case SDLK_l:
+            if (is_down){
+                animate_linear_conv(par);
+            }
+            break;
         default:
             break;
 
@@ -105,25 +151,25 @@ void convolution_par(Param &par){
     par.end = 0;
 
     // Creating signals to work with
-    int n = 128;
-    std::vector<double> sig1(128), sig2(128), sig3(128);
+    int n = 1024;
+    std::vector<double> sig1(n), sig2(n);
     for (int i = 0; i < n; ++i){
-        if (i > n / 4 && i < 3*n/4){
+        if (i > 2*n / 5 && i < 3*n/5){
             sig1[i] = 1.0;
+        }
+        if (i > 2*n / 5 && i < 3*n/5){
             sig2[i] = 1.0;
         }
 /*
         sig1[i] = sin(2*M_PI*i/n);
         sig2[i] = cos(2*M_PI*i/n);
 */
-        sig3[i] = 0;
     }
     par.vdmap["sig1"] = sig1;
     par.vdmap["sig2"] = sig2;
-    par.vdmap["sig3"] = sig3;
-    par.imap["res"] = 128;
+    par.imap["res"] = n;
 
-    fft_conv(par);
+    conv(par);
 
 }
 
@@ -170,8 +216,6 @@ void convolution_OGL(Param &par){
         par.shapes.push_back(line);
     }
 
-    int n = par.imap["res"];
-    std::vector<glm::vec3> conv_arr(n);
     ypos = 0.6;
     std::vector<double> signal;
     for (int i = 0; i < 3; ++i){
@@ -184,8 +228,9 @@ void convolution_OGL(Param &par){
         else if(i == 2){
              signal = par.vdmap["sig3"];
         }
-        for (int i = 0; i < n; ++i){
-            conv_arr[i][0] = -0.9 + i*1.8/(n-1);
+        std::vector<glm::vec3> conv_arr(signal.size());
+        for (int i = 0; i < signal.size(); ++i){
+            conv_arr[i][0] = -0.9 + i*1.8/(signal.size()-1);
             conv_arr[i][1] = ypos + signal[i]*0.3;
             conv_arr[i][2] = 0;
         }
@@ -193,6 +238,7 @@ void convolution_OGL(Param &par){
         glm::vec3 licolor = {1.0, 1.0, 1.0};
     
         create_line(line, conv_arr, licolor);
+        add_keyframes(par, line, 1, 2);
     
         par.shapes.push_back(line);
 
