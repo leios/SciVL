@@ -68,6 +68,8 @@ struct Shape{
     GLuint VAO, VBO, EBO;
     double rad = 0.01;
     Type type;
+    glm::vec3 loc1 = {0,0,0};
+    glm::vec3 loc2 = {0,0,0};
 
     // Integer for the number of vertices
     int vnum;
@@ -76,6 +78,7 @@ struct Shape{
     // Stage of simulation
     int stage;
     int color_index = 0;
+    int move_index = 0;
 
     int rtype = GL_TRIANGLES;
     void destroy();
@@ -85,7 +88,9 @@ struct Shape{
     std::chrono::high_resolution_clock::time_point end_time = 
         std::chrono::high_resolution_clock::now();
     std::vector<std::chrono::high_resolution_clock::time_point> color_keyframes;
+    std::vector<std::chrono::high_resolution_clock::time_point> move_keyframes;
     std::vector<glm::vec3> colors;
+    std::vector<glm::vec3> locations;
     //double start_time, end_time;
     bool draw = true;
 };

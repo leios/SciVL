@@ -38,6 +38,9 @@ void animate_circle(Param &par, Shape &sh);
 // Function to animate a rect as it changes with time
 void animate_rect(Param &par, Shape &sh);
 
+// Function to animate a shape moving with time
+void animate_move(Param &par, Shape &sh);
+
 // Function to draw all shapes in the par shape map
 void draw_shapes(Param &par);
 
@@ -81,5 +84,6 @@ void update_line(Shape &sh, glm::vec3 *new_array);
 // Function to add keyframes to a shape for drawing
 void add_keyframes(Param &par, Shape &sh, double start_time, double end_time);
 void add_color_keyframe(Param &par, Shape &sh, glm::vec3 &color, double time);
+void add_move_keyframe(Param &par, Shape &sh, glm::vec3 &loc, double time);
 
 #endif

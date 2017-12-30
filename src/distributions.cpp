@@ -37,6 +37,9 @@ void std_fn(Param &par){
     // OpenGL stuff
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+    glm::vec3 text_color = {1, 0, 0};
+    glm::vec3 pos = {0, 0, 0};
+    write_string(par, "whatever", pos, 1.0f, text_color);
 
     SDL_GL_SwapWindow(par.screen);
 

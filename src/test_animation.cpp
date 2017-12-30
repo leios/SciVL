@@ -93,6 +93,12 @@ void test_anim_OGL(Param &par){
     create_line(line, array, licolor);
 
     add_keyframes(par, line, 1, 7);
+    glm::vec3 loc = {0,0,0};
+    add_move_keyframe(par, line, loc, 7);
+    loc = {1,1,0};
+    add_move_keyframe(par, line, loc, 8);
+    loc = {-1,-1,0};
+    add_move_keyframe(par, line, loc, 12);
     par.shapes.push_back(line);
 
     // Working with the circle

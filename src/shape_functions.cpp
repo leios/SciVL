@@ -124,6 +124,12 @@ void transform_shape(Shape &sh, glm::mat3 &transform){
 // Function to draw a single shape
 void draw_shape(Param &par, Shape &sh){
 
+    if (sh.loc1 != sh.loc2){
+        glm::vec3 diff = {sh.loc2[0] - sh.loc1[0], sh.loc2[1] - sh.loc1[1], 
+                          sh.loc2[2] - sh.loc1[2]};
+        move_shape(sh, diff);
+        sh.loc1 = sh.loc2;
+    }
     if(sh.draw){
         par.shmap["default"].Use();
         glBindVertexArray(sh.VAO);
@@ -185,7 +191,7 @@ void animate_line(Param &par, Shape &sh){
 }
 
 // Function to animate a circle as it changes with time
-// TODO: add sinple animations
+// TODO: add simple animations
 void animate_circle(Param &par, Shape &sh){
 
     // First, we need to cast the time points onto doubles 
@@ -284,7 +290,28 @@ void animate_rect(Param &par, Shape &sh){
 
 }
 
+// Function to animate the movement of an object
+void animate_move(Param &par, Shape &sh){
+    // First, we need to cast the time points onto doubles 
+    std::chrono::milliseconds total_time, curr_time;
+    total_time = std::chrono::duration_cast<std::chrono::milliseconds>
+        (sh.move_keyframes[sh.move_index] - sh.move_keyframes[sh.move_index-1]);
+    curr_time = std::chrono::duration_cast<std::chrono::milliseconds>
+        (par.curr_time - sh.move_keyframes[sh.move_index-1]);
+    double ratio = (double)curr_time.count() / total_time.count();
 
+    int count = sh.move_index;
+    if (count < sh.locations.size()){
+        glm::vec3 diff = {sh.locations[count][0] - sh.locations[count-1][0], 
+                          sh.locations[count][1] - sh.locations[count-1][1], 
+                          sh.locations[count][2] - sh.locations[count-1][2]};
+        sh.loc2 = {sh.locations[count-1][0] + diff[0]*ratio,
+                   sh.locations[count-1][1] + diff[1]*ratio,
+                   sh.locations[count-1][2] + diff[2]*ratio}; 
+
+    }
+
+}
 
 // Function to draw all shapes in the par shape map
 void draw_shapes(Param &par){
@@ -314,6 +341,16 @@ void draw_shapes(Param &par){
                 change_color(par.shapes[i],
                              par.shapes[i].colors[par.shapes[i].color_index]);
                 par.shapes[i].color_index++;
+            }
+            if(par.shapes[i].move_keyframes.size() > 0 &&
+               par.curr_time < 
+                   par.shapes[i].move_keyframes[par.shapes[i].move_index]){
+               animate_move(par, par.shapes[i]);
+            }
+            else if(par.shapes[i].move_keyframes.size() > 0 &&
+               par.curr_time > 
+                   par.shapes[i].move_keyframes[par.shapes[i].move_index]){
+                par.shapes[i].move_index++;
             }
         }
     }
@@ -393,6 +430,7 @@ void create_rectangle(Shape &rect, glm::vec3 &pos,
     rect.ind = 6;
 
     rect.type = Type::rect;
+    rect.locations.push_back({0,0,0});
 
 }
 
@@ -459,6 +497,7 @@ Shape create_square(Param &par){
 
     square.vnum = 4;
     square.ind = 6;
+    square.locations.push_back({0,0,0});
 
     return square;
 }
@@ -572,6 +611,7 @@ void create_circle(Shape &circle, glm::vec3 &pos, double radius,
     circle.vnum = res+1;
     circle.ind = res*3;
     circle.type = Type::circle;
+    circle.locations.push_back({0,0,0});
     //std::cout << "index number is: " << circle.ind << '\n';
 
 }
@@ -824,6 +864,7 @@ void create_line(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
     line.ind = (size-1)*12 +6;
 
     line.type = Type::line;
+    line.locations.push_back({0,0,0});
 }
 
 // Function to add keyframes to shape for drawing
@@ -845,5 +886,18 @@ void add_color_keyframe(Param &par, Shape &sh, glm::vec3 &color, double time){
         std::chrono::milliseconds((int)(time *1000));
     sh.color_keyframes.push_back(par.start_time + time_offset);
     sh.colors.push_back(color);
+    
+}
+
+// Function to add keyframes to shape for drawing
+void add_move_keyframe(Param &par, Shape &sh, glm::vec3 &loc, double time){
+
+    if (sh.move_keyframes.size() < 1){
+        sh.move_keyframes.push_back(par.curr_time);
+    }
+    std::chrono::milliseconds time_offset = 
+        std::chrono::milliseconds((int)(time *1000));
+    sh.move_keyframes.push_back(par.start_time + time_offset);
+    sh.locations.push_back(loc);
     
 }

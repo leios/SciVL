@@ -142,6 +142,20 @@ void convolution_fn(Param &par){
 
     draw_shapes(par);
 
+    double ypos = 0.725;
+    glm::vec3 text_color = {1, 1, 1};
+
+    for (int i = 0; i < 2; ++i){
+        glm::vec3 pos_text = {-0.9, ypos, 0};
+        ypos -= 0.5;
+        if (i == 0){
+            write_string(par, "Signal 1:", pos_text, 1, text_color);
+        }
+        if (i == 1){
+            write_string(par, "Signal 2:", pos_text, 1, text_color);
+        }
+    }
+
     SDL_GL_SwapWindow(par.screen);
 
 }
@@ -160,16 +174,17 @@ void convolution_par(Param &par){
         if (i > 2*n / 5 && i < 3*n/5){
             sig2[i] = 1.0;
         }
-/*
-        sig1[i] = sin(2*M_PI*i/n);
-        sig2[i] = cos(2*M_PI*i/n);
-*/
+        //sig1[i] = sin(2*M_PI*i/n);
+        //sig2[i] = cos(2*M_PI*i/n);
     }
     par.vdmap["sig1"] = sig1;
     par.vdmap["sig2"] = sig2;
     par.imap["res"] = n;
 
     conv(par);
+
+    par.font = "fonts/LinLibertine_Rah.ttf";
+    par.font_size = sqrt(par.width*par.width + par.height*par.height) / 16;
 
 }
 
@@ -199,15 +214,32 @@ void convolution_OGL(Param &par){
     glEnable(GL_POINT_SMOOTH);
     glPointSize(10);
 
+    Shader textShader;
+    textShader.Load("shaders/text.vtx", "shaders/text.frg");
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(par.width), 
+                                      0.0f, static_cast<GLfloat>(par.height));
+    textShader.Use();
+    glUniformMatrix4fv(glGetUniformLocation(textShader.Program, "projection"), 
+                       1, GL_FALSE, glm::value_ptr(projection));
+    par.shmap["text"] = textShader;
+    setup_freetype(par);
+    create_quad(par.text);
+
     // Creating a simple line
     Shape line;
     std::vector<glm::vec3> array(2);
 
-    double ypos = 0.6;
-    for (int i = 0; i < 3; ++i){
-        array[0] = {-0.9, ypos, 0.0};
-        array[1] = {0.9, ypos, 0.0};
-        ypos -= 0.6;
+    double ypos = 0.75;
+    for (int i = 0; i < 4; ++i){
+        if (i < 2){
+            array[0] = {-0.0, ypos, 0.0};
+            array[1] = {0.9, ypos, 0.0};
+        }
+        else{
+            array[0] = {-0.9, ypos, 0.0};
+            array[1] = {0.9, ypos, 0.0};
+        }
+        ypos -= 0.5;
 
         glm::vec3 licolor = {0.5, 0.5, 0.5};
     
@@ -216,9 +248,9 @@ void convolution_OGL(Param &par){
         par.shapes.push_back(line);
     }
 
-    ypos = 0.6;
+    ypos = 0.75;
     std::vector<double> signal;
-    for (int i = 0; i < 3; ++i){
+    for (int i = 0; i < 4; ++i){
         if(i == 0){
              signal = par.vdmap["sig1"];
         }
@@ -226,22 +258,60 @@ void convolution_OGL(Param &par){
              signal = par.vdmap["sig2"];
         }
         else if(i == 2){
+             signal = par.vdmap["sig1"];
+        }
+        else if(i == 3){
              signal = par.vdmap["sig3"];
         }
         std::vector<glm::vec3> conv_arr(signal.size());
-        for (int i = 0; i < signal.size(); ++i){
-            conv_arr[i][0] = -0.9 + i*1.8/(signal.size()-1);
-            conv_arr[i][1] = ypos + signal[i]*0.3;
-            conv_arr[i][2] = 0;
+        if (i < 2){
+            for (int i = 0; i < signal.size(); ++i){
+                conv_arr[i][0] = 0.0 + i*0.9/(signal.size()-1);
+                conv_arr[i][1] = ypos + signal[i]*0.1;
+                conv_arr[i][2] = 0;
+            }
         }
-        ypos -= 0.6;
+        else{
+            for (int i = 0; i < signal.size(); ++i){
+                conv_arr[i][0] = -0.9 + i*1.8/(signal.size()-1);
+                conv_arr[i][1] = ypos + signal[i]*0.2;
+                conv_arr[i][2] = 0;
+            }
+        }
+        ypos -= 0.5;
         glm::vec3 licolor = {1.0, 1.0, 1.0};
     
         create_line(line, conv_arr, licolor);
-        add_keyframes(par, line, 1, 2);
+        if (i < 2){
+            add_keyframes(par, line, 1, 2);
+        }
+        else if (i == 2){
+            add_keyframes(par, line, 2, 3);
+        }
+        else if (i == 3){
+            add_keyframes(par, line, 3, 7);
+        }
     
         par.shapes.push_back(line);
 
-    }   
+    }
+
+    // Adding the 5th waveform to move across the 3rd waveform
+    Shape sh;
+    signal = par.vdmap["sig2"];
+    std::vector<glm::vec3> conv_arr(signal.size());
+    for (int i = 0; i < signal.size(); ++i){
+        conv_arr[i][0] = -2.9 + i*1.8/(signal.size()-1);
+        conv_arr[i][1] = -0.25 + signal[i]*0.2;
+        conv_arr[i][2] = 0;
+    }
+    glm::vec3 licolor = {0.5, 0.5, 1.0};
+    create_line(sh, conv_arr, licolor);
+    glm::vec3 loc = {0,0,0};
+    add_move_keyframe(par, sh, loc, 3);
+    loc = {4,0,0};
+    add_move_keyframe(par, sh, loc, 7);
+
+    par.shapes.push_back(sh);
 
 }
