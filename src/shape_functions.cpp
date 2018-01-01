@@ -320,7 +320,8 @@ void draw_shapes(Param &par){
             if (par.curr_time > par.shapes[i].end_time){
                 draw_shape(par, par.shapes[i]);
             }
-            if (par.curr_time >  par.shapes[i].start_time && 
+            if (par.shapes[i].draw &&
+                par.curr_time >  par.shapes[i].start_time && 
                 par.curr_time <  par.shapes[i].end_time){
                 switch(par.shapes[i].type){
                     case line: 
@@ -900,4 +901,35 @@ void add_move_keyframe(Param &par, Shape &sh, glm::vec3 &loc, double time){
     sh.move_keyframes.push_back(par.start_time + time_offset);
     sh.locations.push_back(loc);
     
+}
+
+// Function to shift keyframes forward by a specified fdouble value
+void shift_keyframes(Param &par, Shape &sh, double time){
+
+    std::chrono::milliseconds offset = 
+        std::chrono::milliseconds((int)(time * 1000));
+
+    sh.start_time += offset;
+    sh.end_time += offset;
+}
+
+void shift_color_keyframes(Param &par, Shape &sh, double time){
+
+    std::chrono::milliseconds offset = 
+        std::chrono::milliseconds((int)(time * 1000));
+
+    for (auto& key : sh.color_keyframes){
+        key += offset;
+    }
+}
+
+void shift_move_keyframes(Param &par, Shape &sh, double time){
+
+    std::chrono::milliseconds offset = 
+        std::chrono::milliseconds((int)(time * 1000));
+
+    for (auto& key : sh.move_keyframes){
+        key += offset;
+    }
+
 }

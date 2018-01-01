@@ -19,11 +19,29 @@
 // Function to animate linear convolution
 void animate_linear_conv(Param &par){
     std::cout << "animating linear conv..." << '\n';
+    par.bmap["linear"] = true;
+
+    // setting all appropriate shapes to draw
+    for (int i = 0; i < par.shapes.size(); ++i){
+        par.shapes[i].draw = (i < par.imap["shape_number"]);
+    }
+    double offset = par.dmap["offset"];
+    for (Shape& sh : par.shapes){
+        shift_keyframes(par, sh, curr_time(par) - offset);
+        shift_color_keyframes(par, sh, curr_time(par) - offset);
+        shift_move_keyframes(par, sh, curr_time(par) - offset);
+    }
+    par.dmap["offset"] = curr_time(par);
 }
 
 // Function to animate fft convolution
 void animate_fft_conv(Param &par){
     std::cout << "animating fft conv..." << '\n';
+    par.bmap["linear"] = false;
+    // setting all appropriate shapes to draw
+    for (int i = 0; i < par.shapes.size(); ++i){
+        par.shapes[i].draw = (i > par.imap["shape_number"]);
+    }
 }
 
 // Function to perform a convolution
@@ -145,15 +163,19 @@ void convolution_fn(Param &par){
     double ypos = 0.725;
     glm::vec3 text_color = {1, 1, 1};
 
-    for (int i = 0; i < 2; ++i){
-        glm::vec3 pos_text = {-0.9, ypos, 0};
-        ypos -= 0.5;
-        if (i == 0){
-            write_string(par, "Signal 1:", pos_text, 1, text_color);
+    if (par.bmap["linear"]){
+        for (int i = 0; i < 2; ++i){
+            glm::vec3 pos_text = {-0.9, ypos, 0};
+            ypos -= 0.5;
+            if (i == 0){
+                write_string(par, "Signal 1:", pos_text, 1, text_color);
+            }
+            if (i == 1){
+                write_string(par, "Signal 2:", pos_text, 1, text_color);
+            }
         }
-        if (i == 1){
-            write_string(par, "Signal 2:", pos_text, 1, text_color);
-        }
+    }
+    else{
     }
 
     SDL_GL_SwapWindow(par.screen);
@@ -163,6 +185,10 @@ void convolution_fn(Param &par){
 void convolution_par(Param &par){
     par.dist = "test_anim";
     par.end = 0;
+
+    par.dmap["offset"] = 0.0;
+    par.imap["shape_number"] = 9;
+    par.bmap["linear"] = true;
 
     // Creating signals to work with
     int n = 1024;
@@ -174,11 +200,18 @@ void convolution_par(Param &par){
         if (i > 2*n / 5 && i < 3*n/5){
             sig2[i] = 1.0;
         }
-        //sig1[i] = sin(2*M_PI*i/n);
-        //sig2[i] = cos(2*M_PI*i/n);
+        //sig1[i] = sin(2*M_PI*i/n) * (double)i/n;
+        //sig2[i] = cos(2*M_PI*i/n) * (double)i/n;
     }
     par.vdmap["sig1"] = sig1;
     par.vdmap["sig2"] = sig2;
+
+    std::vector<double> sig_temp(n);
+    for (int i = 0; i < n; ++i){
+        sig_temp[i] = sig2[n-i-1];
+    }
+    par.vdmap["sig2_flip"] = sig_temp;
+
     par.imap["res"] = n;
 
     conv(par);
@@ -298,7 +331,7 @@ void convolution_OGL(Param &par){
 
     // Adding the 5th waveform to move across the 3rd waveform
     Shape sh;
-    signal = par.vdmap["sig2"];
+    signal = par.vdmap["sig2_flip"];
     std::vector<glm::vec3> conv_arr(signal.size());
     for (int i = 0; i < signal.size(); ++i){
         conv_arr[i][0] = -2.9 + i*1.8/(signal.size()-1);

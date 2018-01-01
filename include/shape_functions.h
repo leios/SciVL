@@ -86,4 +86,9 @@ void add_keyframes(Param &par, Shape &sh, double start_time, double end_time);
 void add_color_keyframe(Param &par, Shape &sh, glm::vec3 &color, double time);
 void add_move_keyframe(Param &par, Shape &sh, glm::vec3 &loc, double time);
 
+// Functions to shift keyframes by a double value
+void shift_keyframes(Param &par, Shape &sh, double time);
+void shift_color_keyframes(Param &par, Shape &sh, double time);
+void shift_move_keyframes(Param &par, Shape &sh, double time);
+
 #endif
