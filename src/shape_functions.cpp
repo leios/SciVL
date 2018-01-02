@@ -918,9 +918,14 @@ void shift_color_keyframes(Param &par, Shape &sh, double time){
     std::chrono::milliseconds offset = 
         std::chrono::milliseconds((int)(time * 1000));
 
+    sh.color_index = 0;
     for (auto& key : sh.color_keyframes){
         key += offset;
+        if (key < par.curr_time){
+            sh.color_index++;
+        }
     }
+
 }
 
 void shift_move_keyframes(Param &par, Shape &sh, double time){
@@ -928,8 +933,12 @@ void shift_move_keyframes(Param &par, Shape &sh, double time){
     std::chrono::milliseconds offset = 
         std::chrono::milliseconds((int)(time * 1000));
 
+    sh.move_index = 0;
     for (auto& key : sh.move_keyframes){
         key += offset;
+        if (key < par.curr_time){
+            sh.move_index++;
+        }
     }
 
 }

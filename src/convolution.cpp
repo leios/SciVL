@@ -16,6 +16,11 @@
 #include "../include/shaders.h"
 #include "../include/operations.h"
 
+// Function for abs of complex number
+double complex_abs(fftw_complex val){
+    return sqrt(val[0]*val[0] + val[1]*val[1]);
+}
+
 // Function to animate linear convolution
 void animate_linear_conv(Param &par){
     std::cout << "animating linear conv..." << '\n';
@@ -40,8 +45,15 @@ void animate_fft_conv(Param &par){
     par.bmap["linear"] = false;
     // setting all appropriate shapes to draw
     for (int i = 0; i < par.shapes.size(); ++i){
-        par.shapes[i].draw = (i > par.imap["shape_number"]);
+        par.shapes[i].draw = (i >= par.imap["shape_number"]);
     }
+    double offset = par.dmap["offset"];
+    for (Shape& sh : par.shapes){
+        shift_keyframes(par, sh, curr_time(par) - offset);
+        shift_color_keyframes(par, sh, curr_time(par) - offset);
+        shift_move_keyframes(par, sh, curr_time(par) - offset);
+    }
+    par.dmap["offset"] = curr_time(par);
 }
 
 // Function to perform a convolution
@@ -78,7 +90,7 @@ void fft_conv(Param &par){
     std::vector<std::vector<double>> signals(3);
     signals[0] = par.vdmap["sig1"];
     signals[1] = par.vdmap["sig2"];
-    signals[2] = par.vdmap["sig3"];
+    signals[2].reserve(signals[0].size());
 
     // Creating the two arrays for fft'ing
     std::vector<fftw_complex *> waves(3), ftwaves(3);
@@ -118,11 +130,25 @@ void fft_conv(Param &par){
     fftw_destroy_plan(plan);
 
     for (int i = 0; i < n; ++i){
-        signals[2][i] = waves[2][i][0]; 
+        signals[2].push_back(waves[2][i][0]); 
     }
     normalize(signals[2].data(),n);
 
     par.vdmap["sig3"] = signals[2];
+
+    // Adding ftwaves to signal map
+    std::vector<std::vector<double>> abs_ftwaves(3);
+    for (int i = 0; i < 3; ++i){
+        abs_ftwaves[i].reserve(n/2);
+        for (int j = 0; j < n/2; ++j){
+            abs_ftwaves[i].push_back(complex_abs(ftwaves[i][j]));
+        }
+        normalize(abs_ftwaves[i].data(), abs_ftwaves[i].size());
+    }
+
+    par.vdmap["abs_sig1"] = abs_ftwaves[0];
+    par.vdmap["abs_sig2"] = abs_ftwaves[1];
+    par.vdmap["abs_sig3"] = abs_ftwaves[2];
 
 }
 
@@ -176,6 +202,10 @@ void convolution_fn(Param &par){
         }
     }
     else{
+        glm::vec3 pos_text = {-0.7, 0.75, 0};
+        write_string(par, "REAL", pos_text, 1, text_color);
+        pos_text = {0.25, 0.75, 0};
+        write_string(par, "FREQ", pos_text, 1, text_color);
     }
 
     SDL_GL_SwapWindow(par.screen);
@@ -194,14 +224,16 @@ void convolution_par(Param &par){
     int n = 1024;
     std::vector<double> sig1(n), sig2(n);
     for (int i = 0; i < n; ++i){
+/*
         if (i > 2*n / 5 && i < 3*n/5){
             sig1[i] = 1.0;
         }
         if (i > 2*n / 5 && i < 3*n/5){
             sig2[i] = 1.0;
         }
-        //sig1[i] = sin(2*M_PI*i/n) * (double)i/n;
-        //sig2[i] = cos(2*M_PI*i/n) * (double)i/n;
+*/
+        sig1[i] = sin(50*M_PI*i/n) * (double)i/n;
+        sig2[i] = cos(20*M_PI*i/n) * (double)i/n;
     }
     par.vdmap["sig1"] = sig1;
     par.vdmap["sig2"] = sig2;
@@ -347,4 +379,92 @@ void convolution_OGL(Param &par){
 
     par.shapes.push_back(sh);
 
+    ypos = 0.3;
+    double xpos = -0.05;
+    Shape fft_line;
+
+    fft_conv(par);
+
+    for (int i = 0; i < 6; ++i){
+        if (i % 2 == 0){
+            array[0] = {-0.9, ypos, 0.0};
+            array[1] = {xpos, ypos, 0.0};
+        }
+        else{
+            array[0] = {xpos + 0.1, ypos, 0.0};
+            array[1] = {0.9, ypos, 0.0};
+            ypos -= 0.5;
+        }
+
+        glm::vec3 licolor = {0.5, 0.5, 0.5};
+    
+        create_line(fft_line, array, licolor);
+    
+        fft_line.draw = false;
+        par.shapes.push_back(fft_line);
+
+    }
+
+    // Visualizing the signals
+    ypos = 0.3;
+    for (int i = 0; i < 6; ++i){
+        std::string sig_string;
+        if (i==0){
+            sig_string = "sig1";
+        }
+        else if (i==1){
+            sig_string = "abs_sig1";
+        }
+        else if (i==2){
+            sig_string = "sig2";
+        }
+        else if (i==3){
+            sig_string = "abs_sig2";
+        }
+        else if (i==4){
+            sig_string = "sig3";
+        }
+        else if (i==5){
+            sig_string = "abs_sig3";
+        }
+
+        if (i % 2 == 0){
+            xpos = -0.9;
+        }
+        else{
+            xpos = 0.05;
+        }
+        signal = par.vdmap[sig_string];
+        std::vector<glm::vec3> fft_conv_arr(signal.size());
+        for (int i = 0; i < signal.size(); ++i){
+            fft_conv_arr[i][0] = xpos + i*0.85/(signal.size()-1);
+            fft_conv_arr[i][1] = ypos + signal[i]*0.2;
+            fft_conv_arr[i][2] = 0;
+        }
+
+        glm::vec3 licolor = {1, 1, 1};
+    
+        create_line(fft_line, fft_conv_arr, licolor);
+
+        if (i % 2 == 0 && i < 4){
+            add_keyframes(par, fft_line, 1,2);
+        }
+        else if (i%2 != 0 && i < 4){
+            add_keyframes(par, fft_line, 2,3);
+        }
+        else if (i == 4){
+            add_keyframes(par, fft_line, 4,5);
+        }
+        else if (i == 5){
+            add_keyframes(par, fft_line, 3,4);
+        }
+    
+        fft_line.draw = false;
+        par.shapes.push_back(fft_line);
+
+        if (i % 2 != 0){
+            ypos -= 0.5;
+        }
+
+    }
 }
