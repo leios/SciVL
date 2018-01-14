@@ -131,7 +131,7 @@ void draw_shape(Param &par, Shape &sh){
         sh.loc1 = sh.loc2;
     }
     if(sh.draw){
-        par.shmap["default"].Use();
+        par.shmap[sh.shader].Use();
         glBindVertexArray(sh.VAO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sh.EBO);
         glDrawElements(sh.rtype, sh.ind, GL_UNSIGNED_INT, 0);

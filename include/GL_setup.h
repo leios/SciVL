@@ -93,6 +93,8 @@ struct Shape{
     std::vector<glm::vec3> locations;
     //double start_time, end_time;
     bool draw = true;
+
+    std::string shader = "default";
 };
 
 // struct to hold most data

@@ -136,10 +136,19 @@ void normalize(double* array, int size){
             min = array[i];
         }
     }
+    //std::cout << "max is: " << max << '\t' << "min is: " << min << '\n';
 
     // Dividing by the maximum value
     for (int i = 0; i < size; ++i){
-        array[i] /= (max - min);
+        if (max < 0){
+            array[i] -= max;
+        }
+        if (min > 0){
+            array[i] -= min;
+        }
+        if (max - min != 0){
+            array[i] /= (max - min);
+        }
     }
 
 }

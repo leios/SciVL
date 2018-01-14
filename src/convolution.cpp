@@ -16,6 +16,56 @@
 #include "../include/shaders.h"
 #include "../include/operations.h"
 
+void find_mult_signal(Param &par){
+    std::vector<double> mult_signal = par.vdmap["mult_sig"];
+    std::vector<double> sig1 = par.vdmap["sig1"];
+    std::vector<double> sig2 = par.vdmap["sig2"];
+
+    int i = 0;
+    double ctime;
+    if (par.shapes.size() > 0){
+        std::chrono::high_resolution_clock::time_point now = 
+            std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(now - par.shapes[0].start_time);
+        ctime = time_span.count();
+        i = (ctime - 3) / 4 * mult_signal.size();
+    }
+    if (i < 0 || i >= mult_signal.size()){
+        i = 0;
+    }
+    if (i > 0){
+        for (int j = 0; j < mult_signal.size(); ++j){
+            if (j < i && i-j < sig2.size()-1 && j < sig1.size()){
+                mult_signal[j] = sig1[j] * sig2[i-j];
+                //mult_signal[2*j+1] = mult_signal[2*j];
+            }
+            else{
+                mult_signal[j] = 0;
+            }
+        }
+        normalize(mult_signal.data(), mult_signal.size());
+
+        // Updating the array
+        glm::vec3 *new_line;
+        new_line = (glm::vec3 *)malloc(sizeof(glm::vec3)*mult_signal.size());
+        double ypos = -0.45;
+        for (int i = 0; i < mult_signal.size()/2; ++i){
+            new_line[i][0] = -0.9 + i*1.8/(mult_signal.size()/2-1);
+            new_line[i][1] = ypos + mult_signal[i]*0.2;
+            new_line[i][2] = 0;
+        }
+        update_line(par.shapes[8],new_line);
+        free(new_line);
+    }
+    
+/*
+    for (double &val : mult_signal){
+        std::cout << val << '\n';
+    }
+*/
+    par.vdmap["mult_sig"] = mult_signal;
+}
+
 // Function for abs of complex number
 double complex_abs(fftw_complex val){
     return sqrt(val[0]*val[0] + val[1]*val[1]);
@@ -184,6 +234,7 @@ void convolution_fn(Param &par){
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    find_mult_signal(par);
     draw_shapes(par);
 
     double ypos = 0.725;
@@ -217,26 +268,28 @@ void convolution_par(Param &par){
     par.end = 0;
 
     par.dmap["offset"] = 0.0;
-    par.imap["shape_number"] = 9;
+    par.imap["shape_number"] = 11;
     par.bmap["linear"] = true;
 
     // Creating signals to work with
-    int n = 1024;
-    std::vector<double> sig1(n), sig2(n);
+    int n = 128;
+    std::vector<double> sig1(n), sig2(n), mult_signal(2*n);
     for (int i = 0; i < n; ++i){
-/*
         if (i > 2*n / 5 && i < 3*n/5){
             sig1[i] = 1.0;
         }
         if (i > 2*n / 5 && i < 3*n/5){
             sig2[i] = 1.0;
         }
-*/
-        sig1[i] = sin(50*M_PI*i/n) * (double)i/n;
-        sig2[i] = cos(20*M_PI*i/n) * (double)i/n;
+        //sig1[i] = sin(2*M_PI*i/n); // * (double)i/n;
+        //sig2[i] = sin(2*M_PI*i/n); // * (double)i/n;
     }
     par.vdmap["sig1"] = sig1;
     par.vdmap["sig2"] = sig2;
+    for (double &val : mult_signal){
+        val = 0;
+    }
+    par.vdmap["mult_sig"] = mult_signal;
 
     std::vector<double> sig_temp(n);
     for (int i = 0; i < n; ++i){
@@ -273,6 +326,10 @@ void convolution_OGL(Param &par){
     defaultShader.Load("shaders/default.vtx", "shaders/default.frg");
     par.shmap["default"] = defaultShader;
 
+    Shader convolutionShader;
+    convolutionShader.Load("shaders/convolution.vtx","shaders/convolution.frg");
+    par.shmap["convolution"] = convolutionShader;
+
     glEnable(GL_LINE_SMOOTH);
     glLineWidth(2);
 
@@ -290,12 +347,22 @@ void convolution_OGL(Param &par){
     setup_freetype(par);
     create_quad(par.text);
 
+/*
+    Shape rect;
+    glm::vec3 rloc = {0,-0.25,0};
+    glm::vec3 rsize = {1.8,0.4,0};
+    glm::vec3 rcolor = {0.5,0,0.5};
+    create_rectangle(rect, rloc, rsize, rcolor); 
+    rect.shader = "convolution";
+    par.shapes.push_back(rect);
+*/
+
     // Creating a simple line
     Shape line;
     std::vector<glm::vec3> array(2);
 
     double ypos = 0.75;
-    for (int i = 0; i < 4; ++i){
+    for (int i = 0; i < 5; ++i){
         if (i < 2){
             array[0] = {-0.0, ypos, 0.0};
             array[1] = {0.9, ypos, 0.0};
@@ -304,7 +371,7 @@ void convolution_OGL(Param &par){
             array[0] = {-0.9, ypos, 0.0};
             array[1] = {0.9, ypos, 0.0};
         }
-        ypos -= 0.5;
+        ypos -= 0.4;
 
         glm::vec3 licolor = {0.5, 0.5, 0.5};
     
@@ -315,45 +382,54 @@ void convolution_OGL(Param &par){
 
     ypos = 0.75;
     std::vector<double> signal;
-    for (int i = 0; i < 4; ++i){
+    for (int i = 0; i < 5; ++i){
+        int n;
         if(i == 0){
              signal = par.vdmap["sig1"];
+             n = signal.size();
         }
         else if(i == 1){
              signal = par.vdmap["sig2"];
+             n = signal.size();
         }
         else if(i == 2){
              signal = par.vdmap["sig1"];
+             n = signal.size();
         }
         else if(i == 3){
-             signal = par.vdmap["sig3"];
+             signal = par.vdmap["mult_sig"];
+             n = signal.size() / 2;
         }
-        std::vector<glm::vec3> conv_arr(signal.size());
+        else if(i == 4){
+             signal = par.vdmap["sig3"];
+             n = signal.size();
+        }
+        std::vector<glm::vec3> conv_arr(n);
         if (i < 2){
-            for (int i = 0; i < signal.size(); ++i){
-                conv_arr[i][0] = 0.0 + i*0.9/(signal.size()-1);
+            for (int i = 0; i < n; ++i){
+                conv_arr[i][0] = 0.0 + i*0.9/(n-1);
                 conv_arr[i][1] = ypos + signal[i]*0.1;
                 conv_arr[i][2] = 0;
             }
         }
         else{
-            for (int i = 0; i < signal.size(); ++i){
-                conv_arr[i][0] = -0.9 + i*1.8/(signal.size()-1);
+            for (int i = 0; i < n; ++i){
+                conv_arr[i][0] = -0.9 + i*1.8/(n-1);
                 conv_arr[i][1] = ypos + signal[i]*0.2;
                 conv_arr[i][2] = 0;
             }
         }
-        ypos -= 0.5;
+        ypos -= 0.4;
         glm::vec3 licolor = {1.0, 1.0, 1.0};
     
         create_line(line, conv_arr, licolor);
         if (i < 2){
             add_keyframes(par, line, 1, 2);
         }
-        else if (i == 2){
+        else if (i == 2 || i == 3){
             add_keyframes(par, line, 2, 3);
         }
-        else if (i == 3){
+        else if (i == 4){
             add_keyframes(par, line, 3, 7);
         }
     
@@ -367,7 +443,7 @@ void convolution_OGL(Param &par){
     std::vector<glm::vec3> conv_arr(signal.size());
     for (int i = 0; i < signal.size(); ++i){
         conv_arr[i][0] = -2.9 + i*1.8/(signal.size()-1);
-        conv_arr[i][1] = -0.25 + signal[i]*0.2;
+        conv_arr[i][1] = -0.05 + signal[i]*0.2;
         conv_arr[i][2] = 0;
     }
     glm::vec3 licolor = {0.5, 0.5, 1.0};
