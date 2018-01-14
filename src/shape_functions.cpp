@@ -868,6 +868,93 @@ void create_line(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
     line.locations.push_back({0,0,0});
 }
 
+// Function to create odd integral shape from vector of vertices
+void create_integral(Shape &integral, double *array, const int size,
+                     const glm::vec3 pos, const glm::vec3 dim, 
+                     const glm::vec3 &color){
+
+    // Setting render type to GL_LINES
+    integral.rtype = GL_TRIANGLES;
+
+    // Allocating space for vertices -- 2 points for every vertex!
+    integral.vertices = (GLfloat*)malloc(sizeof(GLfloat)*12*size);
+    double slope;
+
+    // This is done in a 3 step process
+    //     1. Find slope of points before and after our element
+    //     2. Find a slope perpendicular to the slope found in 1
+    //     3. Extend that slope in both directions based on the radius
+    for (int i = 0; i < size; ++i){
+        // Special cases for our first and last elements
+        integral.vertices[0+i*12]  = pos[0] + (i)*dim[0] / size;
+        integral.vertices[1+i*12]  = pos[1];
+        integral.vertices[2+i*12]  = 0;
+        integral.vertices[3+i*12]  = color[0];
+        integral.vertices[4+i*12]  = color[1];
+        integral.vertices[5+i*12]  = color[2];
+
+        integral.vertices[6+i*12]  = pos[0] + (i)*dim[0] / size;
+        integral.vertices[7+i*12]  = pos[1] + array[i]*dim[1]*0.5;
+        integral.vertices[8+i*12]  = 0;
+        integral.vertices[9+i*12]  = color[0];
+        integral.vertices[10+i*12] = color[1];
+        integral.vertices[11+i*12] = color[2];
+
+    }
+
+    // Allocating space for indices
+    integral.indices = (GLuint*)malloc(sizeof(GLuint)*(size*6));
+
+    // Generate Indices....
+    for (int i = 0; i < size; i++){
+        integral.indices[0] = i*2+0;
+        integral.indices[1] = i*2+1;
+        integral.indices[2] = i*2+2;
+        integral.indices[3] = i*2+1;
+        integral.indices[4] = i*2+2;
+        integral.indices[5] = i*2+3;
+    }
+
+
+    GLuint VAO, VBO, EBO;
+
+    // Generating objects
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    // Binding the vertex array object
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * size * 12,
+                 integral.vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint) * ((size)*6), 
+                 integral.indices, GL_STATIC_DRAW);
+
+    // position attribute
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+
+    // color attribute
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat),
+                          (GLvoid*)(3*sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
+    // Setting square attributes
+    integral.VAO = VAO;
+    integral.VBO = VBO;
+    integral.EBO = EBO;
+
+    integral.vnum = size*2;
+    integral.ind = size*6;
+
+    integral.type = Type::integral;
+    integral.locations.push_back({0,0,0});
+}
+
 // Function to add keyframes to shape for drawing
 void add_keyframes(Param &par, Shape &sh, double start_time, double end_time){
 

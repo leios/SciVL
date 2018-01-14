@@ -113,4 +113,13 @@ void test_anim_OGL(Param &par){
     add_keyframes(par, rect, 8,9);
     par.shapes.push_back(rect);
 
+    // Creating a set of values to test an integral
+    double int_array[10];
+    for (int i = 0; i < 10; ++i){
+        int_array[i] = sin(i);
+    }
+
+    Shape integral;
+    create_integral(integral, int_array, 10, {0,0,0}, {1,0.5,0}, {0,1,1});
+    par.shapes.push_back(integral);
 }

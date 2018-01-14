@@ -36,7 +36,7 @@
 #include FT_FREETYPE_H  
 
 // enum for type of shape to draw
-enum Type {line, circle, rect};
+enum Type {line, circle, rect, integral};
 
 struct node{
     std::vector<node> children;
