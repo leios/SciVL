@@ -1,5 +1,5 @@
 Thanks for helping with the Algorithm Archive!
-Matthew Giallourakis
+M. Giallourakis
 KingFredrickVI
 Gathros
 Gustorn

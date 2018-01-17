@@ -195,6 +195,11 @@ void process_events(Param &par){
     }
 }
 
+// saves text input as shapes to be drawn
+void save_string(Param &par, std::string text, glm::vec3 pos, GLfloat scale,
+                 glm::vec3 color){
+}
+
 // Dealing with text input and such
 void write_string(Param &par, std::string text, glm::vec3 pos, GLfloat scale, 
                   glm::vec3 color){

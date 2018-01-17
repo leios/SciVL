@@ -907,12 +907,12 @@ void create_integral(Shape &integral, double *array, const int size,
 
     // Generate Indices....
     for (int i = 0; i < size; i++){
-        integral.indices[0] = i*2+0;
-        integral.indices[1] = i*2+1;
-        integral.indices[2] = i*2+2;
-        integral.indices[3] = i*2+1;
-        integral.indices[4] = i*2+2;
-        integral.indices[5] = i*2+3;
+        integral.indices[i+0] = i*2+0;
+        integral.indices[i+1] = i*2+1;
+        integral.indices[i+2] = i*2+2;
+        integral.indices[i+3] = i*2+2;
+        integral.indices[i+4] = i*2+1;
+        integral.indices[i+5] = i*2+3;
     }
 
 
