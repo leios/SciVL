@@ -243,7 +243,7 @@ void convolution_fn(Param &par){
     if (par.bmap["linear"]){
         for (int i = 0; i < 2; ++i){
             glm::vec3 pos_text = {-0.9, ypos, 0};
-            ypos -= 0.5;
+            ypos -= 0.4;
             if (i == 0){
                 write_string(par, "Signal 1:", pos_text, 1, text_color);
             }
@@ -275,14 +275,16 @@ void convolution_par(Param &par){
     int n = 128;
     std::vector<double> sig1(n), sig2(n), mult_signal(2*n);
     for (int i = 0; i < n; ++i){
+/*
         if (i > 2*n / 5 && i < 3*n/5){
             sig1[i] = 1.0;
         }
         if (i > 2*n / 5 && i < 3*n/5){
             sig2[i] = 1.0;
         }
-        //sig1[i] = sin(2*M_PI*i/n); // * (double)i/n;
-        //sig2[i] = sin(2*M_PI*i/n); // * (double)i/n;
+*/
+        sig1[i] = sin(2*M_PI*i/n); // * (double)i/n;
+        sig2[i] = sin(2*M_PI*i/n); // * (double)i/n;
     }
     par.vdmap["sig1"] = sig1;
     par.vdmap["sig2"] = sig2;

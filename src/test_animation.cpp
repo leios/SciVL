@@ -114,12 +114,14 @@ void test_anim_OGL(Param &par){
     par.shapes.push_back(rect);
 
     // Creating a set of values to test an integral
-    double int_array[10];
-    for (int i = 0; i < 10; ++i){
-        int_array[i] = sin(i);
+    int length = 100;
+    double *int_array;
+    int_array = (double *)malloc(sizeof(double)*length);
+    for (int i = 0; i < length; ++i){
+        int_array[i] = sin(i*2*M_PI/(double)length);
     }
 
     Shape integral;
-    create_integral(integral, int_array, 10, {0,0,0}, {1,0.5,0}, {0,1,1});
+    create_integral(integral, int_array, length, {0,0.5,0}, {1,0.5,0}, {0,1,1});
     par.shapes.push_back(integral);
 }

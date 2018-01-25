@@ -79,7 +79,7 @@ void create_line(Shape &line, glm::vec3 *array, int size, glm::vec3 &color);
 void create_line(Shape &line, std::vector<glm::vec3> &array, glm::vec3 &color);
 
 // Function to create odd integral shape from vector of vertices
-void create_integral(Shape &integral, double *array, const int size, 
+void create_integral(Shape &integral, double *array, int size, 
                      const glm::vec3 pos, const glm::vec3 dim, 
                      const glm::vec3 &color);
 

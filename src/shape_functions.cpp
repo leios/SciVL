@@ -869,15 +869,17 @@ void create_line(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
 }
 
 // Function to create odd integral shape from vector of vertices
-void create_integral(Shape &integral, double *array, const int size,
+void create_integral(Shape &integral, double *array, int size,
                      const glm::vec3 pos, const glm::vec3 dim, 
                      const glm::vec3 &color){
+
+    size += 1;
 
     // Setting render type to GL_LINES
     integral.rtype = GL_TRIANGLES;
 
     // Allocating space for vertices -- 2 points for every vertex!
-    integral.vertices = (GLfloat*)malloc(sizeof(GLfloat)*12*size);
+    integral.vertices = (GLfloat*)malloc(sizeof(GLfloat)*12*(size+1));
     double slope;
 
     // This is done in a 3 step process
@@ -903,16 +905,16 @@ void create_integral(Shape &integral, double *array, const int size,
     }
 
     // Allocating space for indices
-    integral.indices = (GLuint*)malloc(sizeof(GLuint)*(size*6));
+    integral.indices = (GLuint*)malloc(sizeof(GLuint)*((size+1)*6));
 
     // Generate Indices....
     for (int i = 0; i < size; i++){
-        integral.indices[i+0] = i*2+0;
-        integral.indices[i+1] = i*2+1;
-        integral.indices[i+2] = i*2+2;
-        integral.indices[i+3] = i*2+2;
-        integral.indices[i+4] = i*2+1;
-        integral.indices[i+5] = i*2+3;
+        integral.indices[i*6+0] = i*2+0;
+        integral.indices[i*6+1] = i*2+1;
+        integral.indices[i*6+2] = i*2+2;
+        integral.indices[i*6+3] = i*2+2;
+        integral.indices[i*6+4] = i*2+1;
+        integral.indices[i*6+5] = i*2+3;
     }
 
 
@@ -927,11 +929,11 @@ void create_integral(Shape &integral, double *array, const int size,
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * size * 12,
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * (size+1) * 12,
                  integral.vertices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint) * ((size)*6), 
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * ((size+1)*6), 
                  integral.indices, GL_STATIC_DRAW);
 
     // position attribute
@@ -948,8 +950,8 @@ void create_integral(Shape &integral, double *array, const int size,
     integral.VBO = VBO;
     integral.EBO = EBO;
 
-    integral.vnum = size*2;
-    integral.ind = size*6;
+    integral.vnum = (size+1)*2;
+    integral.ind = (size+1)*6;
 
     integral.type = Type::integral;
     integral.locations.push_back({0,0,0});
