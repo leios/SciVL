@@ -868,6 +868,63 @@ void create_line(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
     line.locations.push_back({0,0,0});
 }
 
+void update_integral(Shape &integral, double *new_array, double ydim, 
+                     double pos){
+
+    int size = (integral.vnum / 2) - 1;
+    for (int i = 0; i < size; ++i){
+        integral.vertices[7+i*12]  = pos + new_array[i]*ydim*0.5;
+    }
+
+    // Allocating space for indices
+    integral.indices = (GLuint*)malloc(sizeof(GLuint)*((size+1)*6));
+
+    // Generate Indices....
+    for (int i = 0; i < size; i++){
+        integral.indices[i*6+0] = i*2+0;
+        integral.indices[i*6+1] = i*2+1;
+        integral.indices[i*6+2] = i*2+2;
+        integral.indices[i*6+3] = i*2+2;
+        integral.indices[i*6+4] = i*2+1;
+        integral.indices[i*6+5] = i*2+3;
+    }
+
+
+    GLuint VAO, VBO, EBO;
+
+    // Generating objects
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    // Binding the vertex array object
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * (size+1) * 12,
+                 integral.vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * ((size+1)*6), 
+                 integral.indices, GL_STATIC_DRAW);
+
+    // position attribute
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+
+    // color attribute
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(GLfloat),
+                          (GLvoid*)(3*sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
+    // Setting square attributes
+    integral.VAO = VAO;
+    integral.VBO = VBO;
+    integral.EBO = EBO;
+
+
+}
+
 // Function to create odd integral shape from vector of vertices
 void create_integral(Shape &integral, double *array, int size,
                      const glm::vec3 pos, const glm::vec3 dim, 
@@ -880,12 +937,7 @@ void create_integral(Shape &integral, double *array, int size,
 
     // Allocating space for vertices -- 2 points for every vertex!
     integral.vertices = (GLfloat*)malloc(sizeof(GLfloat)*12*(size+1));
-    double slope;
 
-    // This is done in a 3 step process
-    //     1. Find slope of points before and after our element
-    //     2. Find a slope perpendicular to the slope found in 1
-    //     3. Extend that slope in both directions based on the radius
     for (int i = 0; i < size; ++i){
         // Special cases for our first and last elements
         integral.vertices[0+i*12]  = pos[0] + (i)*dim[0] / size;

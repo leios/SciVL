@@ -54,7 +54,7 @@ void find_mult_signal(Param &par){
             new_line[i][1] = ypos + mult_signal[i]*0.2;
             new_line[i][2] = 0;
         }
-        update_line(par.shapes[8],new_line);
+        update_integral(par.shapes[8],mult_signal.data(),0.4,-0.45);
         free(new_line);
     }
     
@@ -284,7 +284,7 @@ void convolution_par(Param &par){
         }
 */
         sig1[i] = sin(2*M_PI*i/n); // * (double)i/n;
-        sig2[i] = sin(2*M_PI*i/n); // * (double)i/n;
+        sig2[i] = sin(4*M_PI*i/n); // * (double)i/n;
     }
     par.vdmap["sig1"] = sig1;
     par.vdmap["sig2"] = sig2;
@@ -421,19 +421,27 @@ void convolution_OGL(Param &par){
                 conv_arr[i][2] = 0;
             }
         }
-        ypos -= 0.4;
         glm::vec3 licolor = {1.0, 1.0, 1.0};
     
-        create_line(line, conv_arr, licolor);
         if (i < 2){
+            create_line(line, conv_arr, licolor);
             add_keyframes(par, line, 1, 2);
         }
-        else if (i == 2 || i == 3){
+        else if (i == 2){
+            create_line(line, conv_arr, licolor);
             add_keyframes(par, line, 2, 3);
         }
+        else if (i == 3){
+            std::cout << ypos << '\n';
+            glm::vec3 pos = {-0.9,ypos,0};
+            glm::vec3 dim = {1.8, 0.4, 0};
+            create_integral(line, signal.data(), n, pos, dim, licolor);
+        }
         else if (i == 4){
+            create_line(line, conv_arr, licolor);
             add_keyframes(par, line, 3, 7);
         }
+        ypos -= 0.4;
     
         par.shapes.push_back(line);
 

@@ -16,6 +16,7 @@
 #include "../include/traverse.h"
 #include "../include/verlet.h"
 #include "../include/convolution.h"
+#include "../include/plot.h"
 #include FT_FREETYPE_H
 
 
@@ -92,6 +93,12 @@ void Param::set_fns(std::string dist){
         key_fn = convolution_key;
         par_fn = convolution_par;
         OGL_fn = convolution_OGL;
+    }
+    else if (dist == "plot"){
+        draw_fn = plot_fn;
+        key_fn = plot_key;
+        par_fn = plot_par;
+        OGL_fn = plot_OGL;
     }
     else{
         if (dist != "std"){

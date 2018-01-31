@@ -85,6 +85,8 @@ void create_integral(Shape &integral, double *array, int size,
 
 // Function to update an array
 void update_line(Shape &sh, glm::vec3 *new_array);
+void update_integral(Shape &integral, double *new_array, double ydim, 
+                     double pos);
 
 // Function to add keyframes to a shape for drawing
 void add_keyframes(Param &par, Shape &sh, double start_time, double end_time);
