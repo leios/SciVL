@@ -17,6 +17,7 @@
 #include "../include/verlet.h"
 #include "../include/convolution.h"
 #include "../include/plot.h"
+#include "../include/stable_marriage.h"
 #include FT_FREETYPE_H
 
 
@@ -99,6 +100,12 @@ void Param::set_fns(std::string dist){
         key_fn = plot_key;
         par_fn = plot_par;
         OGL_fn = plot_OGL;
+    }
+    else if (dist == "stable"){
+        draw_fn = stable_fn;
+        key_fn = stable_key;
+        par_fn = stable_par;
+        OGL_fn = stable_OGL;
     }
     else{
         if (dist != "std"){

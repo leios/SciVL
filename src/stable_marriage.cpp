@@ -1,4 +1,4 @@
-/*-------------convolution.cpp------------------------------------------------//
+/*-------------stable_marriage.cpp--------------------------------------------//
 *
 * Purpose: to hold all possible distributions for SDL and OGL stuff
 *
@@ -16,8 +16,18 @@
 #include "../include/shaders.h"
 #include "../include/operations.h"
 
+struct person{
+    int ID, mate;
+}
+
+void propose(Param &par){
+}
+
+void animate_gale_shapley(Param &par){
+}
+
 // Test functions using shader.h
-void plot_key(Param &par, SDL_Keysym* Keysym, bool is_down){
+void stable_key(Param &par, SDL_Keysym* Keysym, bool is_down){
     if (!is_down){
         return;
     }
@@ -33,7 +43,7 @@ void plot_key(Param &par, SDL_Keysym* Keysym, bool is_down){
 
 }
 
-void plot_fn(Param &par){
+void stable_fn(Param &par){
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -47,8 +57,8 @@ void plot_fn(Param &par){
 
 }
 
-void plot_par(Param &par){
-    par.dist = "plot";
+void stable_par(Param &par){
+    par.dist = "stable";
     par.end = 0;
 
     // Creating signals to work with
@@ -73,7 +83,7 @@ void plot_par(Param &par){
 
 }
 
-void plot_OGL(Param &par){
+void stable_OGL(Param &par){
     glewExperimental = GL_TRUE;
 
     if (glewInit() != GLEW_OK){
@@ -114,36 +124,26 @@ void plot_OGL(Param &par){
     setup_freetype(par);
     create_quad(par.text);
 
-    Shape line;
-    std::vector<glm::vec3> array(2);
+    Shape human;
+    glm::vec3 loc = {-0.25, 0.85, 0};
+    glm::vec3 color1 = {0.25, 0.25, 1};
+    glm::vec3 color2 = {1, 0, 1};
+    double dt = 0;
+    for (int i = 0; i < 4; ++i){
+        create_human(human, loc, color1, 0.075);
+        add_keyframes(par, human, 1+dt,2+dt);
+        par.shapes.push_back(human);
 
-    glm::vec3 color = {0.5, 0.5, 0.5};
-    array[0] = {-0.9, 0.9, 0};
-    array[1] = {-0.9, -0.9, 0};
+        dt += 0.5;
 
-    create_line(line, array, color);
-    add_keyframes(par, line, 1, 2);
-    par.shapes.push_back(line);
+        loc[0] += 0.5;
+        create_human(human, loc, color2, 0.075);
+        add_keyframes(par, human, 1+dt,2+dt);
+        par.shapes.push_back(human);
+        dt += 0.5;
 
-    array[0] = {-0.9, 0, 0};
-    array[1] = {0.9, 0, 0};
-
-    create_line(line, array, color);
-    add_keyframes(par, line, 1, 2);
-    par.shapes.push_back(line);
-
-    int n = par.imap["res"];
-    std::vector<double> signal = par.vdmap["signal"];
-    std::vector<glm::vec3> v3signal(n);
-
-    color = {1,1,1};
-    for (int i = 0; i < n; ++i){
-        v3signal[i][0] = -0.9 + i*1.8 / n;
-        v3signal[i][1] = signal[i] * 0.9;
-        v3signal[i][2] = -0.9 + i*1.8 / n;
+        loc[0] -= 0.5;
+        loc[1] -= 0.5;
     }
-
-    create_line(line, v3signal, color);
-    add_keyframes(par, line, 2, 3);
-    par.shapes.push_back(line);
+    
 }

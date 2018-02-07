@@ -98,4 +98,7 @@ void shift_keyframes(Param &par, Shape &sh, double time);
 void shift_color_keyframes(Param &par, Shape &sh, double time);
 void shift_move_keyframes(Param &par, Shape &sh, double time);
 
+void create_human(Shape &human, const glm::vec3 loc, 
+                  const glm::vec3 color, double radius);
+
 #endif

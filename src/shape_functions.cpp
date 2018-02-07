@@ -1083,3 +1083,27 @@ void shift_move_keyframes(Param &par, Shape &sh, double time){
     }
 
 }
+
+void create_human(Shape &human, const glm::vec3 loc, 
+                  const glm::vec3 color, double rad){
+    int n = 150;
+    std::vector<glm::vec3> array(n);
+
+    int timepoint = 2*n/3;
+    for (int i = 0; i < n; ++i){
+        if(i < timepoint){
+            array[i][0] = loc[0] + rad * sin(M_PI+(2*M_PI*i/(timepoint-1)));
+            array[i][1] = loc[1] + rad * cos(M_PI+(2*M_PI*i/(timepoint-1)));
+            array[i][2] = 0.0;
+        }
+        else{
+            array[i][0] = loc[0];
+            array[i][1] = loc[1] - rad - 2*rad *(i-timepoint)/(n-timepoint);
+            array[i][2] = 0.0;
+        }
+    }
+
+    glm::vec3 temp_color = color;
+    create_line(human, array, temp_color);
+
+}

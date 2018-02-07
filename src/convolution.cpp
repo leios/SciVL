@@ -241,6 +241,7 @@ void convolution_fn(Param &par){
     glm::vec3 text_color = {1, 1, 1};
 
     if (par.bmap["linear"]){
+/*
         for (int i = 0; i < 2; ++i){
             glm::vec3 pos_text = {-0.9, ypos, 0};
             ypos -= 0.4;
@@ -251,6 +252,7 @@ void convolution_fn(Param &par){
                 write_string(par, "Signal 2:", pos_text, 1, text_color);
             }
         }
+*/
     }
     else{
         glm::vec3 pos_text = {-0.7, 0.75, 0};
@@ -283,8 +285,21 @@ void convolution_par(Param &par){
             sig2[i] = 1.0;
         }
 */
+/*
+        if (i  == n/2-1){
+            sig2[i] = 1;
+        }
+        else if (i  == n/2+1){
+            sig2[i] = -1;
+        }
+        else{
+            sig2[i] = 0;
+        }
+*/
+        //double x = i*20 / (double)n;
+        //sig2[i] = exp(-(x-10)*(x-10)*4);
         sig1[i] = sin(2*M_PI*i/n); // * (double)i/n;
-        sig2[i] = sin(4*M_PI*i/n); // * (double)i/n;
+        sig2[i] = sin(10*M_PI*i/n); // * (double)i/n;
     }
     par.vdmap["sig1"] = sig1;
     par.vdmap["sig2"] = sig2;
@@ -349,16 +364,6 @@ void convolution_OGL(Param &par){
     setup_freetype(par);
     create_quad(par.text);
 
-/*
-    Shape rect;
-    glm::vec3 rloc = {0,-0.25,0};
-    glm::vec3 rsize = {1.8,0.4,0};
-    glm::vec3 rcolor = {0.5,0,0.5};
-    create_rectangle(rect, rloc, rsize, rcolor); 
-    rect.shader = "convolution";
-    par.shapes.push_back(rect);
-*/
-
     // Creating a simple line
     Shape line;
     std::vector<glm::vec3> array(2);
@@ -366,7 +371,7 @@ void convolution_OGL(Param &par){
     double ypos = 0.75;
     for (int i = 0; i < 5; ++i){
         if (i < 2){
-            array[0] = {-0.0, ypos, 0.0};
+            array[0] = {-0.9, ypos, 0.0};
             array[1] = {0.9, ypos, 0.0};
         }
         else{
@@ -409,15 +414,15 @@ void convolution_OGL(Param &par){
         std::vector<glm::vec3> conv_arr(n);
         if (i < 2){
             for (int i = 0; i < n; ++i){
-                conv_arr[i][0] = 0.0 + i*0.9/(n-1);
-                conv_arr[i][1] = ypos + signal[i]*0.1;
+                conv_arr[i][0] = -0.9 + i*1.8/(n-1);
+                conv_arr[i][1] = ypos + signal[i]*0.15;
                 conv_arr[i][2] = 0;
             }
         }
         else{
             for (int i = 0; i < n; ++i){
                 conv_arr[i][0] = -0.9 + i*1.8/(n-1);
-                conv_arr[i][1] = ypos + signal[i]*0.2;
+                conv_arr[i][1] = ypos + signal[i]*0.15;
                 conv_arr[i][2] = 0;
             }
         }
