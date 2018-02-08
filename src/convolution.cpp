@@ -343,10 +343,6 @@ void convolution_OGL(Param &par){
     defaultShader.Load("shaders/default.vtx", "shaders/default.frg");
     par.shmap["default"] = defaultShader;
 
-    Shader convolutionShader;
-    convolutionShader.Load("shaders/convolution.vtx","shaders/convolution.frg");
-    par.shmap["convolution"] = convolutionShader;
-
     glEnable(GL_LINE_SMOOTH);
     glLineWidth(2);
 

@@ -16,15 +16,17 @@
 #include "../include/shaders.h"
 #include "../include/operations.h"
 
+/*
 struct person{
     int ID, mate;
-}
+};
 
 void propose(Param &par){
 }
 
 void animate_gale_shapley(Param &par){
 }
+*/
 
 // Test functions using shader.h
 void stable_key(Param &par, SDL_Keysym* Keysym, bool is_down){
@@ -102,10 +104,6 @@ void stable_OGL(Param &par){
     Shader defaultShader;
     defaultShader.Load("shaders/default.vtx", "shaders/default.frg");
     par.shmap["default"] = defaultShader;
-
-    Shader convolutionShader;
-    convolutionShader.Load("shaders/convolution.vtx","shaders/convolution.frg");
-    par.shmap["convolution"] = convolutionShader;
 
     glEnable(GL_LINE_SMOOTH);
     glLineWidth(2);

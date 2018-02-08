@@ -1,4 +1,4 @@
-/*-------------convolution.cpp------------------------------------------------//
+/*-------------plot.cpp-------------------------------------------------------//
 *
 * Purpose: to hold all possible distributions for SDL and OGL stuff
 *
@@ -92,10 +92,6 @@ void plot_OGL(Param &par){
     Shader defaultShader;
     defaultShader.Load("shaders/default.vtx", "shaders/default.frg");
     par.shmap["default"] = defaultShader;
-
-    Shader convolutionShader;
-    convolutionShader.Load("shaders/convolution.vtx","shaders/convolution.frg");
-    par.shmap["convolution"] = convolutionShader;
 
     glEnable(GL_LINE_SMOOTH);
     glLineWidth(2);
