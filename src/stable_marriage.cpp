@@ -10,23 +10,94 @@
 #include <stdlib.h>
 #include <fftw3.h>
 
+#include <random>
+#include <algorithm>
+
 #include "../include/test_animation.h"
 #include "../include/shape_functions.h"
 #include "../include/aux_functions.h"
 #include "../include/shaders.h"
 #include "../include/operations.h"
 
-/*
 struct person{
     int ID, mate;
 };
 
-void propose(Param &par){
+std::vector<person> find_preference(Param &par, int n){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    std::vector<person> preferences(4*n*n);
+    person noone;
+    noone.ID = -1;
+    noone.mate = -1;
+    for(int i = 0; i < 2*n; ++i){
+        std::vector<person> ind_pref(n);
+        for (int i = 0; i < n; ++i){
+            ind_pref[i].ID = i;
+            ind_pref[i].mate = -1;
+        }
+        std::shuffle(ind_pref.begin(), ind_pref.end(), gen);
+        for (int j = 0; j < 2*n; ++j){
+            int index = i*2*n + j;
+            if (i < n){
+                if(j < n){
+                    preferences[index] = ind_pref[j];
+                }
+                else{
+                    preferences[index] = noone;
+                }
+            }
+            else{
+                if(j > n){
+                    preferences[index] = ind_pref[j];
+                }
+                else{
+                    preferences[index] = noone;
+                }
+            }
+        }
+    }
+    return preferences;
 }
 
-void animate_gale_shapley(Param &par){
+void propose(Param &par, std::vector<person> preferences, person man,
+             person woman, std::vector<int> &pairs){
+    int n = sqrt(preferences.size()/2);
+    int mid_0;
+    if (woman.mate >= 0){
+        mid_0 = woman.mate;
+    }
+    else{
+        mid_0 = -1;
+    }
+
+    if (mid_0 >= 0){
+        int rank_0 = preferences[(i+n)*2*n + mid_0+n];
+        int rank_1 = preferences[(i+n)*2*n + man.ID+n];
+        if (rank_1 > rank_0){
+            pairs[man.IS] = woman.ID;
+        }
+    }
+    else{
+        pairs[man.ID] = woman.ID;
+    }
 }
-*/
+
+std::vector<int> gale_shapley(Param &par, std::vector<person> preferences){
+    int n = sqrt(preferences.size()/2);
+    std::vector<int> pairs(n);
+
+    for (int i = 0; i < n; ++i){
+        for (int j = 0; j < n; ++j){
+            person man = preferences[(i+n)*2*n + j+n];
+            person woman = preferences[i*2*n + j];
+            propose(par, preferences, man, woman, pairs);
+        }
+    }
+
+    return pairs;
+}
 
 // Test functions using shader.h
 void stable_key(Param &par, SDL_Keysym* Keysym, bool is_down){
