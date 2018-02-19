@@ -40,17 +40,16 @@ void thanks_fn(Param &par){
     // Finding time
     //std::cout << curr_time(par) << '\n';
 
-/*
     std::string massive_string = "";
     for (int i = 1; i < par.strings.size(); ++i){
         massive_string += par.strings[i] + " | ";
     }
     double offset = 0;
-    offset = curr_time(par) * 0.25;
+    offset = curr_time(par) * 0.1;
     pos_text[0] = 3*0.5 - offset;
     pos_text[1] = -0.8;
     write_string(par, massive_string, pos_text, 1.0f, color);
-*/
+/*
     for (int i = 1; i < par.strings.size(); ++i){
         double offset = curr_time(par) * 0.25;
         pos_text[0] = i*0.25 - offset;
@@ -65,6 +64,7 @@ void thanks_fn(Param &par){
             write_string(par, par.strings[i], pos_text, 1.0f, color);
         }
     }
+*/
 /*
     pos_text[0] -= 0.25;
     pos_text[1] -= 0.2;

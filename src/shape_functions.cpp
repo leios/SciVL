@@ -431,7 +431,9 @@ void create_rectangle(Shape &rect, glm::vec3 &pos,
     rect.ind = 6;
 
     rect.type = Type::rect;
-    rect.locations.push_back({0,0,0});
+    if(rect.locations.size() < 1){
+        rect.locations.push_back({0,0,0});
+    }
 
 }
 
@@ -498,7 +500,9 @@ Shape create_square(Param &par){
 
     square.vnum = 4;
     square.ind = 6;
-    square.locations.push_back({0,0,0});
+    if(square.locations.size() < 1){
+        square.locations.push_back({0,0,0});
+    }
 
     return square;
 }
@@ -612,7 +616,9 @@ void create_circle(Shape &circle, glm::vec3 &pos, double radius,
     circle.vnum = res+1;
     circle.ind = res*3;
     circle.type = Type::circle;
-    circle.locations.push_back({0,0,0});
+    if(circle.locations.size() < 1){
+        circle.locations.push_back({0,0,0});
+    }
     //std::cout << "index number is: " << circle.ind << '\n';
 
 }
@@ -865,7 +871,9 @@ void create_line(Shape &line, glm::vec3 *array, int size, glm::vec3 &color){
     line.ind = (size-1)*12 +6;
 
     line.type = Type::line;
-    line.locations.push_back({0,0,0});
+    if(line.locations.size() < 1){
+        line.locations.push_back({0,0,0});
+    }
 }
 
 void update_integral(Shape &integral, double *new_array, double ydim, 
@@ -1006,7 +1014,9 @@ void create_integral(Shape &integral, double *array, int size,
     integral.ind = (size+1)*6;
 
     integral.type = Type::integral;
-    integral.locations.push_back({0,0,0});
+    if(integral.locations.size() < 1){
+        integral.locations.push_back({0,0,0});
+    }
 }
 
 // Function to add keyframes to shape for drawing
